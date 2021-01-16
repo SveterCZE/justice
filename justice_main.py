@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Dec  5 21:21:32 2020
-
-@author: petrs
-"""
 
 # import cProfile
 # import xml.etree.ElementTree as et
@@ -20,7 +15,7 @@ from datetime import datetime
 # The function opens a file and parses the extracted data into the database
 def parse_to_DB(file):
     print("Processing ", str(file))
-    conn = sqlite3.connect('justice_v3.db')
+    conn = sqlite3.connect('justice_v4.db')
     c = conn.cursor()
     for event, element in etree.iterparse(file, tag="Subjekt"):
         # Bugfix for companies which have been deleted but appear in the list of existing companies      
@@ -39,25 +34,30 @@ def parse_to_DB(file):
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/oddil"), conn, ICO, "oddil")
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/vlozka"), conn, ICO, "vlozka")
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/soud/kod"), conn, ICO, "soud")
+            insert_prop(c, str(adresa(get_SIDLO_v2(element))), conn, ICO, "sidlo")
+            
+            # insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa/obec"), conn, ICO, "sidlo")
+            # insert_prop(c, str(adresa(get_SIDLO(".//udaje/Udaj/adresa"))), conn, ICO, "sidlo")
+            # insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa"), conn, ICO, "sidlo")
             # Now, I need to go deeper into the file to extract data about the registered office
-            subjekt_udaje = element.findall('.//Udaj')
-            for udaj in subjekt_udaje:
-                udaje_spolecnosti = udaj.findall(".//kod")
-                if "SIDLO" in udaje_spolecnosti[0].text and sidlo_set == False:
-                            try:
-                                insert_prop(c, str(adresa(get_SIDLO(udaj))), conn, ICO, "sidlo")
-                                # print(sidlo)
-                                # spolecnosti2[ICO].set_SIDLO(get_SIDLO(udaj,udaje_spolecnosti))
+            # subjekt_udaje = element.findall('.//Udaj')
+            # for udaj in subjekt_udaje:
+            #     udaje_spolecnosti = udaj.findall(".//kod")
+            #     if "SIDLO" in udaje_spolecnosti[0].text and sidlo_set == False:
+            #                 try:
+            #                     insert_prop(c, str(adresa(get_SIDLO(udaj))), conn, ICO, "sidlo")
+            #                     # print(sidlo)
+            #                     # spolecnosti2[ICO].set_SIDLO(get_SIDLO(udaj,udaje_spolecnosti))
                                 
-                                # c.execute("UPDATE spolecnosti SET sidlo = (?) WHERE ICO = (?)", (str(get_SIDLO(udaj,udaje_spolecnosti)), ICO,))
-                                # conn.commit()
-                                sidlo_set = True
-                            except:
-                                print("Zkusil jsem to a nevyslo to!")
-                                sidlo_set = False
+            #                     # c.execute("UPDATE spolecnosti SET sidlo = (?) WHERE ICO = (?)", (str(get_SIDLO(udaj,udaje_spolecnosti)), ICO,))
+            #                     # conn.commit()
+            #                     sidlo_set = True
+            #                 except:
+            #                     print("Zkusil jsem to a nevyslo to!")
+            #                     sidlo_set = False
                 
             element.clear()
-            subjekt_udaje.clear()
+            # subjekt_udaje.clear()
     conn.commit()
     conn.close()
     return 0
@@ -93,53 +93,45 @@ def insert_prop(c, prop, conn, ICO, column):
     except:
         pass
 
-def get_SIDLO(udaj):
-        try:    
-            stat = udaj.find(".//statNazev").text
-        except:
-            stat = None
-        try:    
-            obec = udaj.find(".//obec").text
-        except:
-            obec = None
-        try:
-            ulice = udaj.find(".//ulice").text
-        except:
-            ulice = None
-        try:
-            castObce = udaj.find(".//castObce").text
-        except:
-            castObce = None
-        try:
-            cisloPo = udaj.find(".//cisloPo").text
-        except:
-            cisloPo = None
-        try:
-            cisloOr = udaj.find(".//cisloOr").text
-        except:
-            cisloOr = None
-        try:
-            psc = udaj.find(".//psc").text
-        except:
-            psc = None
-        try:
-            okres = udaj.find(".//okres").text
-        except:
-            okres = None
-        try:
-            komplet_adresa = udaj.find(".//adresaText").text  
-        except:
-            komplet_adresa = None
-        try:
-            cisloEv = udaj.find(".//cisloEv").text  
-        except:
-            cisloEv = None
-        try:
-            cisloText = udaj.find(".//cisloText").text  
-        except:
-            cisloText = None
+def get_SIDLO_v2(element):    
+    address_field = []
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/statNazev"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/obec"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/ulice"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/castObce"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/cisloPo"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/cisloOr"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/psc"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/okres"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/adresaText"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/cisloEv"))
+    address_field.append(get_prop(element, ".//udaje/Udaj/adresa/cisloText"))
+    if address_field[0] == "Česká republika - neztotožněno":
+        address_field[0] = "Česká republika"
+    for i in range(len(address_field)):
+        if address_field[i] == "0":
+            address_field[i] = None
+    
+    # stat = get_prop(element, ".//udaje/Udaj/adresa/statNazev")
+    # obec = get_prop(element, ".//udaje/Udaj/adresa/obec")
+    # ulice = get_prop(element, ".//udaje/Udaj/adresa/ulice")
+    # castObce = get_prop(element, ".//udaje/Udaj/adresa/castObce")
+    # cisloPo = get_prop(element, ".//udaje/Udaj/adresa/cisloPo")
+    # cisloOr = get_prop(element, ".//udaje/Udaj/adresa/cisloOr")
+    # psc = get_prop(element, ".//udaje/Udaj/adresa/psc")
+    # okres = get_prop(element, ".//udaje/Udaj/adresa/okres")
+    # komplet_adresa = get_prop(element, ".//udaje/Udaj/adresa/adresaText") 
+    # cisloEv = get_prop(element, ".//udaje/Udaj/adresa/cisloEv")
+    # cisloText = get_prop(element, ".//udaje/Udaj/adresa/cisloText")
+    
         
-        return [stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText]
+    
+    # if address_field[0] != "Česká republika":
+    #     print(address_field)
+    return address_field    
+    # print([stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText])
+        
+    # return [stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText]
 
 class adresa(object):
     def __init__(self, adresa):
@@ -157,15 +149,15 @@ class adresa(object):
         
     def __str__ (self):
         try:
-            if self.obec == "-":
-                return("Neznama adresa")
-            if self.obec == None:
-                return("Neznama adresa")
+            # if self.obec == "-":
+            #     return("Neznama adresa")
             if self.komplet_adresa != None:
                 if self.stat != None:
                     return str(self.komplet_adresa + " " + self.stat)
                 else:
                     return str(self.komplet_adresa)
+            # if self.obec == None:
+            #     return("Neznama adresa")
             if self.cisloText != None:
                 if self.ulice == None:
                     if self.psc != None:
@@ -204,7 +196,7 @@ class adresa(object):
                         return str(self.ulice + " č.ev. " + self.cisloEv + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)    
                 else:
                     if self.psc != None:
-                        return str(self.ulice + " " + self.cisloPo + ", " + srovnat_obec_cast(self.obec, self.castObce) + self.psc + " " + self.obec + ", " + self.stat)           
+                        return str(self.ulice + " " + self.cisloPo + ", " + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)           
                     else:
                         return str(self.ulice + " " + self.cisloPo + ", " + srovnat_obec_cast(self.obec, self.castObce) + " " + self.obec + ", " + self.stat)         
             
@@ -268,7 +260,7 @@ def general_update(method):
     # typy_po = ["as"]
     # soudy = ["ostrava"]
     
-    rok = datetime.now().year
+    rok = str(datetime.now().year)
     for osoba in typy_po:
         for soud in soudy:
             if method == "down":
@@ -350,7 +342,7 @@ def delete_archive(file):
 # parse_to_DB("sro-actual-praha-2020.xml")
 
 def do_both():
-    general_update("down")
+    # general_update("down")
     general_update("db_update")
 
 do_both()
