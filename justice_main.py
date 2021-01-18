@@ -15,7 +15,7 @@ from datetime import datetime
 # The function opens a file and parses the extracted data into the database
 def parse_to_DB(file):
     print("Processing ", str(file))
-    conn = sqlite3.connect('justice_v4.db')
+    conn = sqlite3.connect('justice_v6.db')
     c = conn.cursor()
     for event, element in etree.iterparse(file, tag="Subjekt"):
         # Bugfix for companies which have been deleted but appear in the list of existing companies      
@@ -23,8 +23,6 @@ def parse_to_DB(file):
             continue
         else:
             ICO = get_ICO(element)
-            sidlo_set = False
-            # print(ICO)
             # Vlozit prazdny radek s ICO
             insert_new_ICO(c, ICO, conn)
             # Vlozit jednolive parametry
@@ -35,7 +33,11 @@ def parse_to_DB(file):
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/vlozka"), conn, ICO, "vlozka")
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/soud/kod"), conn, ICO, "soud")
             insert_prop(c, str(adresa(get_SIDLO_v2(element))), conn, ICO, "sidlo")
+            insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa/obec"), conn, ICO, "obec")
+            insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa/ulice"), conn, ICO, "ulice")
+            insert_prop(c, get_prop(element, ".//udaje/Udaj/pravniForma/nazev"), conn, ICO, "pravni_forma")
             
+
             # insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa/obec"), conn, ICO, "sidlo")
             # insert_prop(c, str(adresa(get_SIDLO(".//udaje/Udaj/adresa"))), conn, ICO, "sidlo")
             # insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa"), conn, ICO, "sidlo")
@@ -64,11 +66,14 @@ def parse_to_DB(file):
 
 # Function to attempt to insert a placeholder for a new company based on ICO
 def insert_new_ICO(c, ICO, conn):
+    
     try:
-        c.execute("INSERT INTO companies VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (ICO, "", "", "", "", "", "", ""))
-        # conn.commit()
+        c.execute("INSERT INTO companies (ico) VALUES (?);", (ICO,))#     
+    # c.execute("INSERT INTO companies VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (ICO, "", "", "", "", "", "", "", "", "", ""))
+        
+    #     # conn.commit()
     except:
-          pass
+           pass
 
 def get_ICO(element):
     try:
@@ -189,22 +194,22 @@ class adresa(object):
                 if self.cisloPo == None:
                     if self.cisloEv == None:
                         if self.psc != None:
-                            return str(self.obec + ", " + self.ulice + " " + srovnat_obec_cast(self.obec, self.castObce) + ", PSČ" + self.psc + " " + self.stat)
+                            return str(self.obec + ", " + self.ulice + "" + srovnat_obec_cast(self.obec, self.castObce) + ", PSČ" + self.psc + " " + self.stat)
                         else:
-                            return str(self.obec + ", " + self.ulice + " " + srovnat_obec_cast(self.obec, self.castObce) + " " + self.stat)
+                            return str(self.obec + ", " + self.ulice + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.stat)
                     else:
                         return str(self.ulice + " č.ev. " + self.cisloEv + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)    
                 else:
                     if self.psc != None:
-                        return str(self.ulice + " " + self.cisloPo + ", " + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)           
+                        return str(self.ulice + " " + self.cisloPo + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)           
                     else:
-                        return str(self.ulice + " " + self.cisloPo + ", " + srovnat_obec_cast(self.obec, self.castObce) + " " + self.obec + ", " + self.stat)         
+                        return str(self.ulice + " " + self.cisloPo + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.obec + ", " + self.stat)         
             
             if self.cisloPo == None and self.cisloEv != None:
-                return str(self.obec + " č.ev. " + self.cisloEv + ", " + self.psc + srovnat_obec_cast(self.obec, self.castObce) + " " + self.obec + ", " + self.stat)
+                return str(self.obec + " č.ev. " + self.cisloEv + ", " + self.psc + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.obec + ", " + self.stat)
             
             if self.cisloPo != None:
-                return str("č.p. " + self.cisloPo + ", " + self.psc + srovnat_obec_cast(self.obec, self.castObce) + " " + self.obec + ", " + self.stat)
+                return str("č.p. " + self.cisloPo + ", " + self.psc + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.obec + ", " + self.stat)
             
             if self.cisloPo == None and self.cisloEv == None and self.ulice == None:
                 return (self.obec + " " + self.stat)
@@ -335,14 +340,14 @@ def delete_archive(file):
     send2trash.send2trash(file)
 
 
-# parse_to_DB("as-actual-ostrava-2020-simple.xml")
+# parse_to_DB("dr-actual-praha-2021.xml")
 
 # parse_to_DB("as-actual-praha-2020.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
 def do_both():
-    # general_update("down")
+    general_update("down")
     general_update("db_update")
 
 do_both()
