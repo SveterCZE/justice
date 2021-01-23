@@ -15,7 +15,7 @@ from datetime import datetime
 # The function opens a file and parses the extracted data into the database
 def parse_to_DB(file):
     print("Processing ", str(file))
-    conn = sqlite3.connect('justice_v6.db')
+    conn = sqlite3.connect('justice_v8.db')
     c = conn.cursor()
     for event, element in etree.iterparse(file, tag="Subjekt"):
         # Bugfix for companies which have been deleted but appear in the list of existing companies      
@@ -24,7 +24,7 @@ def parse_to_DB(file):
         else:
             ICO = get_ICO(element)
             # Vlozit prazdny radek s ICO
-            insert_new_ICO(c, ICO, conn)
+            sql_id = insert_new_ICO(c, ICO, conn)
             # Vlozit jednolive parametry
             insert_prop(c, get_prop(element, "nazev"), conn, ICO, "nazev")
             insert_prop(c, get_prop(element, "zapisDatum"), conn, ICO, "zapis")
@@ -32,12 +32,23 @@ def parse_to_DB(file):
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/oddil"), conn, ICO, "oddil")
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/vlozka"), conn, ICO, "vlozka")
             insert_prop(c, get_prop(element, ".//udaje/Udaj/spisZn/soud/kod"), conn, ICO, "soud")
-            insert_prop(c, str(adresa(get_SIDLO_v2(element))), conn, ICO, "sidlo")
+            address_temp = str(adresa(get_SIDLO_v2(element)))
+            insert_prop(c, address_temp, conn, ICO, "sidlo")
             insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa/obec"), conn, ICO, "obec")
             insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa/ulice"), conn, ICO, "ulice")
-            insert_prop(c, get_prop(element, ".//udaje/Udaj/pravniForma/nazev"), conn, ICO, "pravni_forma")
-            
-
+            insert_prop(c, get_prop(element, ".//udaje/Udaj/pravniForma/nazev"), conn, ICO, "pravni_forma")            
+            # insert_prop_v2(c, find_business(element), conn, ICO, "predmet_podnikani", "predmet_podnikani", sql_id)
+            insert_obec(c, get_prop(element, ".//udaje/Udaj/adresa/obec"), conn, ICO, sql_id) 
+            # insert_adresa(c, address_temp, conn, ICO, sql_id) 
+            insert_ulice(c, get_prop(element, ".//udaje/Udaj/adresa/ulice"), conn, ICO, sql_id)
+            temp_adresy = zkusit_najit_vsechny_adresy(element)
+            for elem in temp_adresy:
+                insert_adresa(c, elem, conn, ICO, sql_id)
+            temp_osoby = zkusit_najit_vsechny_osoby(element)
+            for elem in temp_osoby:
+                insert_osoba(c, elem, conn, ICO, sql_id)
+            # for elem in temp_osoby:
+            #     insert_osoba(c, elem, conn, ICO, sql_id)
             # insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa/obec"), conn, ICO, "sidlo")
             # insert_prop(c, str(adresa(get_SIDLO(".//udaje/Udaj/adresa"))), conn, ICO, "sidlo")
             # insert_prop(c, get_prop(element, ".//udaje/Udaj/adresa"), conn, ICO, "sidlo")
@@ -59,16 +70,90 @@ def parse_to_DB(file):
             #                     sidlo_set = False
                 
             element.clear()
+            
             # subjekt_udaje.clear()
+    # c.execute("DELETE FROM companies")
+    # c.execute("DELETE FROM obce")
+    # c.execute("DELETE FROM adresy")
+    # c.execute("DELETE FROM ulice")    
+    # c.execute("DELETE FROM osoby")
     conn.commit()
     conn.close()
     return 0
+
+def zkusit_najit_vsechny_osoby(element):
+    stat_list = element.iter('osoba')
+    temp_osoby = []
+    for elem in stat_list:
+        try:
+            osoba_temp = ""
+            osoba_temp += get_prop(element, ".//jmeno") + " "
+            osoba_temp += get_prop(element, ".//prijmeni") + ", nar. "
+            osoba_temp += get_prop(element, ".//narozDatum")
+            temp_osoby.append(osoba_temp)
+        except:
+            pass
+    return temp_osoby
+
+
+def zkusit_najit_vsechny_adresy(element):
+    stat_list = element.iter('adresa')
+    temp_adresy = []
+    for elem in stat_list:
+        temp_adresy.append(str(adresa(get_SIDLO_v3(elem))))
+    return temp_adresy
+
+def find_business(element):
+    subjekt_udaje = element.findall('.//Udaj')
+    for udaj in subjekt_udaje:
+        udaje_spolecnosti = udaj.findall(".//kod")
+        if "PREDMET_PODNIKANI_SEKCE" in udaje_spolecnosti[0].text:
+            predmety2 = [elem.text.replace(u'\xa0', u' ') for elem in udaj.iterfind(".//hodnotaText")]
+            return predmety2
+            # TODO - Filter areas that are no longer relevant
+
+def insert_obec(c, obec, conn, ICO, sql_id):
+    try:
+        c.execute("INSERT INTO obce (obec_jmeno) VALUES(?)", (obec,))
+    except:
+        pass
+    
+def insert_adresa(c, adresa, conn, ICO, sql_id):
+    try:
+        c.execute("INSERT INTO adresy (adresa_jmeno) VALUES(?)", (adresa,))
+    except:
+        pass    
+
+def insert_osoba(c, osoba, conn, ICO, sql_id):
+    try:
+        c.execute("INSERT INTO osoby (osoba_jmeno) VALUES(?)", (osoba,))
+    except:
+        pass    
+
+
+def insert_ulice(c, ulice, conn, ICO, sql_id):
+    try:
+        c.execute("INSERT INTO ulice (ulice_jmeno) VALUES(?)", (ulice,))
+    except:
+        pass    
+            
+def insert_prop_v2(c, prop, conn, ICO, column, table, sql_id):
+    # print(column, prop, ICO)
+    # c.execute("UPDATE companies SET (" + column + ") = (?) WHERE ico = (?)", (prop, ICO,))
+    if prop != None:
+        for elem in prop:
+            # print(sql_id)
+            c.execute("INSERT INTO predmety_podnikani (company_id, predmet_podnikani) VALUES(?,?)", (sql_id, elem,))
+                # c.execute("UPDATE (%s) SET (%s, %s) = (?)" % (table, sql_id, elem), (prop, ICO,))
+
 
 # Function to attempt to insert a placeholder for a new company based on ICO
 def insert_new_ICO(c, ICO, conn):
     
     try:
-        c.execute("INSERT INTO companies (ico) VALUES (?);", (ICO,))#     
+        c.execute("INSERT INTO companies (ico) VALUES (?);", (ICO,))
+        return c.lastrowid
+
     # c.execute("INSERT INTO companies VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (ICO, "", "", "", "", "", "", "", "", "", ""))
         
     #     # conn.commit()
@@ -98,6 +183,14 @@ def insert_prop(c, prop, conn, ICO, column):
     except:
         pass
 
+# def insert_prop(c, prop, conn, ICO, column):
+#     # print(column, prop, ICO)
+#     # c.execute("UPDATE companies SET (" + column + ") = (?) WHERE ico = (?)", (prop, ICO,))
+#     try:
+#         c.execute("UPDATE companies SET (%s) = (?) WHERE ico = (?)" % (column), (prop, ICO,))
+#     except:
+#         pass
+
 def get_SIDLO_v2(element):    
     address_field = []
     address_field.append(get_prop(element, ".//udaje/Udaj/adresa/statNazev"))
@@ -116,6 +209,27 @@ def get_SIDLO_v2(element):
     for i in range(len(address_field)):
         if address_field[i] == "0":
             address_field[i] = None
+    return address_field
+
+def get_SIDLO_v3(element):    
+    address_field = []
+    address_field.append(get_prop(element, ".//statNazev"))
+    address_field.append(get_prop(element, ".//obec"))
+    address_field.append(get_prop(element, ".//ulice"))
+    address_field.append(get_prop(element, ".//castObce"))
+    address_field.append(get_prop(element, ".//cisloPo"))
+    address_field.append(get_prop(element, ".//cisloOr"))
+    address_field.append(get_prop(element, ".//psc"))
+    address_field.append(get_prop(element, ".//okres"))
+    address_field.append(get_prop(element, ".//adresaText"))
+    address_field.append(get_prop(element, ".//cisloEv"))
+    address_field.append(get_prop(element, ".//cisloText"))
+    if address_field[0] == "Česká republika - neztotožněno":
+        address_field[0] = "Česká republika"
+    for i in range(len(address_field)):
+        if address_field[i] == "0":
+            address_field[i] = None
+    return address_field
     
     # stat = get_prop(element, ".//udaje/Udaj/adresa/statNazev")
     # obec = get_prop(element, ".//udaje/Udaj/adresa/obec")
@@ -133,7 +247,7 @@ def get_SIDLO_v2(element):
     
     # if address_field[0] != "Česká republika":
     #     print(address_field)
-    return address_field    
+    
     # print([stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText])
         
     # return [stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText]
@@ -340,15 +454,15 @@ def delete_archive(file):
     send2trash.send2trash(file)
 
 
-# parse_to_DB("dr-actual-praha-2021.xml")
+# parse_to_DB("ks-actual-ostrava-2021.xml")
 
 # parse_to_DB("as-actual-praha-2020.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
 def do_both():
-    general_update("down")
-    general_update("db_update")
+        general_update("down")
+        general_update("db_update")
 
 do_both()
 
