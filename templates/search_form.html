@@ -1,0 +1,86 @@
+<title>Justice Database</title>
+
+<h2>Justice Database</h2>
+
+<p></p><p>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+{% from "_formhelpers.html" import render_field %}
+
+<form method="post">
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.nazev_subjektu.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.nazev_subjektu()|safe }} {{ form.nazev_subjektu_selection }}
+      </div>
+    </div>
+    
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.ico_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.ico_search()|safe }} {{ form.ico_search_selection }}
+      </div>
+    </div>
+    
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.obec_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.obec_search()|safe }} {{ form.obec_search_selection }}
+      </div>
+    </div>
+    
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.ulice_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.ulice_search()|safe }} {{ form.ulice_search_selection }}
+      </div>
+    </div>
+    
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.oddil_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.oddil_search()|safe }} {{ form.oddil_search_selection }}
+      </div>
+    </div>
+    
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.vlozka_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.vlozka_search()|safe }} {{ form.vlozka_search_selection }}
+      </div>
+    </div>
+    <div class="row g-2">
+        {{ render_field(form.pravni_forma_search) }}
+    </div>
+    <div class="row g-2">
+        {{ render_field(form.soud_search) }}
+    </div>
+    <div class="row g-2">
+        {{ render_field(form.insolvent_only_search) }}
+    </div>
+  </p>
+  <p><input type="submit" value="Search">
+  </p>
+</form>
