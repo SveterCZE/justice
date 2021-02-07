@@ -7,6 +7,8 @@ Created on Sun Jan 17 10:05:34 2021
 """
 
 from wtforms import Form, StringField, SelectField, BooleanField
+from wtforms.fields.html5 import DateField
+
 # class JusticeSearchForm(Form):
 #     choices = [('ico', 'Identifikační číslo'),
 #                ('nazev', 'Obchodní firma'),]
@@ -66,6 +68,9 @@ class JusticeSearchForm(Form):
              ] 
     soud_search = SelectField(u'Rejstříkjový soud:', choices=soudy)   
     insolvent_only_search = BooleanField("Pouze společnosti s insolvenčním zápisem")
+    zapis_do = DateField(u'Zapsáno do:', format='%Y-%m-%d')
+    zapis_od = DateField(u'Zapsáno od:', format='%Y-%m-%d')
+    
     
 
     
