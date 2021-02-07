@@ -1,0 +1,108 @@
+{% include 'header.html' %}
+
+
+{% for row in results %}
+    
+{% set insolvency_notes = [] %}
+{% for elem in row.insolvence %}
+    {% set insolvency_notes = insolvency_notes.append(elem.insolvency_event) %}
+{% endfor %}
+
+{% set zapis_split = row.zapis.split("-") %}
+{% if zapis_split[1] == "01" %}
+    {% set mesic = "ledna" %}
+{% elif zapis_split[1] == "02" %}
+    {% set mesic = "února" %}
+{% elif zapis_split[1] == "03" %}
+    {% set mesic = "března" %}
+{% elif zapis_split[1] == "04" %}
+    {% set mesic = "dubna" %}
+{% elif zapis_split[1] == "05" %}
+    {% set mesic = "května" %}
+{% elif zapis_split[1] == "06" %}
+    {% set mesic = "června" %}
+{% elif zapis_split[1] == "07" %}
+    {% set mesic = "července" %}
+{% elif zapis_split[1] == "08" %}
+    {% set mesic = "srpna" %}
+{% elif zapis_split[1] == "09" %}
+    {% set mesic = "září" %}
+{% elif zapis_split[1] == "10" %}
+    {% set mesic = "října" %}
+{% elif zapis_split[1] == "11" %}
+    {% set mesic = "listopadu" %}
+{% elif zapis_split[1] == "12" %}
+    {% set mesic = "prosince" %}
+{% endif %}
+
+{% if zapis_split[2][0] == "0" %}
+    {% set den = zapis_split[2][1]  %}
+{% else %}
+    {% set den = zapis_split[2]  %}
+{% endif %}
+
+{% if row.soud == "MSPH" %}
+    {% set soud = "Městského soudu v Praze" %}
+{% elif row.soud == "KSCB" %}
+    {% set soud = "Krajského soudu v Českých Budějovicích" %}
+{% elif row.soud == "KSOS" %}
+    {% set soud = "Krajského soudu v Ostravě" %}
+{% elif row.soud == "KSPL" %}
+    {% set soud = "Krajského soudu v Plzni" %}
+{% elif row.soud == "KSBR" %}
+    {% set soud = "Krajského soudu v Brně" %}
+{% elif row.soud == "KSHK" %}
+    {% set soud = "Krajského soudu v Hradci Králové" %}
+{% elif row.soud == "KSUL" %}
+    {% set soud = "Krajského soudu v Ústí nad Labem" %}
+{% endif %}
+
+{% if insolvency_notes|length > 0 %}
+    {% set table_style = "table table-danger" %}
+{% elif loop.index % 2 == 0 %}
+    {% set table_style = "table table-light" %}
+{% else %}
+    {% set table_style = "table table-secondary" %}
+{% endif %}
+
+{% if row.ico|length != 8 %}            
+    {% set ico_buffer = [] %}
+    {% for i in range (8 - row.ico|length) %}
+        {% set ico_buffer = ico_buffer.append("0") %}
+    {% endfor %}
+    
+{% else %}
+    {% set ico_buffer = "" %}
+{% endif %}
+
+
+
+
+<table class= "{{table_style}}" style="width: 100%">
+    <tr>
+        <td style="width:25%">Datum vzniku a zápisu:</td>
+        <td style="width:75%"><b>{{den}}. {{mesic}} {{zapis_split[0]}}</b></td>
+    </tr>
+    <tr>
+        <td>Spisová značka:</td>
+        <td>{{ row.oddil }} {{ row.vlozka }} vedená u {{ soud }}</td>
+    </tr>
+    <tr>
+        <td>Obchodní firma:</td>
+        <td>{{ row.nazev }}</td>
+    </tr>
+    <tr>
+        <td>Sídlo:</td>
+        <td>{{ row.sidlo }}</td>
+    </tr>
+    <tr>
+        <td>Identifikační číslo:</td>
+        <td>{{ ico_buffer|join("") }}{{ row.ico }}</td>
+    </tr>
+</table>
+{% endfor %}
+
+<p><a href="/">Zpět na vyhledání.</a></p>
+
+
+{% include 'footer.html' %}

@@ -150,6 +150,15 @@ def search_results_BACKUP(search):
         return render_template('results.html', table=table)
 
 
+@app.route("/<int:ico>", methods=['GET', 'POST'])
+def extract(ico):
+    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
+    qry = qry.filter(Company.ico == ico)
+    # qry = qry.filter(Company.nazev.contains("prigo"))
+    # qry = Obce.query
+    results = qry.all()
+    return render_template("extract.html", ico = ico, results = results)
+
 @app.route('/new_company', methods=['GET', 'POST'])
 def new_company():
     """
