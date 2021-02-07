@@ -10,7 +10,7 @@ from datetime import datetime
 # The function opens a file and parses the extracted data into the database
 def parse_to_DB(file):
     print("Processing ", str(file))
-    conn = sqlite3.connect('justice_v9.db')
+    conn = sqlite3.connect('justice.db')
     c = conn.cursor()
     for event, element in etree.iterparse(file, tag="Subjekt"):
         # Bugfix for companies which have been deleted but appear in the list of existing companies      
