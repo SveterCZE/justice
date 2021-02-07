@@ -1,0 +1,66 @@
+CREATE TABLE "companies" (
+	"id"	INTEGER,
+	"ico"	TEXT NOT NULL UNIQUE,
+	"nazev"	TEXT,
+	"zapis"	DATE,
+	"sidlo"	TEXT,
+	"oddil"	TEXT,
+	"vlozka"	TEXT,
+	"soud"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+CREATE TABLE "insolvency_events" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"company_id"	TEXT NOT NULL,
+	"insolvency_event"	TEXT UNIQUE,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+CREATE TABLE "obce" (
+	"id"	INTEGER NOT NULL,
+	"obec_jmeno"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+CREATE TABLE "obce_relation" (
+	"company_id"	INTEGER NOT NULL UNIQUE,
+	"obec_id"	INTEGER NOT NULL,
+	FOREIGN KEY("obec_id") REFERENCES "obce"("id"),
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+)
+
+CREATE TABLE "osoby" (
+	"id"	INTEGER NOT NULL,
+	"osoba_jmeno"	TEXT UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+CREATE TABLE "pravni_formy" (
+	"id"	INTEGER NOT NULL,
+	"pravni_forma"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+CREATE TABLE "pravni_formy_relation" (
+	"company_id"	INTEGER NOT NULL UNIQUE,
+	"pravni_forma_id"	INTEGER NOT NULL,
+	FOREIGN KEY("pravni_forma_id") REFERENCES "pravni_formy"("id"),
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+)
+
+CREATE TABLE sqlite_sequence(name,seq)
+
+CREATE TABLE "ulice" (
+	"id"	INTEGER NOT NULL,
+	"ulice_jmeno"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+CREATE TABLE "ulice_relation" (
+	"company_id"	INTEGER NOT NULL UNIQUE,
+	"ulice_id"	INTEGER NOT NULL,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	FOREIGN KEY("ulice_id") REFERENCES "ulice"("id")
+)
