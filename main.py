@@ -36,6 +36,8 @@ def search_results(search):
     pravni_forma = search.pravni_forma_search.data 
     soud = search.soud_search.data
     insolvent_only = search.insolvent_only_search.data
+    zapsano_od = search.zapis_od.data
+    zapsano_do = search.zapis_do.data
     if insolvent_only == False:
         qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
     else:
@@ -86,12 +88,15 @@ def search_results(search):
             qry = qry.filter(Ulice.ulice_jmeno.like(f'{ulice}%'))
         elif ulice_search_method == "text_exact":
             qry = qry.filter(Ulice.ulice_jmeno == ulice)               
-        
         # qry = qry.filter(Ulice.ulice_jmeno.contains(ulice))
     if pravni_forma:
         qry = qry.filter(Pravni_Forma.pravni_forma.contains(pravni_forma))
     if soud:
         qry = qry.filter(Company.soud.contains(soud))
+    if zapsano_od:
+        qry = qry.filter(Company.zapis >= zapsano_od)
+    if zapsano_do:
+        qry = qry.filter(Company.zapis <= zapsano_do)
     results = qry.all()
         # else:
         #     qry = db_session.query(Company)
@@ -108,7 +113,7 @@ def search_results(search):
         table = Results(results)
         table.border = True
         # return render_template('results.html', table=table)
-        return render_template("results2.html", results=results, form=search)
+        return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do)
 
 def search_results_BACKUP(search):
     results = []

@@ -137,3 +137,5 @@ justice.db
 justice.db-journal
 .vscode/settings.json
 debug.log
+data/temp-sro-actual-praha-2021.xml
+data/temp-sro-actual-praha-2021.xml.gz
