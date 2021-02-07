@@ -139,3 +139,17 @@ justice.db-journal
 debug.log
 data/temp-sro-actual-praha-2021.xml
 data/temp-sro-actual-praha-2021.xml.gz
+justice2.db
+bin/*
+bin/
+lib/
+lib/*
+pyvenv.cfg
+__pycache__/app.cpython-38.pyc
+__pycache__/db_setup.cpython-38.pyc
+__pycache__/forms.cpython-38.pyc
+__pycache__/main.cpython-38.pyc
+__pycache__/models.cpython-38.pyc
+__pycache__/tables.cpython-38.pyc
+pyvenv.cfg
+pyvenv.cfg
