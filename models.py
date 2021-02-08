@@ -45,11 +45,11 @@ pravni_forma_association=db.Table("pravni_formy_relation",
 
 class Predmety_Podnikani_Association(db.Model):
     __tablename__ = 'predmety_podnikani_relation'
-    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), primary_key=True, nullable=False)
-    predmet_podnikani_id = db.Column(db.Integer, db.ForeignKey('predmety_podnikani.id'), nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    predmet_podnikani_id = db.Column(db.Integer, db.ForeignKey('predmety_podnikani.id'), nullable=False, primary_key=True)
     zapis_datum = db.Column(db.String)
-    child = db.relationship("Predmet_Podnikani", back_populates="company_predmet_podnikani", lazy="joined")
-    parent = db.relationship("Company", back_populates="predmet_podnikani", lazy="joined")
+    child = db.relationship("Predmet_Podnikani", back_populates="company_predmet_podnikani")
+    parent = db.relationship("Company", back_populates="predmet_podnikani")
 
 
 class Company(db.Model):
