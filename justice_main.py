@@ -47,9 +47,9 @@ def purge_DB(c):
     c.execute("DELETE FROM pravni_formy_relation")
     c.execute("DELETE FROM insolvency_events")
     c.execute("DELETE FROM predmety_podnikani")
-    c.execute("DELETE FROM predemty_podnikani_relation")
+    c.execute("DELETE FROM predmety_podnikani_relation")
     c.execute("DELETE FROM predmety_cinnosti")
-    c.execute("DELETE FROM predemty_cinnosti_relation")
+    c.execute("DELETE FROM predmety_cinnosti_relation")
 
 def find_other_properties(c, ICO, element, conn, primary_sql_key):
     try:
@@ -79,7 +79,7 @@ def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key
                 zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
                 vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
                 # hodnota_text = str(get_prop(elem2, ".//hodnotaText"))
-                insert_instructions = [(".//hodnotaText","predmety_podnikani", "predmet_podnikani", "predemty_podnikani_relation")]
+                insert_instructions = [(".//hodnotaText","predmety_podnikani", "predmet_podnikani", "predmety_podnikani_relation")]
                 for elem in insert_instructions:
                     inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
                     insert_into_ancillary_table(c, elem, inserted_figure)
@@ -97,7 +97,7 @@ def find_predmet_cinnosti(c, ICO, predmet_podnikani_elem, conn, primary_sql_key,
                 zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
                 vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
                 # hodnota_text = str(get_prop(elem2, ".//hodnotaText"))
-                insert_instructions = [(".//hodnotaText","predmety_cinnosti", "predmet_cinnosti", "predemty_cinnosti_relation")]
+                insert_instructions = [(".//hodnotaText","predmety_cinnosti", "predmet_cinnosti", "predmety_cinnosti_relation")]
                 for elem in insert_instructions:
                     inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
                     insert_into_ancillary_table(c, elem, inserted_figure)

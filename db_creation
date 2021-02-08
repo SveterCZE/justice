@@ -64,3 +64,34 @@ CREATE TABLE "ulice_relation" (
 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
 	FOREIGN KEY("ulice_id") REFERENCES "ulice"("id")
 )
+
+CREATE TABLE "predmety_cinnosti_relation" (
+	"company_id"	INTEGER NOT NULL,
+	"predmet_cinnosti_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	FOREIGN KEY("predmet_cinnosti_id") REFERENCES "predmety_cinnosti"("id")
+)
+
+CREATE TABLE "predmety_podnikani_relation" (
+	"company_id"	INTEGER NOT NULL,
+	"predmet_podnikani_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	FOREIGN KEY("predmet_podnikani_id") REFERENCES "predmety_podnikani"("id")
+)
+
+CREATE TABLE "predmety_cinnosti" (
+	"id"	INTEGER NOT NULL,
+	"predmet_cinnosti"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+CREATE TABLE "predmety_podnikani" (
+	"id"	INTEGER NOT NULL,
+	"predmet_podnikani"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
