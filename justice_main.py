@@ -10,7 +10,7 @@ from datetime import datetime
 # The function opens a file and parses the extracted data into the database
 def parse_to_DB(file):
     print("Processing ", str(file))
-    conn = sqlite3.connect('justice.db')
+    conn = sqlite3.connect('justice-testing.db')
     c = conn.cursor()
     for event, element in etree.iterparse(file, tag="Subjekt"):
         # Bugfix for companies which have been deleted but appear in the list of existing companies      
@@ -45,6 +45,11 @@ def purge_DB(c):
     c.execute("DELETE FROM sqlite_sequence")
     c.execute("DELETE FROM pravni_formy")
     c.execute("DELETE FROM pravni_formy_relation")
+    c.execute("DELETE FROM insolvency_events")
+    c.execute("DELETE FROM predmety_podnikani")
+    c.execute("DELETE FROM predemty_podnikani_relation")
+    c.execute("DELETE FROM predmety_cinnosti")
+    c.execute("DELETE FROM predemty_cinnosti_relation")
 
 def find_other_properties(c, ICO, element, conn, primary_sql_key):
     try:
@@ -58,8 +63,55 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "KONKURS_SEKCE":
                     find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "PREDMET_PODNIKANI_SEKCE":
+                    find_predmet_podnikani(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "PREDMET_CINNOSTI_SEKCE":
+                    find_predmet_cinnosti(c, ICO, elem2, conn, primary_sql_key, element)
     except:
         pass
+
+def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
+    try:
+        my_iter = predmet_podnikani_elem.findall("podudaje")
+        for elem in my_iter:
+            my_iter2 = elem.iter("Udaj")
+            for elem2 in my_iter2:
+                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                # hodnota_text = str(get_prop(elem2, ".//hodnotaText"))
+                insert_instructions = [(".//hodnotaText","predmety_podnikani", "predmet_podnikani", "predemty_podnikani_relation")]
+                for elem in insert_instructions:
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    insert_into_ancillary_table(c, elem, inserted_figure)
+                    ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)            
+    except Exception as f:
+        pass
+
+def find_predmet_cinnosti(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
+    try:
+        my_iter = predmet_podnikani_elem.findall("podudaje")
+        for elem in my_iter:
+            my_iter2 = elem.iter("Udaj")
+            for elem2 in my_iter2:
+                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                # hodnota_text = str(get_prop(elem2, ".//hodnotaText"))
+                insert_instructions = [(".//hodnotaText","predmety_cinnosti", "predmet_cinnosti", "predemty_cinnosti_relation")]
+                for elem in insert_instructions:
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    insert_into_ancillary_table(c, elem, inserted_figure)
+                    ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)            
+    except Exception as f:
+        pass
+
+
+
+def insert_individual_relations_v2(c, ICO, conn, primary_sql_key, zapis_datum, vymaz_datum, hodnota_text):
+    insert_into_ancillary_table(c, elem, inserted_figure)
+    return 0
+
 
 def find_active_insolvency(c, ICO, insolvency_elem, conn, primary_sql_key):
    try:
@@ -86,8 +138,6 @@ def insert_insolvency_text(c, conn, insolvency_text, primary_sql_key):
         c.execute("INSERT INTO insolvency_events (company_id, insolvency_event) VALUES(?, ?)", (primary_sql_key, insolvency_text,))
     except:
         pass
-
-
 
 def get_primary_sql_key(c, ICO):
     try:
@@ -120,7 +170,7 @@ def insert_individual_relations(c, ICO, element, conn, primary_sql_key, elem):
     insert_into_ancillary_table(c, elem, inserted_figure)
     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
     insert_relation_information(c, elem, primary_sql_key, ancillary_table_key)
-    return 0
+    return ancillary_table_key
 
 def insert_into_ancillary_table(c, elem, inserted_figure):
     try:
@@ -133,15 +183,21 @@ def get_anciallary_table_key(c, elem, inserted_figure):
         anciallary_table_key = c.execute("SELECT id FROM " + elem[1] + " WHERE " + elem[2] + " = (?)", (inserted_figure,))
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
-    except:
-        print("Nepovedlo se")
-        return 0
+    except Exception as f:
+        pass
 
 def insert_relation_information(c, elem, primary_sql_key, ancillary_table_key):
     try:
         c.execute("INSERT INTO " + elem[3] + " VALUES(?, ?)", (primary_sql_key, ancillary_table_key,))
-    except:
+    except Exception as f:
         pass
+    return 0
+
+def insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum):
+    try:
+        c.execute("INSERT INTO " + elem[3] + " VALUES(?, ?, ?, ?)", (primary_sql_key, ancillary_table_key,zapis_datum, vymaz_datum,))
+    except Exception as f:
+        print(f)
     return 0
 
 def insert_obec_relation(c, conn, ICO, element, primary_sql_key):
@@ -517,7 +573,7 @@ def delete_archive(file):
     send2trash.send2trash(file)
 
 
-# parse_to_DB("as-full-praha-2021.xml")
+parse_to_DB("as-actual-ostrava-2021.xml")
 
 # parse_to_DB("ks-actual-ostrava-2021.xml")
 
@@ -527,6 +583,6 @@ def do_both():
         general_update("down")
         general_update("db_update")
 
-do_both()
+# do_both()
 
 # cProfile.run('do_both()')
