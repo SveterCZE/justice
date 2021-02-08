@@ -35,8 +35,24 @@ pravni_forma_association=db.Table("pravni_formy_relation",
                                   db.Column("pravni_forma_id", db.Integer, db.ForeignKey("pravni_formy.id"), nullable=False),
                                   )
 
-class Company(db.Model):
+# predmety_podnikani_association = db.Table("predmety_podnikani_relation",
+#                                 db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
+#                                 db.Column("predmet_podnikani_id", db.Integer, db.ForeignKey("predmety_podnikani.id"), nullable=False),
+#                                 db.Column("zapis_datum", db.String),
+#                                 db.Column("vymaz_datum", db.String),
+#                                 )
 
+
+class Predmety_Podnikani_Association(db.Model):
+    __tablename__ = 'predmety_podnikani_relation'
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), primary_key=True, nullable=False)
+    predmet_podnikani_id = db.Column(db.Integer, db.ForeignKey('predmety_podnikani.id'), nullable=False)
+    zapis_datum = db.Column(db.String)
+    child = db.relationship("Predmet_Podnikani", back_populates="company_predmet_podnikani", lazy="joined")
+    parent = db.relationship("Company", back_populates="predmet_podnikani", lazy="joined")
+
+
+class Company(db.Model):
     __tablename__ = "companies"   
     id = db.Column(db.Integer, primary_key=True)
     ico = db.Column(db.String)
@@ -50,6 +66,7 @@ class Company(db.Model):
     ulice = db.relationship("Ulice", secondary=ulice_association, backref="companies")
     pravni_forma = db.relationship("Pravni_Forma", secondary=pravni_forma_association, backref="companies")
     insolvence = db.relationship("Insolvency_Events", backref="companies")
+    predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="parent", lazy="joined")
     
 
 class Obce(db.Model):
@@ -78,16 +95,8 @@ class Insolvency_Events(db.Model):
     insolvency_event = db.Column(db.String)
 
 
-# class Association(db.Model):   
-#     __tablename__ = "obce_relation"
-#     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), primary_key=True)
-#     obec_id = db.Column(db.Integer, db.ForeignKey('obce.id'))
-    
-#     company = relationship("Company", back_populates = "Obce")
-#     obec = relationship("Obce", back_populates = "Company")
-    
-
-        
-
-
-# </soud:>
+class Predmet_Podnikani(db.Model):
+    __tablename__ = "predmety_podnikani"
+    id = db.Column(db.Integer, primary_key=True)
+    predmet_podnikani = db.Column(db.String)
+    company_predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="child", lazy="joined")

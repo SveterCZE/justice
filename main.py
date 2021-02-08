@@ -4,7 +4,7 @@ from db_setup import init_db, db_session
 from forms import JusticeSearchForm, CompanyForm
 from flask import flash, render_template, request, redirect
 # from models import Company, Soud
-from models import Company, Obce, Ulice, Pravni_Forma, Insolvency_Events
+from models import Company, Obce, Ulice, Pravni_Forma, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association
 from tables import Results
 
 init_db()
@@ -97,6 +97,7 @@ def search_results(search):
         qry = qry.filter(Company.zapis >= zapsano_od)
     if zapsano_do:
         qry = qry.filter(Company.zapis <= zapsano_do)
+    
     results = qry.all()
         # else:
         #     qry = db_session.query(Company)

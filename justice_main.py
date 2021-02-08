@@ -10,7 +10,7 @@ from datetime import datetime
 # The function opens a file and parses the extracted data into the database
 def parse_to_DB(file):
     print("Processing ", str(file))
-    conn = sqlite3.connect('justice-testing.db')
+    conn = sqlite3.connect('justice.db')
     c = conn.cursor()
     for event, element in etree.iterparse(file, tag="Subjekt"):
         # Bugfix for companies which have been deleted but appear in the list of existing companies      
@@ -573,7 +573,7 @@ def delete_archive(file):
     send2trash.send2trash(file)
 
 
-parse_to_DB("as-actual-ostrava-2021.xml")
+# parse_to_DB("as-actual-ostrava-2021.xml")
 
 # parse_to_DB("ks-actual-ostrava-2021.xml")
 
@@ -583,6 +583,6 @@ def do_both():
         general_update("down")
         general_update("db_update")
 
-# do_both()
+do_both()
 
 # cProfile.run('do_both()')

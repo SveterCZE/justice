@@ -78,40 +78,79 @@
 <h2>{{ row.nazev }}, {{ row.oddil }} {{ row.vlozka }} vedená u {{ soud }}</h2>
 <p><a href="/">Zpět na vyhledání.</a></p>
 
+{{ row.predmet_podnikani }}
+
 <table class= "table" style="width: 100%">
     <tr>
         <td style="width:15%">Datum vzniku a zápisu:</td>
-        <td style="width:85%">{{den}}. {{mesic}} {{zapis_split[0]}}</td>
+        <td style="width:60%">{{den}}. {{mesic}} {{zapis_split[0]}}</td>
+        <td style="width:25%"></td>
     </tr>
     <tr>
         <td>Spisová značka:</td>
         <td>{{ row.oddil }} {{ row.vlozka }} vedená u {{ soud }}</td>
+        <td></td>
     </tr>
     <tr>
         <td>Obchodní firma:</td>
         <td>{{ row.nazev }}</td>
+        <td></td>
     </tr>
     <tr>
         <td>Sídlo:</td>
         <td>{{ row.sidlo }}</td>
+        <td></td>
     </tr>
     <tr>
         <td>Identifikační číslo:</td>
         <td>{{ ico_buffer|join("") }}{{ row.ico }}</td>
+        <td></td>
     </tr>
     <tr>
         <td>Právní forma:</td>
         <td>{{ row.pravni_forma[0].pravni_forma }}</td>
+        <td></td>
     </tr>
+    
+    <tr>
+        <td>Předmět podnikání - test:</td>
+        <td>{{ row.predmet_podnikani[0].child.predmet_podnikani }}</td>
+        <td>Zapsáno: {{ row.predmet_podnikani[0].zapis_datum }} <br> Vymazáno: {{ row.predmet_podnikani[0].vymaz_datum }} </td>
+        <td></td>
+    </tr>
+
+    {% if row.predmet_podnikani|length == 1 %}
+    <tr>
+        <td>Předmět podnikání:</td>
+        <td>{{ row.predmet_podnikani }}</td>
+        <td>Zapsáno: {{ row.predmet_podnikani[0] }} <br> Vymazáno: {{ row.predmet_podnikani[0].vymaz_datum }} </td>
+    </tr>
+    {% elif row.predmet_podnikani|length > 1 %}
+    <tr>
+        <td>Předmět podnikání:</td>
+        <td>{{ row.predmet_podnikani }}</td>
+        <td>Zapsáno: {{ row.predmet_podnikani[0].zapis_datum }} <br> Vymazáno: {{ row.predmet_podnikani[0].vymaz_datum }} </td>
+    </tr>
+    {% for i in range (1, row.predmet_podnikani|length) %}
+    <tr>
+        <td></td>
+        <td>{{ row.predmet_podnikani[i].predmet_podnikani }}</td>
+        <td>Zapsáno: {{ row.predmet_podnikani[i].zapis_datum.company_id }} <br> Vymazáno: {{ row.predmet_podnikani[i].vymaz_datum }} </td>
+    </tr>            
+    {% endfor %}
+    {% endif %}
+
     {% if insolvency_notes|length > 0 %}
     <tr>
         <td>Údaje o insolvencích:</td>
         <td>{{ insolvency_notes[0] }}</td>
+        <td></td>
     </tr>        
         {% for i in range (1, insolvency_notes|length) %}
         <tr>
             <td></td>
             <td>{{ insolvency_notes[i] }}</td>
+            <td></td>
         </tr>            
         {% endfor %}
     {% endif %}
