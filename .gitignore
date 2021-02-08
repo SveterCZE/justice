@@ -153,3 +153,6 @@ __pycache__/models.cpython-38.pyc
 __pycache__/tables.cpython-38.pyc
 pyvenv.cfg
 pyvenv.cfg
+justice-testing.db
+as-actual-ostrava-2021.xml
+as-actual-ostrava-2021-test.xml
