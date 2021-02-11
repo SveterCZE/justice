@@ -71,9 +71,6 @@ class JusticeSearchForm(Form):
     zapis_do = DateField(u'Zapsáno do:', format='%Y-%m-%d')
     zapis_od = DateField(u'Zapsáno od:', format='%Y-%m-%d')
     
-    
-
-    
 class CompanyForm(Form):
     oddil = [('A', 'A'),
                    ('B', 'B'),

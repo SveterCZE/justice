@@ -41,7 +41,7 @@ def search_results(search):
     if insolvent_only == False:
         qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
     else:
-        qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events)
+        qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence)
     if ico:
         if ico_search_method == "text_anywhere":
             qry = qry.filter(Company.ico.contains(ico))
@@ -154,11 +154,23 @@ def search_results_BACKUP(search):
 @app.route("/<int:ico>", methods=['GET', 'POST'])
 def extract(ico):
     qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
+    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence, isouter=True).join(Predmet_Podnikani, Company.predmet_podnikani).join(Predmet_Cinnosti, Company.predmet_cinnosti)
     qry = qry.filter(Company.ico == ico)
     # qry = qry.filter(Company.nazev.contains("prigo"))
     # qry = Obce.query
     results = qry.all()
     return render_template("extract.html", ico = ico, results = results)
+
+@app.route("/<int:ico>-actual", methods=['GET', 'POST'])
+def extract_actual(ico):
+    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
+    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence, isouter=True).join(Predmet_Podnikani, Company.predmet_podnikani).join(Predmet_Cinnosti, Company.predmet_cinnosti)
+    qry = qry.filter(Company.ico == ico)
+    # qry = qry.filter(Company.nazev.contains("prigo"))
+     # qry = Obce.query
+    results = qry.all()
+    return render_template("extract-actual.html", ico = ico, results = results)
+
 
 @app.route('/new_company', methods=['GET', 'POST'])
 def new_company():

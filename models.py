@@ -16,8 +16,14 @@ def convert_date_to_string(converted_date):
         return converted_date
     else:
         separated_string = converted_date.split("-")
-        converted_string = "".join([separated_string[2], ". ", convert_month_to_string(separated_string[1]), " ", separated_string[0]])
+        converted_string = "".join([strip_zero_from_date(separated_string[2]), ". ", convert_month_to_string(separated_string[1]), " ", separated_string[0]])
     return converted_string
+
+def strip_zero_from_date(converted_date):
+    if converted_date[0] == "0":
+        return converted_date[1]
+    else:
+        return converted_date
 
 def convert_month_to_string(my_month):
     if my_month == "01":
@@ -123,8 +129,8 @@ class Company(db.Model):
     ulice = db.relationship("Ulice", secondary=ulice_association, backref="companies")
     pravni_forma = db.relationship("Pravni_Forma", secondary=pravni_forma_association, backref="companies")
     insolvence = db.relationship("Insolvency_Events", backref="companies")
-    predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="company", lazy="joined")
-    predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="company", lazy="joined")
+    predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="company")
+    predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="company")
     
 
 class Obce(db.Model):
@@ -149,17 +155,17 @@ class Insolvency_Events(db.Model):
     __tablename__ = "insolvency_events"
     id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
-    company = relationship("Company", backref="insolvency_events")
+    company = db.relationship("Company", backref="insolvency_events")
     insolvency_event = db.Column(db.String)
 
 class Predmet_Podnikani(db.Model):
     __tablename__ = "predmety_podnikani"
     id = db.Column(db.Integer, primary_key=True)
     predmet_podnikani = db.Column(db.String)
-    company_predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="predmet_podnikani", lazy="joined")
+    company_predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="predmet_podnikani")
 
 class Predmet_Cinnosti(db.Model):
     __tablename__ = "predmety_cinnosti"
     id = db.Column(db.Integer, primary_key=True)
     predmet_cinnosti = db.Column(db.String)
-    company_predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="predmet_cinnosti", lazy="joined")
+    company_predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="predmet_cinnosti")

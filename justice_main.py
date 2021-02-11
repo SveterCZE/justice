@@ -579,10 +579,10 @@ def delete_archive(file):
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
-def do_both():
-        general_update("down")
-        general_update("db_update")
+# def do_both():
+#         general_update("down")
+#         general_update("db_update")
 
-do_both()
+# do_both()
 
 # cProfile.run('do_both()')
