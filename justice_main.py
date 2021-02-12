@@ -13,7 +13,7 @@ def parse_to_DB(file):
     conn = sqlite3.connect('justice.db')
     c = conn.cursor()
     for event, element in etree.iterparse(file, tag="Subjekt"):
-        # Bugfix for companies which have been deleted but appear in the list of existing companies      
+        # Bugfix for companies which have been deleted but appear in the list of existing companies
         if ([element.find('vymazDatum')][0]) != None:
             continue
         else:
@@ -24,10 +24,10 @@ def parse_to_DB(file):
             # Vlozit jednolive parametry
             insert_primary_company_figures(c, ICO, element, conn)
             insert_company_relations(c, ICO, element, conn, primary_sql_key)
-            # insert_obec_relation(c, conn, ICO, element, primary_sql_key)                
+            # insert_obec_relation(c, conn, ICO, element, primary_sql_key)
             find_other_properties(c, ICO, element, conn, primary_sql_key)
             element.clear()
-            
+
             # subjekt_udaje.clear()
 
     # purge_DB(c)
@@ -50,6 +50,7 @@ def purge_DB(c):
     c.execute("DELETE FROM predmety_podnikani_relation")
     c.execute("DELETE FROM predmety_cinnosti")
     c.execute("DELETE FROM predmety_cinnosti_relation")
+    c.execute("DELETE FROM zakladni_kapital")
 
 def find_other_properties(c, ICO, element, conn, primary_sql_key):
     try:
@@ -67,6 +68,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_predmet_podnikani(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "PREDMET_CINNOSTI_SEKCE":
                     find_predmet_cinnosti(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "ZAKLADNI_KAPITAL":
+                    find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element)
     except:
         pass
 
@@ -84,7 +87,7 @@ def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key
                     inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
                     insert_into_ancillary_table(c, elem, inserted_figure)
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)            
+                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
         pass
 
@@ -102,11 +105,21 @@ def find_predmet_cinnosti(c, ICO, predmet_podnikani_elem, conn, primary_sql_key,
                     inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
                     insert_into_ancillary_table(c, elem, inserted_figure)
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)            
+                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
         pass
 
-
+def find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+        vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+        vklad_typ = str(get_prop(elem2, ".//hodnotaUdaje/vklad/typ"))
+        vklad_hodnota = str(get_prop(elem2, ".//hodnotaUdaje/vklad/textValue"))
+        splaceni_typ = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/typ"))
+        splaceni_hodnota = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/textValue"))
+        c.execute("INSERT INTO zakladni_kapital (company_id, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota) VALUES(?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota,))
+    except Exception as f:
+        print(f)
 
 def insert_individual_relations_v2(c, ICO, conn, primary_sql_key, zapis_datum, vymaz_datum, hodnota_text):
     insert_into_ancillary_table(c, elem, inserted_figure)
@@ -146,7 +159,7 @@ def get_primary_sql_key(c, ICO):
         return primary_key[0]
     except:
         return 0
-    
+
     return
 
 def insert_primary_company_figures(c, ICO, element, conn):
@@ -175,9 +188,9 @@ def insert_individual_relations(c, ICO, element, conn, primary_sql_key, elem):
 def insert_into_ancillary_table(c, elem, inserted_figure):
     try:
         c.execute("INSERT INTO " + elem[1] + "(" + elem[2] + ") VALUES(?)", (inserted_figure,))
-    except:    
+    except:
         pass
-    
+
 def get_anciallary_table_key(c, elem, inserted_figure):
     try:
         anciallary_table_key = c.execute("SELECT id FROM " + elem[1] + " WHERE " + elem[2] + " = (?)", (inserted_figure,))
@@ -206,7 +219,7 @@ def insert_obec_relation(c, conn, ICO, element, primary_sql_key):
     try:
         c.execute("INSERT INTO obce (obec_jmeno) VALUES(?)", (obec,))
     except:
-        pass    
+        pass
     # Get municipality sql_id
     try:
         municipality_key = c.execute("SELECT id FROM obce WHERE obec_jmeno = (?)", (obec,))
@@ -218,7 +231,7 @@ def insert_obec_relation(c, conn, ICO, element, primary_sql_key):
         c.execute("INSERT INTO obec_relation VALUES(?, ?)", (primary_sql_key, municipality_key,))
     except:
         pass
-    
+
     return
 
 def zkusit_najit_vsechny_osoby(element):
@@ -257,26 +270,26 @@ def insert_obec(c, obec, conn, ICO, sql_id):
         c.execute("INSERT INTO obce (obec_jmeno) VALUES(?)", (obec,))
     except:
         pass
-    
+
 def insert_adresa(c, adresa, conn, ICO, sql_id):
     try:
         c.execute("INSERT INTO adresy (adresa_jmeno) VALUES(?)", (adresa,))
     except:
-        pass    
+        pass
 
 def insert_osoba(c, osoba, conn, ICO, sql_id):
     try:
         c.execute("INSERT INTO osoby (osoba_jmeno) VALUES(?)", (osoba,))
     except:
-        pass    
+        pass
 
 
 def insert_ulice(c, ulice, conn, ICO, sql_id):
     try:
         c.execute("INSERT INTO ulice (ulice_jmeno) VALUES(?)", (ulice,))
     except:
-        pass    
-            
+        pass
+
 def insert_prop_v2(c, prop, conn, ICO, column, table, sql_id):
     # print(column, prop, ICO)
     # c.execute("UPDATE companies SET (" + column + ") = (?) WHERE ico = (?)", (prop, ICO,))
@@ -289,13 +302,13 @@ def insert_prop_v2(c, prop, conn, ICO, column, table, sql_id):
 
 # Function to attempt to insert a placeholder for a new company based on ICO
 def insert_new_ICO(c, ICO, conn):
-    
+
     try:
         c.execute("INSERT INTO companies (ico) VALUES (?);", (ICO,))
         return c.lastrowid
 
     # c.execute("INSERT INTO companies VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (ICO, "", "", "", "", "", "", "", "", "", ""))
-        
+
     #     # conn.commit()
     except:
            pass
@@ -309,10 +322,10 @@ def get_ICO(element):
 
 def get_prop(element, prop):
     try:
-        return element.find(prop).text 
+        return element.find(prop).text
     except:
         return "0"
-    
+
     # return [element.find(prop)][0].text
 
 def insert_prop(c, prop, conn, ICO, column):
@@ -331,7 +344,7 @@ def insert_prop(c, prop, conn, ICO, column):
 #     except:
 #         pass
 
-def get_SIDLO_v2(element):    
+def get_SIDLO_v2(element):
     address_field = []
     address_field.append(get_prop(element, ".//udaje/Udaj/adresa/statNazev"))
     address_field.append(get_prop(element, ".//udaje/Udaj/adresa/obec"))
@@ -351,7 +364,7 @@ def get_SIDLO_v2(element):
             address_field[i] = None
     return address_field
 
-def get_SIDLO_v3(element):    
+def get_SIDLO_v3(element):
     address_field = []
     address_field.append(get_prop(element, ".//statNazev"))
     address_field.append(get_prop(element, ".//obec"))
@@ -370,7 +383,7 @@ def get_SIDLO_v3(element):
         if address_field[i] == "0":
             address_field[i] = None
     return address_field
-                
+
 
 class adresa(object):
     def __init__(self, adresa):
@@ -385,7 +398,7 @@ class adresa(object):
         self.komplet_adresa = adresa[8]
         self.cisloEv = adresa[9]
         self.cisloText = adresa[10]
-        
+
     def __str__ (self):
         try:
             # if self.obec == "-":
@@ -409,13 +422,13 @@ class adresa(object):
                         else:
                             return str(self.obec + " - " + self.castObce + ", " + self.ulice + " " + self.cisloText)
                 if self.okres == None and self.castObce == None and self.psc != None:
-                    return str(self.obec + ", " + self.ulice + " " + self.cisloText + ", PSČ " + self.psc)   
+                    return str(self.obec + ", " + self.ulice + " " + self.cisloText + ", PSČ " + self.psc)
                 if self.castObce == None and self.psc == None:
                     return str(self.obec + ", " + self.ulice + " " + self.cisloText)
                 else:
-                    if self.psc != None:
+                    if self.psc != None and self.ulice == None:
                         return str(self.obec + " " + self.cisloText + " " + "okres " +  self.okres + ", PSČ " + self.psc)
-                    else:
+                    elif self.ulice == None:
                         return str(self.obec + " " + self.cisloText + " " + "okres " +  self.okres)
             if self.ulice != None :
                 if self.cisloOr != None:
@@ -432,56 +445,56 @@ class adresa(object):
                         else:
                             return str(self.obec + ", " + self.ulice + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.stat)
                     else:
-                        return str(self.ulice + " č.ev. " + self.cisloEv + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)    
+                        return str(self.ulice + " č.ev. " + self.cisloEv + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)
                 else:
                     if self.psc != None:
-                        return str(self.ulice + " " + self.cisloPo + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)           
+                        return str(self.ulice + " " + self.cisloPo + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.psc + " " + self.obec + ", " + self.stat)
                     else:
-                        return str(self.ulice + " " + self.cisloPo + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.obec + ", " + self.stat)         
-            
+                        return str(self.ulice + " " + self.cisloPo + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.obec + ", " + self.stat)
+
             if self.cisloPo == None and self.cisloEv != None:
                 return str(self.obec + " č.ev. " + self.cisloEv + ", " + self.psc + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.obec + ", " + self.stat)
-            
+
             if self.cisloPo != None:
                 return str("č.p. " + self.cisloPo + ", " + self.psc + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.obec + ", " + self.stat)
-            
+
             if self.cisloPo == None and self.cisloEv == None and self.ulice == None:
                 return (self.obec + " " + self.stat)
-                
+
         except TypeError:
               temp_adr = []
               if self.ulice != None:
                   temp_adr.append(self.ulice)
-              
+
               if self.obec != None:
                   temp_adr.append(self.obec)
-                  
+
               if self.castObce != None:
                   temp_adr.append(self.castObce)
-              
+
               if self.cisloPo != None:
-                  temp_adr.append(self.cisloPo)  
-              
+                  temp_adr.append(self.cisloPo)
+
               if self.cisloOr != None:
-                  temp_adr.append(self.cisloOr)  
-              
+                  temp_adr.append(self.cisloOr)
+
               if self.psc != None:
                   temp_adr.append(self.psc)
-              
+
               if self.okres != None:
-                  temp_adr.append(self.okres)  
-              
+                  temp_adr.append(self.okres)
+
               if self.cisloEv != None:
                   temp_adr.append(self.cisloEv)
-                  
+
               if self.cisloText != None:
                   temp_adr.append(self.cisloText)
-                  
+
               if self.stat != None:
                   temp_adr.append(self.stat)
-              
-              listToStr = ' '.join([str(elem) for elem in temp_adr])  
-              
+
+              listToStr = ' '.join([str(elem) for elem in temp_adr])
+
               return listToStr
 
 def srovnat_obec_cast(obec, cast_obce):
@@ -493,20 +506,20 @@ def srovnat_obec_cast(obec, cast_obce):
         return str(", " + cast_obce)
 
 def general_update(method):
-    typy_po = ["as", "sro", "vos", "ks", "dr", "zajzdrpo", "zahrfos", "ustav", "svj", "spolek", "prisp", "pobspolek", 
+    typy_po = ["as", "sro", "vos", "ks", "dr", "zajzdrpo", "zahrfos", "ustav", "svj", "spolek", "prisp", "pobspolek",
                   "oszpo", "osznadf", "osznad", "orgzam", "odbororg", "nadf", "nad", "evrspol", "evrhzs", "evrdrspol"]
     soudy = ["praha", "plzen", "brno", "ceske_budejovice", "hradec_kralove", "ostrava", "usti_nad_labem"]
     # typy_po = ["as"]
     # soudy = ["ostrava"]
-    
+
     rok = str(datetime.now().year)
     for osoba in typy_po:
         for soud in soudy:
             if method == "down":
-                update_data(osoba + "-actual-" + soud + "-" + rok + ".xml.gz")
+                update_data(osoba + "-full-" + soud + "-" + rok + ".xml.gz")
             elif method == "db_update":
                 try:
-                    parse_to_DB(os.path.join(str(os.getcwd()), "data", osoba) + "-actual-" + soud + "-" + rok + ".xml")
+                    parse_to_DB(os.path.join(str(os.getcwd()), "data", osoba) + "-full-" + soud + "-" + rok + ".xml")
                 except:
                     pass
 
@@ -528,7 +541,7 @@ def update_data(filename):
             delete_archive(temp_file[:-3])
 
 
-def downloadOR(source):    
+def downloadOR(source):
     download = requests.get(source, stream = True)
     try:
         print("Downloading file ", source)
@@ -565,24 +578,24 @@ def delete_temp_file(temp_file):
 
 def unzip_file(filename, temp_file):
     with gzip.open(temp_file, 'rb') as f_in:
-        with open(os.path.join(str(os.getcwd()), "data", "temp-" + filename), "wb") as f_out: 
+        with open(os.path.join(str(os.getcwd()), "data", "temp-" + filename), "wb") as f_out:
         # with open(str(os.getcwd()) + "\\data\\temp-" + filename, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
-    
+
 def delete_archive(file):
     send2trash.send2trash(file)
 
 
-# parse_to_DB("as-actual-ostrava-2021.xml")
+# parse_to_DB("as-full-ostrava-2021.xml")
 
 # parse_to_DB("ks-actual-ostrava-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
-# def do_both():
-#         general_update("down")
-#         general_update("db_update")
+def do_both():
+    # general_update("down")
+    general_update("db_update")# 
 
-# do_both()
+do_both()
 
 # cProfile.run('do_both()')

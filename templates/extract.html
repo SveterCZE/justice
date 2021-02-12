@@ -113,6 +113,88 @@
         <td></td>
     </tr>
 
+    {% if row.zakladni_kapital|length > 0 %}
+    <tr>
+        <td>Základní kapitál:</td>
+        {% if row.zakladni_kapital[0].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+
+        {% if row.zakladni_kapital[0].vklad_typ == "KORUNY" %}
+            {% set vklad_typ_symbol = "Kč" %}
+            {% set vklad_typ_description = row.zakladni_kapital[0].vklad_hodnota %}
+        {% elif row.zakladni_kapital[0].vklad_typ == "EURA" %}
+            {% set vklad_typ_symbol = "euro" %}
+            {% set vklad_typ_description = row.zakladni_kapital[0].vklad_hodnota %}
+        {% else %}
+            {% set vklad_typ_symbol = "" %}
+            {% set vklad_typ_description = row.zakladni_kapital[0].vklad_hodnota %}
+        {% endif %}           
+
+        {% if row.zakladni_kapital[0].splaceni_typ == "KORUNY" %}
+            {% set splaceni_typ_symbol = "Kč" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
+        {% elif row.zakladni_kapital[0].splaceni_typ == "PROCENTA" %}
+            {% set splaceni_typ_symbol = "%" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
+        {% elif row.zakladni_kapital[0].splaceni_typ == "EURA" %}
+            {% set splaceni_typ_symbol = "euro" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
+        {% else %}
+            {% set splaceni_typ_symbol = "" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
+        {% endif %}  
+
+        <td>{{ underlne_style_open|safe }} {{ vklad_typ_description }} {{ vklad_typ_symbol }} {% if splaceni_typ_description != "0" %} <br> Splaceno: {{ splaceni_typ_description }} {{ splaceni_typ_symbol }} {% endif %}  {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.zakladni_kapital[0].zapis_datum }} {% if row.zakladni_kapital[0].vymaz_datum != 0 %} <br> Vymazáno: {{ row.zakladni_kapital[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+    {% for i in range (1, row.zakladni_kapital|length) %}
+    <tr>
+        <td></td>
+        {% if row.zakladni_kapital[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+
+        {% if row.zakladni_kapital[i].vklad_typ == "KORUNY" %}
+            {% set vklad_typ_symbol = "Kč" %}
+            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
+        {% elif row.zakladni_kapital[i].vklad_typ == "EURA" %}
+            {% set vklad_typ_symbol = "euro" %}
+            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
+        {% else %}
+            {% set vklad_typ_symbol = "" %}
+            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
+        {% endif %}           
+
+        {% if row.zakladni_kapital[i].splaceni_typ == "KORUNY" %}
+            {% set splaceni_typ_symbol = "Kč" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
+        {% elif row.zakladni_kapital[i].splaceni_typ == "PROCENTA" %}
+            {% set splaceni_typ_symbol = "%" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
+        {% elif row.zakladni_kapital[i].splaceni_typ == "EURA" %}
+            {% set splaceni_typ_symbol = "euro" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
+        {% else %}
+            {% set splaceni_typ_symbol = "" %}
+            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
+        {% endif %}  
+
+        <td>{{ underlne_style_open|safe }} {{ vklad_typ_description }} {{ vklad_typ_symbol }} {% if splaceni_typ_description != "0" %} <br> Splaceno: {{ splaceni_typ_description }} {{ splaceni_typ_symbol }} {% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.zakladni_kapital[i].zapis_datum }} {% if row.zakladni_kapital[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.zakladni_kapital[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+
+
     {% if row.predmet_podnikani|length > 0 %}
     <tr>
         <td>Předmět podnikání:</td>

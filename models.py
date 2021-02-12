@@ -131,6 +131,7 @@ class Company(db.Model):
     insolvence = db.relationship("Insolvency_Events", backref="companies")
     predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="company")
     predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="company")
+    zakladni_kapital =  db.relationship("Zakladni_Kapital", backref="companies")
     
 
 class Obce(db.Model):
@@ -157,6 +158,17 @@ class Insolvency_Events(db.Model):
     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
     company = db.relationship("Company", backref="insolvency_events")
     insolvency_event = db.Column(db.String)
+
+class Zakladni_Kapital(db.Model):
+    __tablename__ = "zakladni_kapital"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    vklad_typ = db.Column(db.String)
+    vklad_hodnota = db.Column(db.String)
+    splaceni_typ = db.Column(db.String)
+    splaceni_hodnota = db.Column(db.String)
 
 class Predmet_Podnikani(db.Model):
     __tablename__ = "predmety_podnikani"

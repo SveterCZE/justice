@@ -21,6 +21,13 @@
         {% endif %}
 {% endfor %}
 
+{% set zakladni_kapital_notes = [] %}
+{% for i in range (row.zakladni_kapital|length) %}
+    {% if row.zakladni_kapital[i].vymaz_datum == 0 %}
+        {% set zakladni_kapital_notes = zakladni_kapital_notes.append(row.zakladni_kapital[i]) %}
+        {% endif %}
+{% endfor %}
+
 {% set zapis_split = row.zapis.split("-") %}
 {% if zapis_split[1] == "01" %}
     {% set mesic = "ledna" %}
@@ -118,6 +125,38 @@
         <td>{{ row.pravni_forma[0].pravni_forma }}</td>
     </tr>
 
+    {% if zakladni_kapital_notes|length > 0 %}
+    <tr>
+        {% if zakladni_kapital_notes[0].vklad_typ == "KORUNY" %}
+            {% set vklad_typ_symbol = "Kč" %}
+            {% set vklad_typ_description = zakladni_kapital_notes[0].vklad_hodnota %}
+        {% elif zakladni_kapital_notes[0].vklad_typ == "EURA" %}
+            {% set vklad_typ_symbol = "euro" %}
+            {% set vklad_typ_description = zakladni_kapital_notes[0].vklad_hodnota %}
+        {% else %}
+            {% set vklad_typ_symbol = "" %}
+            {% set vklad_typ_description = zakladni_kapital_notes[0].vklad_hodnota %}
+        {% endif %}           
+
+        {% if zakladni_kapital_notes[0].splaceni_typ == "KORUNY" %}
+            {% set splaceni_typ_symbol = "Kč" %}
+            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
+        {% elif zakladni_kapital_notes[0].splaceni_typ == "PROCENTA" %}
+            {% set splaceni_typ_symbol = "%" %}
+            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
+        {% elif zakladni_kapital_notes[0].splaceni_typ == "EURA" %}
+            {% set splaceni_typ_symbol = "euro" %}
+            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
+        {% else %}
+            {% set splaceni_typ_symbol = "" %}
+            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
+        {% endif %}  
+
+        <td>Základní kapitál:</td>
+        <td>{{ underlne_style_open|safe }} {{ vklad_typ_description }} {{ vklad_typ_symbol }} {% if splaceni_typ_description != "0" %} <br> Splaceno: {{ splaceni_typ_description }} {{ splaceni_typ_symbol }} {% endif %}  {{ underlne_style_close|safe }}</td>
+    </tr>
+    {% endif %}
+    
     {% if predmety_podnikani_notes|length > 0 %}
     <tr>
         <td>Předmět podnikání:</td>
