@@ -253,6 +253,119 @@
     {% endfor %}
     {% endif %}
     
+    {% if row.akcie|length > 0 %}
+    <tr>
+        <td>Akcie:</td>
+        {% if row.akcie[0].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+
+        {% if row.akcie[0].akcie_podoba == "LISTINNA" %}
+            {% set akcie_podoba_description = "v listinné podobě" %}
+        {% elif row.akcie[0].akcie_podoba == "ZAKNIHOVANA" %}
+            {% set akcie_podoba_description = "v zaknihované podobě" %}
+        {% elif row.akcie[0].akcie_podoba == "IMOBILIZOVANA" %}
+            {% set akcie_podoba_description = "v imobilizované podobě" %}            
+        {% else %}
+            {% set akcie_podoba_description = "" %}    
+        {% endif %}
+        
+        {% if row.akcie[0].akcie_typ == "KMENOVE_NA_JMENO" %}
+            {% set akcie_typ_description = "kmenové akcie na jméno" %}
+        {% elif row.akcie[0].akcie_typ == "KMENOVE_NA_MAJITELE" %}
+            {% set akcie_typ_description = "kmenové akcie na majitele" %}
+        {% elif row.akcie[0].akcie_typ == "KUSOVE_NA_JMENO" %}
+            {% set akcie_typ_description = "kusové akcie" %}
+        {% elif row.akcie[0].akcie_typ == "NA_JMENO" %}
+            {% set akcie_typ_description = "akcie na jméno" %}
+        {% elif row.akcie[0].akcie_typ == "NA_MAJITELE" %}
+            {% set akcie_typ_description = "akcie na majitele" %}
+        {% elif row.akcie[0].akcie_typ == "PRIORITNI_NA_JMENO" %}
+            {% set akcie_typ_description = "prioritní akcie na jméno" %}
+        {% elif row.akcie[0].akcie_typ == "PRIORITNI_NA_MAJITELE" %}
+            {% set akcie_typ_description = "prioritní akcie na majitele" %}                           
+        {% elif row.akcie[0].akcie_typ == "ZAMESTNANECKE_NA_JMENO" %}
+            {% set akcie_typ_description = "zaměstnanecké akcie na jméno" %}
+        {% elif row.akcie[0].akcie_typ == "ZVLASTNI_PRAVA" %}
+            {% set akcie_typ_description = "akcie se zvláštními právy" %}
+        {% elif row.akcie[0].akcie_typ == "HROMANDA" %}
+            {% set akcie_typ_description = "hromadná akcie" %}
+        {% elif row.akcie[0].akcie_typ == "NA_JMENO_A_MAJITELE" %}
+            {% set akcie_typ_description = "akcie na jméno a majitele" %}
+            {% else %}
+            {% set akcie_typ_description = "" %}    
+        {% endif %}  
+
+        {% if row.akcie[0].akcie_hodnota_typ == "KORUNY" %}
+            {% set akcie_hodnota_typ_symbol = "Kč" %}
+        {% elif row.akcie[0].akcie_hodnota_typ == "EURA" %}
+            {% set akcie_hodnota_typ_symbol = "euro" %}  
+        {% else %}
+            {% set akcie_hodnota_typ_symbol = "" %}
+        {% endif %}      
+
+        <td>{{ underlne_style_open|safe }} {{ row.akcie[0].akcie_pocet }} ks {{ akcie_typ_description }} {{ akcie_podoba_description }}  ve jmenovité hodnotě {{ row.akcie[0].akcie_hodnota_value }} {{ akcie_hodnota_typ_symbol }} {% if row.akcie[0].akcie_text != "0" %} <br> {{ row.akcie[0].akcie_text }} {% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.akcie[0].zapis_datum }} {% if row.akcie[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.akcie[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+    {% for i in range (1, row.akcie|length) %}
+    <tr>
+        <td></td>
+        {% if row.akcie[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+
+        {% if row.akcie[i].akcie_podoba == "LISTINNA" %}
+            {% set akcie_podoba_description = "v listinné podobě" %}
+        {% elif row.akcie[i].akcie_podoba == "ZAKNIHOVANA" %}
+            {% set akcie_podoba_description = "v zaknihované podobě" %}
+        {% elif row.akcie[i].akcie_podoba == "IMOBILIZOVANA" %}
+            {% set akcie_podoba_description = "v imobilizované podobě" %}            
+        {% else %}
+            {% set akcie_podoba_description = "" %}    
+        {% endif %}
+        
+        {% if row.akcie[i].akcie_typ == "KMENOVE_NA_JMENO" %}
+            {% set akcie_typ_description = "kmenové akcie na jméno" %}
+        {% elif row.akcie[i].akcie_typ == "KMENOVE_NA_MAJITELE" %}
+            {% set akcie_typ_description = "kmenové akcie na majitele" %}
+        {% elif row.akcie[i].akcie_typ == "KUSOVE_NA_JMENO" %}
+            {% set akcie_typ_description = "kusové akcie" %}
+        {% elif row.akcie[i].akcie_typ == "NA_JMENO" %}
+            {% set akcie_typ_description = "akcie na jméno" %}
+        {% elif row.akcie[i].akcie_typ == "NA_MAJITELE" %}
+            {% set akcie_typ_description = "akcie na majitele" %}
+        {% elif row.akcie[i].akcie_typ == "PRIORITNI_NA_JMENO" %}
+            {% set akcie_typ_description = "prioritní akcie na jméno" %}                   
+        {% elif row.akcie[i].akcie_typ == "ZAMESTNANECKE_NA_JMENO" %}
+            {% set akcie_typ_description = "zaměstnanecké akcie na jméno" %}
+        {% elif row.akcie[i].akcie_typ == "ZVLASTNI_PRAVA" %}
+            {% set akcie_typ_description = "akcie se zvláštními právy" %}
+        {% else %}
+            {% set akcie_typ_description = "" %}    
+        {% endif %}  
+
+        {% if row.akcie[i].akcie_hodnota_typ == "KORUNY" %}
+            {% set akcie_hodnota_typ_symbol = "Kč" %}
+        {% elif row.akcie[i].akcie_hodnota_typ == "EURA" %}
+            {% set akcie_hodnota_typ_symbol = "euro" %}  
+        {% else %}
+            {% set akcie_hodnota_typ_symbol = "" %}
+        {% endif %}  
+
+        <td>{{ underlne_style_open|safe }} {{ row.akcie[i].akcie_pocet }} ks {{ akcie_typ_description }} {{ akcie_podoba_description }}  ve jmenovité hodnotě {{ row.akcie[i].akcie_hodnota_value }} {{ akcie_hodnota_typ_symbol }} {% if row.akcie[i].akcie_text != "0"  %} <br> {{ row.akcie[i].akcie_text }} {% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.akcie[i].zapis_datum }} {% if row.akcie[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.akcie[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+
 
     {% if insolvency_notes|length > 0 %}
     <tr>
@@ -268,6 +381,36 @@
         </tr>            
         {% endfor %}
     {% endif %}
+
+    {% if row.ostatni_skutecnosti|length > 0 %}
+    <tr>
+        <td>Ostatní skutečnosti:</td>
+        {% if row.ostatni_skutecnosti[0].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{ row.ostatni_skutecnosti[0].ostatni_skutecnost }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ostatni_skutecnosti[0].zapis_datum }} {% if row.ostatni_skutecnosti[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.ostatni_skutecnosti[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+    {% for i in range (1, row.ostatni_skutecnosti|length) %}
+    <tr>
+        <td></td>
+        {% if row.ostatni_skutecnosti[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{ row.ostatni_skutecnosti[i].ostatni_skutecnost }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ostatni_skutecnosti[i].zapis_datum }} {% if row.ostatni_skutecnosti[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.ostatni_skutecnosti[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+
 </table>
     
 {% endfor %}

@@ -4,7 +4,7 @@ from db_setup import init_db, db_session
 from forms import JusticeSearchForm, CompanyForm
 from flask import flash, render_template, request, redirect
 # from models import Company, Soud
-from models import Company, Obce, Ulice, Pravni_Forma, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Zakladni_Kapital
+from models import Company, Obce, Ulice, Pravni_Forma, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Zakladni_Kapital, Akcie
 from tables import Results
 
 init_db()

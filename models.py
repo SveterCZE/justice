@@ -132,6 +132,8 @@ class Company(db.Model):
     predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="company")
     predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="company")
     zakladni_kapital =  db.relationship("Zakladni_Kapital", backref="companies")
+    ostatni_skutecnosti = db.relationship("Ostatni_Skutecnosti", backref="companies")
+    akcie = db.relationship("Akcie", backref="companies")
     
 
 class Obce(db.Model):
@@ -181,3 +183,24 @@ class Predmet_Cinnosti(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     predmet_cinnosti = db.Column(db.String)
     company_predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="predmet_cinnosti")
+
+class Ostatni_Skutecnosti(db.Model):
+    __tablename__ = "ostatni_skutecnosti"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    ostatni_skutecnost = db.Column(db.String)
+
+class Akcie(db.Model):
+    __tablename__ = "akcie"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    akcie_podoba = db.Column(db.String)
+    akcie_typ = db.Column(db.String)
+    akcie_pocet = db.Column(db.String)
+    akcie_hodnota_typ = db.Column(db.String)
+    akcie_hodnota_value = db.Column(db.String)
+    akcie_text = db.Column(db.String)

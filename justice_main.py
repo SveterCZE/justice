@@ -29,13 +29,13 @@ def parse_to_DB(file):
             element.clear()
 
             # subjekt_udaje.clear()
-
-    # purge_DB(c)
     conn.commit()
     conn.close()
     return 0
 
 def purge_DB(c):
+    conn = sqlite3.connect('justice.db')
+    c = conn.cursor()
     c.execute("DELETE FROM companies")
     c.execute("DELETE FROM obce")
     c.execute("DELETE FROM ulice")
@@ -51,6 +51,9 @@ def purge_DB(c):
     c.execute("DELETE FROM predmety_cinnosti")
     c.execute("DELETE FROM predmety_cinnosti_relation")
     c.execute("DELETE FROM zakladni_kapital")
+    c.execute("DELETE FROM ostatni_skutecnosti")
+    c.execute("DELETE FROM akcie")
+    return 0
 
 def find_other_properties(c, ICO, element, conn, primary_sql_key):
     try:
@@ -70,6 +73,10 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_predmet_cinnosti(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "ZAKLADNI_KAPITAL":
                     find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "OST_SKUTECNOSTI_SEKCE":
+                    find_ostatni_skutecnosti(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "AKCIE_SEKCE":
+                    find_akcie(c, ICO, elem2, conn, primary_sql_key, element)
     except:
         pass
 
@@ -88,12 +95,12 @@ def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key
                     insert_into_ancillary_table(c, elem, inserted_figure)
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
-    except Exception as f:
+    except:
         pass
 
-def find_predmet_cinnosti(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
+def find_predmet_cinnosti(c, ICO, predmet_cinnosti_elem, conn, primary_sql_key, element):
     try:
-        my_iter = predmet_podnikani_elem.findall("podudaje")
+        my_iter = predmet_cinnosti_elem.findall("podudaje")
         for elem in my_iter:
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
@@ -106,7 +113,7 @@ def find_predmet_cinnosti(c, ICO, predmet_podnikani_elem, conn, primary_sql_key,
                     insert_into_ancillary_table(c, elem, inserted_figure)
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
-    except Exception as f:
+    except:
         pass
 
 def find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element):
@@ -118,8 +125,40 @@ def find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element):
         splaceni_typ = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/typ"))
         splaceni_hodnota = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/textValue"))
         c.execute("INSERT INTO zakladni_kapital (company_id, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota) VALUES(?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota,))
-    except Exception as f:
-        print(f)
+    except:
+        pass
+
+def find_ostatni_skutecnosti(c, ICO, ostatni_skutecnosti_elem, conn, primary_sql_key, element):
+    try:
+        my_iter = ostatni_skutecnosti_elem.findall("podudaje")
+        for elem in my_iter:
+            my_iter2 = elem.iter("Udaj")
+            for elem2 in my_iter2:
+                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                c.execute("INSERT INTO ostatni_skutecnosti (company_id, zapis_datum, vymaz_datum, ostatni_skutecnost) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, inserted_figure,))
+    except:
+        pass
+
+def find_akcie(c, ICO, ostatni_akcie_elem, conn, primary_sql_key, element):
+    try:
+        my_iter = ostatni_akcie_elem.findall("podudaje")
+        for elem in my_iter:
+            my_iter2 = elem.iter("Udaj")
+            for elem2 in my_iter2:
+                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                akcie_podoba = str(get_prop(elem2, ".//hodnotaUdaje/podoba"))
+                akcie_typ = str(get_prop(elem2, ".//hodnotaUdaje/typ"))
+                akcie_pocet = str(get_prop(elem2, ".//hodnotaUdaje/pocet"))
+                akcie_hodnota_typ = str(get_prop(elem2, ".//hodnotaUdaje/hodnota/typ"))
+                akcie_hodnota_value = str(get_prop(elem2, ".//hodnotaUdaje/hodnota/textValue"))
+                akcie_text = str(get_prop(elem2, ".//hodnotaUdaje/text"))
+                c.execute("INSERT INTO akcie (company_id, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value, akcie_text) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value,akcie_text,))
+    except:
+        pass
+
 
 def insert_individual_relations_v2(c, ICO, conn, primary_sql_key, zapis_datum, vymaz_datum, hodnota_text):
     insert_into_ancillary_table(c, elem, inserted_figure)
@@ -196,20 +235,20 @@ def get_anciallary_table_key(c, elem, inserted_figure):
         anciallary_table_key = c.execute("SELECT id FROM " + elem[1] + " WHERE " + elem[2] + " = (?)", (inserted_figure,))
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
-    except Exception as f:
+    except:
         pass
 
 def insert_relation_information(c, elem, primary_sql_key, ancillary_table_key):
     try:
         c.execute("INSERT INTO " + elem[3] + " VALUES(?, ?)", (primary_sql_key, ancillary_table_key,))
-    except Exception as f:
+    except:
         pass
     return 0
 
 def insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum):
     try:
         c.execute("INSERT INTO " + elem[3] + " VALUES(?, ?, ?, ?)", (primary_sql_key, ancillary_table_key,zapis_datum, vymaz_datum,))
-    except Exception as f:
+    except:
         print(f)
     return 0
 
@@ -441,7 +480,7 @@ class adresa(object):
                 if self.cisloPo == None:
                     if self.cisloEv == None:
                         if self.psc != None:
-                            return str(self.obec + ", " + self.ulice + "" + srovnat_obec_cast(self.obec, self.castObce) + ", PSČ" + self.psc + " " + self.stat)
+                            return str(self.obec + ", " + self.ulice + "" + srovnat_obec_cast(self.obec, self.castObce) + ", PSČ " + self.psc + " " + self.stat)
                         else:
                             return str(self.obec + ", " + self.ulice + "" + srovnat_obec_cast(self.obec, self.castObce) + ", " + self.stat)
                     else:
@@ -594,7 +633,7 @@ def delete_archive(file):
 
 def do_both():
     # general_update("down")
-    general_update("db_update")# 
+    general_update("db_update") 
 
 do_both()
 

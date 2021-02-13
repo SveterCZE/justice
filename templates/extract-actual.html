@@ -28,6 +28,14 @@
         {% endif %}
 {% endfor %}
 
+{% set ostatni_skutecnosti_notes = [] %}
+{% for i in range (row.ostatni_skutecnosti|length) %}
+    {% if row.ostatni_skutecnosti[i].vymaz_datum == 0 %}
+        {% set ostatni_skutecnosti_notes = ostatni_skutecnosti_notes.append(row.ostatni_skutecnosti[i]) %}
+        {% endif %}
+{% endfor %}
+
+
 {% set zapis_split = row.zapis.split("-") %}
 {% if zapis_split[1] == "01" %}
     {% set mesic = "ledna" %}
@@ -197,6 +205,22 @@
         </tr>            
         {% endfor %}
     {% endif %}
+
+    {% if ostatni_skutecnosti_notes|length > 0 %}
+    <tr>
+        <td>Ostatní skutečnosti:</td>
+        <td>{{ ostatni_skutecnosti_notes[0].ostatni_skutecnost }}</td>
+        <td></td>
+    </tr>        
+        {% for i in range (1, ostatni_skutecnosti_notes|length) %}
+        <tr>
+            <td></td>
+            <td>{{ ostatni_skutecnosti_notes[i].ostatni_skutecnost }}</td>
+            <td></td>
+        </tr>            
+        {% endfor %}
+    {% endif %}
+
 </table>
     
 {% endfor %}
