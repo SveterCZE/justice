@@ -53,10 +53,25 @@ def convert_month_to_string(my_month):
     else:
         return "podivného měsíce"
 
+def convert_soud_to_string(my_soud):
+    if my_soud == "MSPH":
+        return "Městského soudu v Praze"
+    elif my_soud == "KSCB":
+        return "Krajského soudu v Českých Budějovicích"
+    elif my_soud == "KSPL":
+        return "Krajského soudu v Plzni"
+    elif my_soud == "KSUL":
+        return "Krajského soudu v Ústí nad Labem"
+    elif my_soud == "KSHK":
+        return "Krajského soudu v Hradci Králové"
+    elif my_soud == "KSBR":
+        return "Krajského soudu v Brně"
+    elif my_soud == "KSOS":
+        return "Krajského soudu v Ostravě"
+    else:
+        return "podivného soudu"
+
 class MyType(types.TypeDecorator):
-    '''Prefixes Unicode values with "PREFIX:" on the way in and
-    strips it off on the way out.
-    '''
 
     impl = types.Unicode
 
@@ -69,6 +84,20 @@ class MyType(types.TypeDecorator):
 
     def copy(self, **kw):
         return MyType(self.impl.length)
+
+class MySoud(types.TypeDecorator):
+    
+    impl = types.Unicode
+
+    # def process_bind_param(self, value, dialect):
+    #     return convert_soud_to_string(value)
+
+    def process_result_value(self, value, dialect):
+        # return "PREFIX:" + value
+        return convert_soud_to_string(value)
+
+    def copy(self, **kw):
+        return MySoud(self.impl.length)    
 
 
 association_table = db.Table("obce_relation",
@@ -134,6 +163,8 @@ class Company(db.Model):
     zakladni_kapital =  db.relationship("Zakladni_Kapital", backref="companies")
     ostatni_skutecnosti = db.relationship("Ostatni_Skutecnosti", backref="companies")
     akcie = db.relationship("Akcie", backref="companies")
+    obchodni_firma = db.relationship("Nazvy", backref="companies")
+    soudni_zapis = db.relationship("Soudni_Zapisy", backref="companies")
     
 
 class Obce(db.Model):
@@ -204,3 +235,21 @@ class Akcie(db.Model):
     akcie_hodnota_typ = db.Column(db.String)
     akcie_hodnota_value = db.Column(db.String)
     akcie_text = db.Column(db.String)
+
+class Nazvy(db.Model):
+    __tablename__ = "nazvy"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    nazev_text = db.Column(db.String)
+
+class Soudni_Zapisy(db.Model):
+    __tablename__ = "zapis_soudy"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    oddil = db.Column(db.String)
+    vlozka = db.Column(db.String)
+    soud = db.Column(MySoud)

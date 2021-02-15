@@ -33,27 +33,34 @@ def parse_to_DB(file):
     conn.close()
     return 0
 
-def purge_DB(c):
-    conn = sqlite3.connect('justice.db')
-    c = conn.cursor()
-    c.execute("DELETE FROM companies")
-    c.execute("DELETE FROM obce")
-    c.execute("DELETE FROM ulice")
-    c.execute("DELETE FROM ulice_relation")
-    c.execute("DELETE FROM osoby")
-    c.execute("DELETE FROM obce_relation")
-    c.execute("DELETE FROM sqlite_sequence")
-    c.execute("DELETE FROM pravni_formy")
-    c.execute("DELETE FROM pravni_formy_relation")
-    c.execute("DELETE FROM insolvency_events")
-    c.execute("DELETE FROM predmety_podnikani")
-    c.execute("DELETE FROM predmety_podnikani_relation")
-    c.execute("DELETE FROM predmety_cinnosti")
-    c.execute("DELETE FROM predmety_cinnosti_relation")
-    c.execute("DELETE FROM zakladni_kapital")
-    c.execute("DELETE FROM ostatni_skutecnosti")
-    c.execute("DELETE FROM akcie")
-    return 0
+def purge_DB():
+    try:
+        conn = sqlite3.connect('justice.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM companies")
+        c.execute("DELETE FROM obce")
+        c.execute("DELETE FROM ulice")
+        c.execute("DELETE FROM ulice_relation")
+        c.execute("DELETE FROM osoby")
+        c.execute("DELETE FROM obce_relation")
+        c.execute("DELETE FROM sqlite_sequence")
+        c.execute("DELETE FROM pravni_formy")
+        c.execute("DELETE FROM pravni_formy_relation")
+        c.execute("DELETE FROM insolvency_events")
+        c.execute("DELETE FROM predmety_podnikani")
+        c.execute("DELETE FROM predmety_podnikani_relation")
+        c.execute("DELETE FROM predmety_cinnosti")
+        c.execute("DELETE FROM predmety_cinnosti_relation")
+        c.execute("DELETE FROM zakladni_kapital")
+        c.execute("DELETE FROM ostatni_skutecnosti")
+        c.execute("DELETE FROM akcie")
+        c.execute("DELETE FROM zapis_soudy")
+        c.execute("DELETE FROM nazvy")
+        conn.commit()
+        conn.close()
+        return 0
+    except Exception as f:
+        print(f)
 
 def find_other_properties(c, ICO, element, conn, primary_sql_key):
     try:
@@ -77,8 +84,12 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_ostatni_skutecnosti(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "AKCIE_SEKCE":
                     find_akcie(c, ICO, elem2, conn, primary_sql_key, element)
-    except:
-        pass
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "SPIS_ZN":
+                    find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "NAZEV":
+                    find_nazev(c, ICO, elem2, conn, primary_sql_key, element)
+    except Exception as f:
+        print (f)
 
 def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
     try:
@@ -115,6 +126,27 @@ def find_predmet_cinnosti(c, ICO, predmet_cinnosti_elem, conn, primary_sql_key, 
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except:
         pass
+
+def find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+        vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+        soud = str(get_prop(elem2, ".//spisZn/soud/kod"))
+        oddil = str(get_prop(elem2, ".//spisZn/oddil"))
+        vlozka = str(get_prop(elem2, ".//spisZn/vlozka"))
+        c.execute("INSERT INTO zapis_soudy (company_id, zapis_datum, vymaz_datum, oddil, vlozka, soud) VALUES(?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, oddil, vlozka, soud,))
+    except:
+        pass
+
+def find_nazev(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+        vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+        nazev = str(get_prop(elem2, ".//hodnotaText"))
+        print(ICO, zapis_datum, vymaz_datum, nazev)
+        c.execute("INSERT INTO nazvy (company_id, zapis_datum, vymaz_datum, nazev_text) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, nazev,))
+    except Exception as f:
+        print(f)
 
 def find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element):
     try:
@@ -624,17 +656,18 @@ def unzip_file(filename, temp_file):
 def delete_archive(file):
     send2trash.send2trash(file)
 
+purge_DB()
 
-# parse_to_DB("as-full-ostrava-2021.xml")
+parse_to_DB("as-full-ostrava-2021.xml")
 
 # parse_to_DB("ks-actual-ostrava-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
-def do_both():
-    # general_update("down")
-    general_update("db_update") 
+# def do_both():
+#     # general_update("down")
+#     general_update("db_update") 
 
-do_both()
+# do_both()
 
 # cProfile.run('do_both()')

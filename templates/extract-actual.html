@@ -36,6 +36,7 @@
 {% endfor %}
 
 
+
 {% set zapis_split = row.zapis.split("-") %}
 {% if zapis_split[1] == "01" %}
     {% set mesic = "ledna" %}
@@ -104,7 +105,11 @@
 {% endif %}
 
 <h1>Výpis z obchodního rejstříku</h1>
-<h2>{{ row.nazev }}, {{ row.oddil }} {{ row.vlozka }} vedená u {{ soud }}</h2>
+{% for i in range (row.soudni_zapis|length) %}
+    {% if row.soudni_zapis[i].vymaz_datum == 0 %}
+<h2>{{ row.nazev }}, {{ row.soudni_zapis[i].oddil }} {{ row.soudni_zapis[i].vlozka }} vedená u {{ row.soudni_zapis[i].soud }}</h2>
+{% endif %}
+{% endfor %}
 <p><a href="/">Zpět na vyhledání.</a></p>
 
 <table class= "table" style="width: 100%">
@@ -114,11 +119,19 @@
     </tr>
     <tr>
         <td>Spisová značka:</td>
-        <td>{{ row.oddil }} {{ row.vlozka }} vedená u {{ soud }}</td>
+        {% for i in range (row.soudni_zapis|length) %}
+            {% if row.soudni_zapis[i].vymaz_datum == 0 %}
+            <td>{{ row.soudni_zapis[i].oddil }} {{ row.soudni_zapis[i].vlozka }} vedená u {{ row.soudni_zapis[i].soud }}</td>
+            {% endif %}
+        {% endfor %}
     </tr>
     <tr>
         <td>Obchodní firma:</td>
-        <td>{{ row.nazev }}</td>
+        {% for i in range (row.obchodni_firma|length) %}
+            {% if row.obchodni_firma[i].vymaz_datum == 0 %}
+            <td>{{ row.obchodni_firma[i].nazev_text }}</td>
+            {% endif %}
+        {% endfor %}
     </tr>
     <tr>
         <td>Sídlo:</td>
