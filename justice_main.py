@@ -23,7 +23,7 @@ def parse_to_DB(file):
             primary_sql_key = get_primary_sql_key(c, ICO)
             # Vlozit jednolive parametry
             insert_primary_company_figures(c, ICO, element, conn)
-            insert_company_relations(c, ICO, element, conn, primary_sql_key)
+            # insert_company_relations(c, ICO, element, conn, primary_sql_key)
             # insert_obec_relation(c, conn, ICO, element, primary_sql_key)
             find_other_properties(c, ICO, element, conn, primary_sql_key)
             element.clear()
@@ -71,7 +71,7 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
             for elem2 in my_iter2:
                 # print(ICO, str(get_prop(elem2, ".//udajTyp/kod")))
                 if str(get_prop(elem2, ".//udajTyp/kod")) == "SIDLO":
-                    find_registered_office(c, ICO, elem2, conn, primary_sql_key)
+                    find_registered_office(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "INSOLVENCE_SEKCE":
                     find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "KONKURS_SEKCE":
@@ -93,12 +93,18 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
     except:
         pass
 
-def find_registered_office(c, ICO, elem2, conn, primary_sql_key):
+def find_registered_office(c, ICO, elem2, conn, primary_sql_key, element):
     try:
         zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
         vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
         sidlo = str(adresa(get_SIDLO_v3(elem2)))
-        print(ICO, zapis_datum, vymaz_datum, sidlo)
+        if vymaz_datum == "0":
+            insert_prop(c, sidlo, conn, ICO, "sidlo")
+            # obec = str(get_prop(elem2, ".//adresa/obec"))
+            # ulice = str(get_prop(elem2, ".//adresa/ulice"))
+            insert_instructions = [(".//adresa/obec","obce", "obec_jmeno", "obce_relation"), (".//adresa/ulice","ulice", "ulice_jmeno", "ulice_relation")]
+            for elem in insert_instructions:
+                insert_individual_relations(c, ICO, element, conn, primary_sql_key, elem)
         insert_instructions = [(sidlo,"adresy", "adresa_text", "sidlo_relation")]
         for elem in insert_instructions:
             insert_into_ancillary_table(c, elem, sidlo)
@@ -260,12 +266,15 @@ def get_primary_sql_key(c, ICO):
     return
 
 def insert_primary_company_figures(c, ICO, element, conn):
+    # insert_instructions = [("nazev","nazev"), ("zapisDatum","zapis"), (".//udaje/Udaj/spisZn/oddil","oddil"),
+    #                        (".//udaje/Udaj/spisZn/vlozka","vlozka"),(".//udaje/Udaj/spisZn/soud/kod","soud"),(str(adresa(get_SIDLO_v2(element))),"sidlo")]
+    
     insert_instructions = [("nazev","nazev"), ("zapisDatum","zapis"), (".//udaje/Udaj/spisZn/oddil","oddil"),
-                           (".//udaje/Udaj/spisZn/vlozka","vlozka"),(".//udaje/Udaj/spisZn/soud/kod","soud"),(str(adresa(get_SIDLO_v2(element))),"sidlo")]
-    for elem in insert_instructions[:-1]:
+                           (".//udaje/Udaj/spisZn/vlozka","vlozka"),(".//udaje/Udaj/spisZn/soud/kod","soud")]
+    for elem in insert_instructions:
         insert_prop(c, get_prop(element, elem[0]), conn, ICO, elem[1])
     # Override to insert the address
-    insert_prop(c, insert_instructions[-1][0], conn, ICO, insert_instructions[-1][1])
+    # insert_prop(c, insert_instructions[-1][0], conn, ICO, insert_instructions[-1][1])
     return 0
 
 def insert_company_relations(c, ICO, element, conn, primary_sql_key):
