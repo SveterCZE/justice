@@ -4,7 +4,7 @@ from db_setup import init_db, db_session
 from forms import JusticeSearchForm, CompanyForm
 from flask import flash, render_template, request, redirect
 # from models import Company, Soud
-from models import Company, Obce, Ulice, Pravni_Forma, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Zakladni_Kapital, Akcie, Nazvy
+from models import Company, Obce, Ulice, Pravni_Forma, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association
 from tables import Results
 
 init_db()
@@ -32,16 +32,17 @@ def search_results(search):
     obec = search.obec_search.data
     obec_search_method = search.obec_search_selection.data
     ulice = search.ulice_search.data
-    ulice_search_method = search.ulice_search_selection.data 
-    pravni_forma = search.pravni_forma_search.data 
+    ulice_search_method = search.ulice_search_selection.data
+    pravni_forma = search.pravni_forma_search.data
     soud = search.soud_search.data
     insolvent_only = search.insolvent_only_search.data
     zapsano_od = search.zapis_od.data
     zapsano_do = search.zapis_do.data
-    if insolvent_only == False:
-        qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
-    else:
-        qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence)
+    qry = Company.query
+    # if insolvent_only == False:
+    #     qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
+    # else:
+    #     qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence)
     if ico:
         if ico_search_method == "text_anywhere":
             qry = qry.filter(Company.ico.contains(ico))
@@ -62,7 +63,7 @@ def search_results(search):
         elif oddil_search_method == "text_beginning":
             qry = qry.filter(Company.oddil.like(f'{oddil}%'))
         elif oddil_search_method == "text_exact":
-            qry = qry.filter(Company.oddil == oddil)                        
+            qry = qry.filter(Company.oddil == oddil)
         # qry = qry.filter(Company.oddil.contains(oddil))
     if vlozka:
         if vlozka_search_method == "text_anywhere":
@@ -70,26 +71,29 @@ def search_results(search):
         elif vlozka_search_method == "text_beginning":
             qry = qry.filter(Company.vlozka.like(f'{vlozka}%'))
         elif vlozka_search_method == "text_exact":
-            qry = qry.filter(Company.vlozka == vlozka)           
-        
+            qry = qry.filter(Company.vlozka == vlozka)
+
         # qry = qry.filter(Company.vlozka.contains(vlozka))
     if obec:
+        qry = qry.join(Obce, Company.obec)
         if obec_search_method == "text_anywhere":
             qry = qry.filter(Obce.obec_jmeno.contains(obec))
         elif obec_search_method == "text_beginning":
             qry = qry.filter(Obce.obec_jmeno.like(f'{obec}%'))
         elif obec_search_method == "text_exact":
-            qry = qry.filter(Obce.obec_jmeno == obec)              
+            qry = qry.filter(Obce.obec_jmeno == obec)
         # qry = qry.filter(Obce.obec_jmeno.contains(obec))
     if ulice:
+        qry = qry.join(Ulice, Company.ulice)
         if ulice_search_method == "text_anywhere":
             qry = qry.filter(Ulice.ulice_jmeno.contains(ulice))
         elif ulice_search_method == "text_beginning":
             qry = qry.filter(Ulice.ulice_jmeno.like(f'{ulice}%'))
         elif ulice_search_method == "text_exact":
-            qry = qry.filter(Ulice.ulice_jmeno == ulice)               
+            qry = qry.filter(Ulice.ulice_jmeno == ulice)
         # qry = qry.filter(Ulice.ulice_jmeno.contains(ulice))
     if pravni_forma:
+        qry = qry.join(Pravni_Forma, Company.pravni_forma)
         qry = qry.filter(Pravni_Forma.pravni_forma.contains(pravni_forma))
     if soud:
         qry = qry.filter(Company.soud.contains(soud))
@@ -97,7 +101,7 @@ def search_results(search):
         qry = qry.filter(Company.zapis >= zapsano_od)
     if zapsano_do:
         qry = qry.filter(Company.zapis <= zapsano_do)
-    
+
     results = qry.all()
         # else:
         #     qry = db_session.query(Company)
@@ -105,11 +109,11 @@ def search_results(search):
     # else:
     #     qry = db_session.query(Company)
     #     results = qry.all()
-    
+
     if not results:
         flash('No results found!')
         return redirect('/')
-    
+
     else:
         table = Results(results)
         table.border = True
@@ -119,7 +123,7 @@ def search_results(search):
 def search_results_BACKUP(search):
     results = []
     search_string = search.data['search']
-    
+
     if search_string:
         # if search.data['select'] == 'soud':
         #     qry = db_session.query(Company, Soud).filter(
@@ -140,11 +144,11 @@ def search_results_BACKUP(search):
     else:
         qry = db_session.query(Company)
         results = qry.all()
-    
+
     if not results:
         flash('No results found!')
         return redirect('/')
-    
+
     else:
         table = Results(results)
         table.border = True
@@ -178,7 +182,7 @@ def new_company():
     Add a new company
     """
     form = CompanyForm(request.form)
-    
+
     if request.method == 'POST' and form.validate():
         # save the album
         company = Company()
@@ -195,7 +199,7 @@ def save_changes(company, form, new=False):
     # of the SQLAlchemy table object
     # soud = Soud()
     # soud.name = form.soud.data
-    
+
     # company.soud = soud
     company.soud = form.soud.data
     company.ico = form.ico.data

@@ -47,6 +47,7 @@ def purge_DB():
         c.execute("DELETE FROM pravni_formy")
         c.execute("DELETE FROM pravni_formy_relation")
         c.execute("DELETE FROM insolvency_events")
+        c.execute("DELETE FROM konkurz_events")
         c.execute("DELETE FROM predmety_podnikani")
         c.execute("DELETE FROM predmety_podnikani_relation")
         c.execute("DELETE FROM predmety_cinnosti")
@@ -69,11 +70,12 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
                 # print(ICO, str(get_prop(elem2, ".//udajTyp/kod")))
-                if str(get_prop(elem2, ".//udajTyp/kod")) == "INSOLVENCE_SEKCE":
-                    # print("INSOLVENCY:", ICO)
+                if str(get_prop(elem2, ".//udajTyp/kod")) == "SIDLO":
+                    find_registered_office(c, ICO, elem2, conn, primary_sql_key)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "INSOLVENCE_SEKCE":
                     find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "KONKURS_SEKCE":
-                    find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
+                    find_active_konkurz(c, ICO, elem2, conn, primary_sql_key)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "PREDMET_PODNIKANI_SEKCE":
                     find_predmet_podnikani(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "PREDMET_CINNOSTI_SEKCE":
@@ -88,8 +90,23 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "NAZEV":
                     find_nazev(c, ICO, elem2, conn, primary_sql_key, element)
+    except:
+        pass
+
+def find_registered_office(c, ICO, elem2, conn, primary_sql_key):
+    try:
+        zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+        vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+        sidlo = str(adresa(get_SIDLO_v3(elem2)))
+        print(ICO, zapis_datum, vymaz_datum, sidlo)
+        insert_instructions = [(sidlo,"adresy", "adresa_text", "sidlo_relation")]
+        for elem in insert_instructions:
+            insert_into_ancillary_table(c, elem, sidlo)
+            ancillary_table_key = get_anciallary_table_key(c, elem, sidlo)
+            insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+        return 0
     except Exception as f:
-        print (f)
+        print(f)
 
 def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
     try:
@@ -143,10 +160,9 @@ def find_nazev(c, ICO, elem2, conn, primary_sql_key, element):
         zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
         vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
         nazev = str(get_prop(elem2, ".//hodnotaText"))
-        print(ICO, zapis_datum, vymaz_datum, nazev)
         c.execute("INSERT INTO nazvy (company_id, zapis_datum, vymaz_datum, nazev_text) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, nazev,))
-    except Exception as f:
-        print(f)
+    except:
+        pass
 
 def find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element):
     try:
@@ -203,25 +219,35 @@ def find_active_insolvency(c, ICO, insolvency_elem, conn, primary_sql_key):
        for elem in my_iter:
            my_iter2 = elem.iter("Udaj")
            for elem2 in my_iter2:
-               if (str(get_prop(elem2, ".//vymazDatum"))) == "0":
-                   insolvency_text = str(get_prop(elem2, ".//text"))
-                   if insolvency_text != "0":
-                       insert_insolvency_text(c, conn, insolvency_text, primary_sql_key)
-                       # print(insolvency_text)
-                   # print(ICO, str(get_prop(elem2, ".//zapisDatum")), str(get_prop(elem2, ".//text")))
-                # my_iter3 = elem2.iterfind()
-                # for elem3 in my_iter3:
-                   # print(str(get_prop(elem2, ".//hlavicka")))
-                   # print(str(get_prop(elem2, ".//zapisDatum")))
-                   # print(str(get_prop(elem2, ".//vymazDatum")))
+            #    if (str(get_prop(elem2, ".//vymazDatum"))) == "0":
+                    insolvency_text = str(get_prop(elem2, ".//text"))
+                    zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                    vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                    if insolvency_text != "0":
+                        try:
+                            c.execute("INSERT INTO insolvency_events (company_id, zapis_datum, vymaz_datum, insolvency_event) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, insolvency_text,))
+                        except:
+                            pass
    except:
        pass
 
-def insert_insolvency_text(c, conn, insolvency_text, primary_sql_key):
-    try:
-        c.execute("INSERT INTO insolvency_events (company_id, insolvency_event) VALUES(?, ?)", (primary_sql_key, insolvency_text,))
-    except:
-        pass
+def find_active_konkurz(c, ICO, konkurz_elem, conn, primary_sql_key):
+   try:
+       my_iter = konkurz_elem.findall("podudaje")
+       for elem in my_iter:
+           my_iter2 = elem.iter("Udaj")
+           for elem2 in my_iter2:
+            #    if (str(get_prop(elem2, ".//vymazDatum"))) == "0":
+                    konkurz_text = str(get_prop(elem2, ".//text"))
+                    zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                    vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                    if konkurz_text != "0":
+                        try:
+                            c.execute("INSERT INTO konkurz_events (company_id, zapis_datum, vymaz_datum, konkurz_event) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, konkurz_text,))
+                        except:
+                            pass
+   except:
+       pass
 
 def get_primary_sql_key(c, ICO):
     try:
@@ -666,7 +692,7 @@ parse_to_DB("as-full-ostrava-2021.xml")
 
 # def do_both():
 #     # general_update("down")
-#     general_update("db_update") 
+#     general_update("db_update")
 
 # do_both()
 

@@ -143,6 +143,15 @@ class Predmety_Cinnosti_Association(db.Model):
     predmet_cinnosti = db.relationship("Predmet_Cinnosti", back_populates="company_predmet_cinnosti")
     company = db.relationship("Company", back_populates="predmet_cinnosti")
 
+class Sidlo_Association(db.Model):
+    __tablename__ = 'sidlo_relation'
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    sidlo_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False, primary_key=True)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    sidlo_text = db.relationship("Sidlo", back_populates="company_sidlo")
+    company = db.relationship("Company", back_populates="sidlo_text")
+
 
 class Company(db.Model):
     __tablename__ = "companies"   
@@ -158,6 +167,7 @@ class Company(db.Model):
     ulice = db.relationship("Ulice", secondary=ulice_association, backref="companies")
     pravni_forma = db.relationship("Pravni_Forma", secondary=pravni_forma_association, backref="companies")
     insolvence = db.relationship("Insolvency_Events", backref="companies")
+    konkurz = db.relationship("Konkurz_Events", backref="companies")
     predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="company")
     predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="company")
     zakladni_kapital =  db.relationship("Zakladni_Kapital", backref="companies")
@@ -165,6 +175,7 @@ class Company(db.Model):
     akcie = db.relationship("Akcie", backref="companies")
     obchodni_firma = db.relationship("Nazvy", backref="companies")
     soudni_zapis = db.relationship("Soudni_Zapisy", backref="companies")
+    sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
     
 
 class Obce(db.Model):
@@ -189,8 +200,19 @@ class Insolvency_Events(db.Model):
     __tablename__ = "insolvency_events"
     id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
-    company = db.relationship("Company", backref="insolvency_events")
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    # company = db.relationship("Company", backref="insolvency_events")
     insolvency_event = db.Column(db.String)
+
+class Konkurz_Events(db.Model):
+    __tablename__ = "konkurz_events"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    # company = db.relationship("Company", backref="insolvency_events")
+    konkurz_event = db.Column(db.String)    
 
 class Zakladni_Kapital(db.Model):
     __tablename__ = "zakladni_kapital"
@@ -214,6 +236,12 @@ class Predmet_Cinnosti(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     predmet_cinnosti = db.Column(db.String)
     company_predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association", back_populates="predmet_cinnosti")
+
+class Sidlo(db.Model):
+    __tablename__ = "adresy"
+    id = db.Column(db.Integer, primary_key=True)
+    adresa_text = db.Column(db.String)
+    company_sidlo = db.relationship("Sidlo_Association", back_populates="sidlo_text")
 
 class Ostatni_Skutecnosti(db.Model):
     __tablename__ = "ostatni_skutecnosti"
