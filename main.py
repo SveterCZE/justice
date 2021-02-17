@@ -4,7 +4,7 @@ from db_setup import init_db, db_session
 from forms import JusticeSearchForm, CompanyForm
 from flask import flash, render_template, request, redirect
 # from models import Company, Soud
-from models import Company, Obce, Ulice, Pravni_Forma, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association
+from models import Company, Obce, Ulice, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy
 from tables import Results
 
 init_db()
@@ -157,7 +157,8 @@ def search_results_BACKUP(search):
 
 @app.route("/<int:ico>", methods=['GET', 'POST'])
 def extract(ico):
-    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
+    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Insolvency_Events, isouter=True)
+    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
     # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence, isouter=True).join(Predmet_Podnikani, Company.predmet_podnikani).join(Predmet_Cinnosti, Company.predmet_cinnosti)
     qry = qry.filter(Company.ico == ico)
     # qry = qry.filter(Company.nazev.contains("prigo"))
@@ -167,7 +168,8 @@ def extract(ico):
 
 @app.route("/<int:ico>-actual", methods=['GET', 'POST'])
 def extract_actual(ico):
-    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
+    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Insolvency_Events, isouter=True)
+    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
     # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence, isouter=True).join(Predmet_Podnikani, Company.predmet_podnikani).join(Predmet_Cinnosti, Company.predmet_cinnosti)
     qry = qry.filter(Company.ico == ico)
     # qry = qry.filter(Company.nazev.contains("prigo"))

@@ -23,7 +23,7 @@ def parse_to_DB(file):
             primary_sql_key = get_primary_sql_key(c, ICO)
             # Vlozit jednolive parametry
             insert_primary_company_figures(c, ICO, element, conn)
-            # insert_company_relations(c, ICO, element, conn, primary_sql_key)
+            insert_company_relations(c, ICO, element, conn, primary_sql_key)
             # insert_obec_relation(c, conn, ICO, element, primary_sql_key)
             find_other_properties(c, ICO, element, conn, primary_sql_key)
             element.clear()
@@ -37,26 +37,32 @@ def purge_DB():
     try:
         conn = sqlite3.connect('justice.db')
         c = conn.cursor()
+        c.execute("DELETE FROM adresy")
+        c.execute("DELETE FROM akcie")
         c.execute("DELETE FROM companies")
-        c.execute("DELETE FROM obce")
-        c.execute("DELETE FROM ulice")
-        c.execute("DELETE FROM ulice_relation")
-        c.execute("DELETE FROM osoby")
-        c.execute("DELETE FROM obce_relation")
-        c.execute("DELETE FROM sqlite_sequence")
-        c.execute("DELETE FROM pravni_formy")
-        c.execute("DELETE FROM pravni_formy_relation")
         c.execute("DELETE FROM insolvency_events")
         c.execute("DELETE FROM konkurz_events")
-        c.execute("DELETE FROM predmety_podnikani")
-        c.execute("DELETE FROM predmety_podnikani_relation")
+        c.execute("DELETE FROM nazvy")
+        c.execute("DELETE FROM obce")
+        c.execute("DELETE FROM obce_relation")
+        c.execute("DELETE FROM osoby")
+        c.execute("DELETE FROM ostatni_skutecnosti")
+        c.execute("DELETE FROM pravni_formy")
+        c.execute("DELETE FROM pravni_formy_relation")
         c.execute("DELETE FROM predmety_cinnosti")
         c.execute("DELETE FROM predmety_cinnosti_relation")
+        c.execute("DELETE FROM predmety_podnikani")
+        c.execute("DELETE FROM predmety_podnikani_relation")
+        c.execute("DELETE FROM sidla")
+        c.execute("DELETE FROM sidlo_relation")
+        c.execute("DELETE FROM sqlite_sequence")
+        c.execute("DELETE FROM statutarni_organy")
+        c.execute("DELETE FROM statutarni_organ_relation")
+        c.execute("DELETE FROM ulice")
+        c.execute("DELETE FROM ulice_relation")
         c.execute("DELETE FROM zakladni_kapital")
-        c.execute("DELETE FROM ostatni_skutecnosti")
-        c.execute("DELETE FROM akcie")
         c.execute("DELETE FROM zapis_soudy")
-        c.execute("DELETE FROM nazvy")
+
         conn.commit()
         conn.close()
         return 0
@@ -72,6 +78,10 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                 # print(ICO, str(get_prop(elem2, ".//udajTyp/kod")))
                 if str(get_prop(elem2, ".//udajTyp/kod")) == "SIDLO":
                     find_registered_office(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "NAZEV":
+                    find_nazev(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "STATUTARNI_ORGAN":
+                    find_statutar(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "INSOLVENCE_SEKCE":
                     find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "KONKURS_SEKCE":
@@ -88,11 +98,42 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_akcie(c, ICO, elem2, conn, primary_sql_key, element)
                 elif str(get_prop(elem2, ".//udajTyp/kod")) == "SPIS_ZN":
                     find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "NAZEV":
-                    find_nazev(c, ICO, elem2, conn, primary_sql_key, element)
+                elif str(get_prop(elem2, ".//udajTyp/kod")) == "PRAVNI_FORMA":
+                    find_pravni_forma(c, ICO, elem2, conn, primary_sql_key, element)
     except:
         pass
 
+def find_pravni_forma(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+        vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+        pravni_forma = str(get_prop(elem2, ".//pravniForma/nazev"))
+        # print(ICO, zapis_datum, vymaz_datum, pravni_forma)
+        insert_instructions = [(pravni_forma,"pravni_formy", "pravni_forma", "pravni_formy_relation")]
+        for elem in insert_instructions:
+            insert_into_ancillary_table(c, elem, pravni_forma)
+            ancillary_table_key = get_anciallary_table_key(c, elem, pravni_forma)
+            insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+    except:
+        pass
+
+
+def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        zapis_datum = str(get_prop(elem2, "zapisDatum"))
+        vymaz_datum = str(get_prop(elem2, "vymazDatum"))
+        oznaceni_statutar_organu = str(get_prop(elem2, ".//hlavicka"))
+        # print(ICO, zapis_datum, vymaz_datum, oznaceni_statutar_organu)
+        insert_instructions = [(oznaceni_statutar_organu,"statutarni_organy", "statutarni_organ_text", "statutarni_organ_relation")]
+        for elem in insert_instructions:
+            insert_into_ancillary_table(c, elem, oznaceni_statutar_organu)
+            ancillary_table_key = get_anciallary_table_key(c, elem, oznaceni_statutar_organu)
+            insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+    except Exception as f:
+        print(f)
+
+
+# THIS NEEDS TO BE REFACTORED
 def find_registered_office(c, ICO, elem2, conn, primary_sql_key, element):
     try:
         zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
@@ -100,19 +141,26 @@ def find_registered_office(c, ICO, elem2, conn, primary_sql_key, element):
         sidlo = str(adresa(get_SIDLO_v3(elem2)))
         if vymaz_datum == "0":
             insert_prop(c, sidlo, conn, ICO, "sidlo")
-            # obec = str(get_prop(elem2, ".//adresa/obec"))
-            # ulice = str(get_prop(elem2, ".//adresa/ulice"))
-            insert_instructions = [(".//adresa/obec","obce", "obec_jmeno", "obce_relation"), (".//adresa/ulice","ulice", "ulice_jmeno", "ulice_relation")]
+            obec = str(get_prop(elem2, ".//adresa/obec"))
+            insert_instructions = [(obec,"obce", "obec_jmeno", "obce_relation")]
             for elem in insert_instructions:
-                insert_individual_relations(c, ICO, element, conn, primary_sql_key, elem)
+                insert_into_ancillary_table(c, elem, obec)
+                ancillary_table_key = get_anciallary_table_key(c, elem, obec)
+                insert_relation_information(c, elem, primary_sql_key, ancillary_table_key)
+            ulice = str(get_prop(elem2, ".//adresa/ulice"))
+            insert_instructions = [(ulice,"ulice", "ulice_jmeno", "ulice_relation")]
+            for elem in insert_instructions:
+                insert_into_ancillary_table(c, elem, ulice)
+                ancillary_table_key = get_anciallary_table_key(c, elem, ulice)
+                insert_relation_information(c, elem, primary_sql_key, ancillary_table_key)
         insert_instructions = [(sidlo,"adresy", "adresa_text", "sidlo_relation")]
         for elem in insert_instructions:
             insert_into_ancillary_table(c, elem, sidlo)
             ancillary_table_key = get_anciallary_table_key(c, elem, sidlo)
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
         return 0
-    except Exception as f:
-        print(f)
+    except:
+        pass
 
 def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
     try:
@@ -268,7 +316,7 @@ def get_primary_sql_key(c, ICO):
 def insert_primary_company_figures(c, ICO, element, conn):
     # insert_instructions = [("nazev","nazev"), ("zapisDatum","zapis"), (".//udaje/Udaj/spisZn/oddil","oddil"),
     #                        (".//udaje/Udaj/spisZn/vlozka","vlozka"),(".//udaje/Udaj/spisZn/soud/kod","soud"),(str(adresa(get_SIDLO_v2(element))),"sidlo")]
-    
+
     insert_instructions = [("nazev","nazev"), ("zapisDatum","zapis"), (".//udaje/Udaj/spisZn/oddil","oddil"),
                            (".//udaje/Udaj/spisZn/vlozka","vlozka"),(".//udaje/Udaj/spisZn/soud/kod","soud")]
     for elem in insert_instructions:
@@ -278,8 +326,9 @@ def insert_primary_company_figures(c, ICO, element, conn):
     return 0
 
 def insert_company_relations(c, ICO, element, conn, primary_sql_key):
-    insert_instructions = [(".//udaje/Udaj/adresa/obec","obce", "obec_jmeno", "obce_relation"), (".//udaje/Udaj/adresa/ulice","ulice", "ulice_jmeno", "ulice_relation"),
-                           (".//udaje/Udaj/pravniForma/nazev","pravni_formy", "pravni_forma", "pravni_formy_relation")]
+    # insert_instructions = [(".//udaje/Udaj/adresa/obec","obce", "obec_jmeno", "obce_relation"), (".//udaje/Udaj/adresa/ulice","ulice", "ulice_jmeno", "ulice_relation"),
+    #                        (".//udaje/Udaj/pravniForma/nazev","pravni_formy", "pravni_forma", "pravni_formy_relation")]
+    insert_instructions = [(".//udaje/Udaj/pravniForma/nazev","pravni_formy", "pravni_forma", "pravni_formy_relation")]
     for elem in insert_instructions:
         insert_individual_relations(c, ICO, element, conn, primary_sql_key, elem)
     return 0
@@ -700,7 +749,7 @@ parse_to_DB("as-full-ostrava-2021.xml")
 # parse_to_DB("sro-actual-praha-2020.xml")
 
 # def do_both():
-#     # general_update("down")
+#     general_update("down")
 #     general_update("db_update")
 
 # do_both()

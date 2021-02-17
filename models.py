@@ -86,7 +86,7 @@ class MyType(types.TypeDecorator):
         return MyType(self.impl.length)
 
 class MySoud(types.TypeDecorator):
-    
+
     impl = types.Unicode
 
     # def process_bind_param(self, value, dialect):
@@ -97,7 +97,7 @@ class MySoud(types.TypeDecorator):
         return convert_soud_to_string(value)
 
     def copy(self, **kw):
-        return MySoud(self.impl.length)    
+        return MySoud(self.impl.length)
 
 
 association_table = db.Table("obce_relation",
@@ -112,10 +112,10 @@ ulice_association = db.Table("ulice_relation",
                                 # db.PrimaryKeyConstraint('company_id', 'obec_id')
                                 )
 
-pravni_forma_association=db.Table("pravni_formy_relation",
-                                  db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
-                                  db.Column("pravni_forma_id", db.Integer, db.ForeignKey("pravni_formy.id"), nullable=False),
-                                  )
+# pravni_forma_association=db.Table("pravni_formy_relation",
+#                                   db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
+#                                   db.Column("pravni_forma_id", db.Integer, db.ForeignKey("pravni_formy.id"), nullable=False),
+#                                   )
 
 # predmety_podnikani_association = db.Table("predmety_podnikani_relation",
 #                                 db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
@@ -152,9 +152,27 @@ class Sidlo_Association(db.Model):
     sidlo_text = db.relationship("Sidlo", back_populates="company_sidlo")
     company = db.relationship("Company", back_populates="sidlo_text")
 
+class Pravni_Forma_Association_v2(db.Model):
+    __tablename__ = 'pravni_formy_relation'
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    pravni_forma_id = db.Column(db.Integer, db.ForeignKey('pravni_formy.id'), nullable=False, primary_key=True)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    pravni_forma_text = db.relationship("Pravni_Formy", back_populates="company_pravni_forma")
+    company = db.relationship("Company", back_populates="pravni_forma_text")
+
+class Statutarni_Organ_Association(db.Model):
+    __tablename__ = 'statutarni_organ_relation'
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organy.id'), nullable=False, primary_key=True)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    statutarni_organ_text = db.relationship("Statutarni_Organy", back_populates="company_statutarni_organ")
+    company = db.relationship("Company", back_populates="statutarni_organ_text")
+
 
 class Company(db.Model):
-    __tablename__ = "companies"   
+    __tablename__ = "companies"
     id = db.Column(db.Integer, primary_key=True)
     ico = db.Column(db.String)
     nazev = db.Column(db.String)
@@ -165,7 +183,7 @@ class Company(db.Model):
     soud = db.Column(db.String)
     obec = db.relationship("Obce", secondary=association_table, backref="companies")
     ulice = db.relationship("Ulice", secondary=ulice_association, backref="companies")
-    pravni_forma = db.relationship("Pravni_Forma", secondary=pravni_forma_association, backref="companies")
+    # pravni_forma = db.relationship("Pravni_Forma", secondary=pravni_forma_association, backref="companies")
     insolvence = db.relationship("Insolvency_Events", backref="companies")
     konkurz = db.relationship("Konkurz_Events", backref="companies")
     predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="company")
@@ -176,25 +194,27 @@ class Company(db.Model):
     obchodni_firma = db.relationship("Nazvy", backref="companies")
     soudni_zapis = db.relationship("Soudni_Zapisy", backref="companies")
     sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
-    
+    pravni_forma_text = db.relationship("Pravni_Forma_Association_v2", back_populates="company")
+    statutarni_organ_text = db.relationship("Statutarni_Organ_Association", back_populates="company")
+
 
 class Obce(db.Model):
     __tablename__ = "obce"
     id = db.Column(db.Integer, primary_key=True)
     obec_jmeno = db.Column(db.String)
     company_obec = db.relationship("Company", secondary=association_table, backref="obce")
-    
+
 class Ulice(db.Model):
     __tablename__ = "ulice"
     id = db.Column(db.Integer, primary_key=True)
     ulice_jmeno = db.Column(db.String)
-    company_ulice = db.relationship("Company", secondary=ulice_association)    
+    company_ulice = db.relationship("Company", secondary=ulice_association)
 
-class Pravni_Forma(db.Model):
-    __tablename__ = "pravni_formy"
-    id = db.Column(db.Integer, primary_key=True)
-    pravni_forma = db.Column(db.String)
-    company_pravni_forma = db.relationship("Company", secondary=pravni_forma_association)
+# class Pravni_Forma(db.Model):
+#     __tablename__ = "pravni_formy"
+#     id = db.Column(db.Integer, primary_key=True)
+#     pravni_forma = db.Column(db.String)
+#     company_pravni_forma = db.relationship("Company", secondary=pravni_forma_association)
 
 class Insolvency_Events(db.Model):
     __tablename__ = "insolvency_events"
@@ -212,7 +232,7 @@ class Konkurz_Events(db.Model):
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     # company = db.relationship("Company", backref="insolvency_events")
-    konkurz_event = db.Column(db.String)    
+    konkurz_event = db.Column(db.String)
 
 class Zakladni_Kapital(db.Model):
     __tablename__ = "zakladni_kapital"
@@ -242,6 +262,18 @@ class Sidlo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     adresa_text = db.Column(db.String)
     company_sidlo = db.relationship("Sidlo_Association", back_populates="sidlo_text")
+
+class Pravni_Formy(db.Model):
+    __tablename__ = "pravni_formy"
+    id = db.Column(db.Integer, primary_key=True)
+    pravni_forma = db.Column(db.String)
+    company_pravni_forma = db.relationship("Pravni_Forma_Association_v2", back_populates="pravni_forma_text")
+
+class Statutarni_Organy(db.Model):
+    __tablename__ = "statutarni_organy"
+    id = db.Column(db.Integer, primary_key=True)
+    statutarni_organ_text = db.Column(db.String)
+    company_statutarni_organ = db.relationship("Statutarni_Organ_Association", back_populates="statutarni_organ_text")
 
 class Ostatni_Skutecnosti(db.Model):
     __tablename__ = "ostatni_skutecnosti"
