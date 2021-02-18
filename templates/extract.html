@@ -67,9 +67,6 @@
 
 <p><a href="/">Zpět na vyhledání.</a></p>
 
-<p>Toto jsem extrahoval: {{ row.statutarni_organ_text[0].zpusoby_jednani[1].zpusob_jednani.zpusob_jednani_text }}</p>
-
-
 <table class= "table" style="width: 100%">
     <tr>
         <td style="width:15%">Datum vzniku a zápisu:</td>
@@ -382,6 +379,35 @@
     {% endfor %}
     {% endif %}
 
+    {% if row.statutarni_organ_text[0].zpusoby_jednani|length > 0 %}
+    <tr>    
+        <td style = padding-left:2em>Způsob jednání:</td>
+        {% if row.statutarni_organ_text[0].zpusoby_jednani[0].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].zpusoby_jednani[0].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[0].zapis_datum }} {% if row.statutarni_organ_text[0].zpusoby_jednani[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+    {% for i in range (1, row.statutarni_organ_text[0].zpusoby_jednani|length) %}
+    <tr>    
+        <td></td>
+        {% if row.statutarni_organ_text[0].zpusoby_jednani[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+    <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].zpusoby_jednani[i].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
+    <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[i].zapis_datum }} {% if row.statutarni_organ_text[0].zpusoby_jednani[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+
     {% for i in range (1, row.statutarni_organ_text|length) %}
     <tr>
         <td>{{ row.statutarni_organ_text[i].statutarni_organ_text.statutarni_organ_text }}:</td>
@@ -422,14 +448,42 @@
         <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].pocet_clenu[j].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].pocet_clenu[j].zapis_datum }} {% if row.statutarni_organ_text[i].pocet_clenu[j].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].pocet_clenu[j].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
-{% endfor %}
-{% endif %}
+    {% endfor %}
+    {% endif %}
+
+
+    {% if row.statutarni_organ_text[i].zpusoby_jednani|length > 0 %}
+    <tr>    
+        <td style = padding-left:2em>Způsob jednání:</td>
+        {% if row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].pocet_clenu[0].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[0].zapis_datum }} {% if row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+    {% for j in range (1, row.statutarni_organ_text[i].zpusoby_jednani|length) %}
+    <tr>    
+        <td></td>
+        {% if row.statutarni_organ_text[i].zpusoby_jednani[j].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].pocet_clenu[j].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[j].zapis_datum }} {% if row.statutarni_organ_text[i].zpusoby_jednani[j].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[j].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
 
     {% endfor %}
-    {% endif %}  
-    
-
-    
+    {% endif %}
+     
     {% if row.akcie|length > 0 %}
     <tr>
         <td>Akcie:</td>
