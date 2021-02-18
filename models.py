@@ -177,7 +177,7 @@ class Statutarni_Organ_Association(db.Model):
     statutarni_organ_text = db.relationship("Statutarni_Organy", back_populates="company_statutarni_organ")
     company = db.relationship("Company", back_populates="statutarni_organ_text")
     pocet_clenu = db.relationship("Pocty_Clenu_Organu", backref="statutarni_organ_relation")
-    children = db.relationship("Zpusob_Jednani_Association", back_populates="parent")
+    zpusoby_jednani = db.relationship("Zpusob_Jednani_Association", back_populates="statutarni_organ")
 
 
 class Zpusob_Jednani_Association(db.Model):
@@ -187,8 +187,8 @@ class Zpusob_Jednani_Association(db.Model):
     zpusob_jednani_id = db.Column(db.Integer, db.ForeignKey('zpusoby_jednani.id'), nullable=False)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
-    child = relationship("Child", back_populates="parents")
-    parent = relationship("Statutarni_Organ_Association", back_populates="children")    
+    zpusob_jednani = relationship("Zpusob_Jednani", back_populates="zpusob_jednani_rship")
+    statutarni_organ = relationship("Statutarni_Organ_Association", back_populates="zpusoby_jednani")      
 
 
 class Company(db.Model):
@@ -342,8 +342,8 @@ class Pocty_Clenu_Organu(db.Model):
     vymaz_datum = db.Column(MyType)
     pocet_clenu_value = db.Column(db.String)
 
-class Child(db.Model):
+class Zpusob_Jednani(db.Model):
     __tablename__ = "zpusoby_jednani"
     id = db.Column(db.Integer, primary_key=True)
     zpusob_jednani_text = db.Column(db.String)
-    parents = db.relationship("Zpusob_Jednani_Association", back_populates="child")
+    zpusob_jednani_rship = db.relationship("Zpusob_Jednani_Association", back_populates="zpusob_jednani")
