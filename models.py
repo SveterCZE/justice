@@ -127,6 +127,7 @@ ulice_association = db.Table("ulice_relation",
 
 class Predmety_Podnikani_Association(db.Model):
     __tablename__ = 'predmety_podnikani_relation'
+    id = db.Column(db.Integer)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
     predmet_podnikani_id = db.Column(db.Integer, db.ForeignKey('predmety_podnikani.id'), nullable=False, primary_key=True)
     zapis_datum = db.Column(MyType)
@@ -136,6 +137,7 @@ class Predmety_Podnikani_Association(db.Model):
 
 class Predmety_Cinnosti_Association(db.Model):
     __tablename__ = 'predmety_cinnosti_relation'
+    id = db.Column(db.Integer)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
     predmet_cinnosti_id = db.Column(db.Integer, db.ForeignKey('predmety_cinnosti.id'), nullable=False, primary_key=True)
     zapis_datum = db.Column(MyType)
@@ -145,6 +147,7 @@ class Predmety_Cinnosti_Association(db.Model):
 
 class Sidlo_Association(db.Model):
     __tablename__ = 'sidlo_relation'
+    id = db.Column(db.Integer)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
     sidlo_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False, primary_key=True)
     zapis_datum = db.Column(MyType)
@@ -154,6 +157,7 @@ class Sidlo_Association(db.Model):
 
 class Pravni_Forma_Association_v2(db.Model):
     __tablename__ = 'pravni_formy_relation'
+    id = db.Column(db.Integer)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
     pravni_forma_id = db.Column(db.Integer, db.ForeignKey('pravni_formy.id'), nullable=False, primary_key=True)
     zapis_datum = db.Column(MyType)
@@ -161,14 +165,30 @@ class Pravni_Forma_Association_v2(db.Model):
     pravni_forma_text = db.relationship("Pravni_Formy", back_populates="company_pravni_forma")
     company = db.relationship("Company", back_populates="pravni_forma_text")
 
+
+
 class Statutarni_Organ_Association(db.Model):
     __tablename__ = 'statutarni_organ_relation'
+    id = db.Column(db.Integer)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
     statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organy.id'), nullable=False, primary_key=True)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     statutarni_organ_text = db.relationship("Statutarni_Organy", back_populates="company_statutarni_organ")
     company = db.relationship("Company", back_populates="statutarni_organ_text")
+    pocet_clenu = db.relationship("Pocty_Clenu_Organu", backref="statutarni_organ_relation")
+    children = db.relationship("Zpusob_Jednani_Association", back_populates="parent")
+
+
+class Zpusob_Jednani_Association(db.Model):
+    __tablename__ = 'zpusoby_jednani_relation'
+    id = db.Column(db.Integer, primary_key=True)
+    statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organ_relation.id'), nullable=False)
+    zpusob_jednani_id = db.Column(db.Integer, db.ForeignKey('zpusoby_jednani.id'), nullable=False)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    child = relationship("Child", back_populates="parents")
+    parent = relationship("Statutarni_Organ_Association", back_populates="children")    
 
 
 class Company(db.Model):
@@ -313,3 +333,17 @@ class Soudni_Zapisy(db.Model):
     oddil = db.Column(db.String)
     vlozka = db.Column(db.String)
     soud = db.Column(MySoud)
+
+class Pocty_Clenu_Organu(db.Model):
+    __tablename__ = "pocty_clenu_organu"
+    id = db.Column(db.Integer, primary_key=True)
+    organ_id = db.Column(db.String, db.ForeignKey("statutarni_organ_relation.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    pocet_clenu_value = db.Column(db.String)
+
+class Child(db.Model):
+    __tablename__ = "zpusoby_jednani"
+    id = db.Column(db.Integer, primary_key=True)
+    zpusob_jednani_text = db.Column(db.String)
+    parents = db.relationship("Zpusob_Jednani_Association", back_populates="child")

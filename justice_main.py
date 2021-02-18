@@ -47,6 +47,7 @@ def purge_DB():
         c.execute("DELETE FROM obce_relation")
         c.execute("DELETE FROM osoby")
         c.execute("DELETE FROM ostatni_skutecnosti")
+        c.execute("DELETE FROM pocty_clenu_organu")
         c.execute("DELETE FROM pravni_formy")
         c.execute("DELETE FROM pravni_formy_relation")
         c.execute("DELETE FROM predmety_cinnosti")
@@ -62,6 +63,8 @@ def purge_DB():
         c.execute("DELETE FROM ulice_relation")
         c.execute("DELETE FROM zakladni_kapital")
         c.execute("DELETE FROM zapis_soudy")
+        c.execute("DELETE FROM zpusoby_jednani")
+        c.execute("DELETE FROM zpusoby_jednani_relation")
 
         conn.commit()
         conn.close()
@@ -129,9 +132,43 @@ def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
             insert_into_ancillary_table(c, elem, oznaceni_statutar_organu)
             ancillary_table_key = get_anciallary_table_key(c, elem, oznaceni_statutar_organu)
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+            relationship_table_key = c.execute("SELECT id FROM statutarni_organ_relation WHERE company_id = (?) and statutarni_organ_id = (?)", (primary_sql_key,ancillary_table_key,))
+            relationship_table_key = c.fetchone()[0]
+        my_iter = elem2.findall("podudaje/Udaj")
+        for elem in my_iter:
+            if (str(get_prop(elem, "udajTyp/kod"))) == "POCET_CLENU":
+                find_pocet_clenu(c, ICO, elem, conn, relationship_table_key, element)
+            elif (str(get_prop(elem, "udajTyp/kod"))) == "ZPUSOB_JEDNANI":
+                find_zpusob_jednani(c, ICO, elem, conn, relationship_table_key, element)
+            elif (str(get_prop(elem, "udajTyp/kod"))) == "STATUTARNI_ORGAN_CLEN":
+                pass
+            else:
+                print(str(get_prop(elem, "udajTyp/kod")))
     except Exception as f:
         print(f)
 
+def find_pocet_clenu(c, ICO, elem, conn, relationship_table_key, element):
+    try:
+        zapis_datum = str(get_prop(elem, "zapisDatum"))
+        vymaz_datum = str(get_prop(elem, "vymazDatum"))
+        pocet_clenu_number = str(get_prop(elem, "hodnotaText"))
+        c.execute("INSERT into pocty_clenu_organu (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (?,?,?,?)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum,))        
+        # print(ICO, zapis_datum, vymaz_datum, pocet_clenu_number)
+    except Exception as f:
+        print(f)
+
+def find_zpusob_jednani(c, ICO, elem, conn, relationship_table_key, element):
+    try:
+        zapis_datum = str(get_prop(elem, "zapisDatum"))
+        vymaz_datum = str(get_prop(elem, "vymazDatum"))
+        zpusob_jednani = str(get_prop(elem, "hodnotaText"))
+        insert_instructions = [(zpusob_jednani,"zpusoby_jednani", "zpusob_jednani_text", "zpusoby_jednani_relation")]
+        for elem in insert_instructions:
+            insert_into_ancillary_table(c, elem, zpusob_jednani)
+            ancillary_table_key = get_anciallary_table_key(c, elem, zpusob_jednani)
+            insert_relation_information_v2(c, elem, relationship_table_key, ancillary_table_key, zapis_datum, vymaz_datum)
+    except Exception as f:
+        print(f)
 
 # THIS NEEDS TO BE REFACTORED
 def find_registered_office(c, ICO, elem2, conn, primary_sql_key, element):
@@ -351,8 +388,8 @@ def get_anciallary_table_key(c, elem, inserted_figure):
         anciallary_table_key = c.execute("SELECT id FROM " + elem[1] + " WHERE " + elem[2] + " = (?)", (inserted_figure,))
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
-    except:
-        pass
+    except Exception as f:
+        print(f)
 
 def insert_relation_information(c, elem, primary_sql_key, ancillary_table_key):
     try:
@@ -363,8 +400,8 @@ def insert_relation_information(c, elem, primary_sql_key, ancillary_table_key):
 
 def insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum):
     try:
-        c.execute("INSERT INTO " + elem[3] + " VALUES(?, ?, ?, ?)", (primary_sql_key, ancillary_table_key,zapis_datum, vymaz_datum,))
-    except:
+        c.execute("INSERT INTO " + elem[3] + " VALUES(NULL, ?, ?, ?, ?)", (primary_sql_key, ancillary_table_key,zapis_datum, vymaz_datum,))
+    except Exception as f:
         print(f)
     return 0
 
@@ -741,10 +778,9 @@ def delete_archive(file):
     send2trash.send2trash(file)
 
 purge_DB()
+# general_update("db_update")
 
 parse_to_DB("as-full-ostrava-2021.xml")
-
-# parse_to_DB("ks-actual-ostrava-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
