@@ -6,6 +6,9 @@ import gzip
 import send2trash
 import os
 from datetime import datetime
+import cProfile
+import re
+from sqlalchemy import text, exc, insert, engine
 
 # The function opens a file and parses the extracted data into the database
 def parse_to_DB(file):
@@ -40,6 +43,7 @@ def purge_DB():
         c.execute("DELETE FROM adresy")
         c.execute("DELETE FROM akcie")
         c.execute("DELETE FROM companies")
+        c.execute("DELETE FROM fyzicke_osoby")
         c.execute("DELETE FROM insolvency_events")
         c.execute("DELETE FROM konkurz_events")
         c.execute("DELETE FROM nazvy")
@@ -57,8 +61,9 @@ def purge_DB():
         c.execute("DELETE FROM sidla")
         c.execute("DELETE FROM sidlo_relation")
         c.execute("DELETE FROM sqlite_sequence")
-        c.execute("DELETE FROM statutarni_organy")
+        c.execute("DELETE FROM statutarni_organ_clen_relation")
         c.execute("DELETE FROM statutarni_organ_relation")
+        c.execute("DELETE FROM statutarni_organy")
         c.execute("DELETE FROM ulice")
         c.execute("DELETE FROM ulice_relation")
         c.execute("DELETE FROM zakladni_kapital")
@@ -78,30 +83,30 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
         for elem in my_iter:
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
-                # print(ICO, str(get_prop(elem2, ".//udajTyp/kod")))
-                if str(get_prop(elem2, ".//udajTyp/kod")) == "SIDLO":
+                udajTyp_name = str(get_prop(elem2, ".//udajTyp/kod"))
+                if udajTyp_name == "SIDLO":
                     find_registered_office(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "NAZEV":
+                elif udajTyp_name == "NAZEV":
                     find_nazev(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "STATUTARNI_ORGAN":
+                elif udajTyp_name == "STATUTARNI_ORGAN":
                     find_statutar(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "INSOLVENCE_SEKCE":
+                elif udajTyp_name == "INSOLVENCE_SEKCE":
                     find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "KONKURS_SEKCE":
+                elif udajTyp_name == "KONKURS_SEKCE":
                     find_active_konkurz(c, ICO, elem2, conn, primary_sql_key)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "PREDMET_PODNIKANI_SEKCE":
+                elif udajTyp_name == "PREDMET_PODNIKANI_SEKCE":
                     find_predmet_podnikani(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "PREDMET_CINNOSTI_SEKCE":
+                elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
                     find_predmet_cinnosti(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "ZAKLADNI_KAPITAL":
+                elif udajTyp_name == "ZAKLADNI_KAPITAL":
                     find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "OST_SKUTECNOSTI_SEKCE":
+                elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
                     find_ostatni_skutecnosti(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "AKCIE_SEKCE":
+                elif udajTyp_name == "AKCIE_SEKCE":
                     find_akcie(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "SPIS_ZN":
+                elif udajTyp_name == "SPIS_ZN":
                     find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element)
-                elif str(get_prop(elem2, ".//udajTyp/kod")) == "PRAVNI_FORMA":
+                elif udajTyp_name == "PRAVNI_FORMA":
                     find_pravni_forma(c, ICO, elem2, conn, primary_sql_key, element)
     except:
         pass
@@ -132,20 +137,122 @@ def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
             insert_into_ancillary_table(c, elem, oznaceni_statutar_organu)
             ancillary_table_key = get_anciallary_table_key(c, elem, oznaceni_statutar_organu)
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
-            relationship_table_key = c.execute("SELECT id FROM statutarni_organ_relation WHERE company_id = (?) and statutarni_organ_id = (?)", (primary_sql_key,ancillary_table_key,))
-            relationship_table_key = c.fetchone()[0]
-        my_iter = elem2.findall("podudaje/Udaj")
+            relationship_table_key = get_relationship_table_key(c, primary_sql_key, ancillary_table_key)
+            # relationship_table_key = c.execute("SELECT id FROM statutarni_organ_relation WHERE company_id = (?) and statutarni_organ_id = (?)", (primary_sql_key,ancillary_table_key,))
+            # relationship_table_key = c.fetchone()[0]
+        my_iter = elem2.findall("podudaje/Udaj") 
         for elem in my_iter:
-            if (str(get_prop(elem, "udajTyp/kod"))) == "POCET_CLENU":
+            udajTyp_name = str(get_prop(elem, "udajTyp/kod"))
+            if udajTyp_name == "POCET_CLENU":
                 find_pocet_clenu(c, ICO, elem, conn, relationship_table_key, element)
-            elif (str(get_prop(elem, "udajTyp/kod"))) == "ZPUSOB_JEDNANI":
+            elif udajTyp_name == "ZPUSOB_JEDNANI":
                 find_zpusob_jednani(c, ICO, elem, conn, relationship_table_key, element)
-            elif (str(get_prop(elem, "udajTyp/kod"))) == "STATUTARNI_ORGAN_CLEN":
-                pass
+            elif udajTyp_name == "STATUTARNI_ORGAN_CLEN":
+                find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element)
             else:
                 print(str(get_prop(elem, "udajTyp/kod")))
     except Exception as f:
         print(f)
+
+def find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element):
+    try:
+        zapis_datum = str(get_prop(elem, "zapisDatum"))
+        vymaz_datum = str(get_prop(elem, "vymazDatum"))
+        funkce_statutar_organu = str(get_prop(elem, "funkce"))
+        typ_osoby = str(get_prop(elem, "hodnotaText"))
+        funkceOd = str(get_prop(elem, "funkceOd"))
+        clenstviOd = str(get_prop(elem, "clenstviOd")) 
+        funkceDo = str(get_prop(elem, "funkceDo"))
+        clenstviDo = str(get_prop(elem, "clenstviDo"))
+        if typ_osoby == "AngazmaFyzicke":
+            osoba_id = find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element)
+        else:
+            osoba_id = "1111111"
+        adresa_id = find_and_store_address(c, elem)
+        c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+    except Exception as f:
+        print(f)
+
+def find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element):
+    try:
+        jmeno = str(get_prop(elem, "osoba/jmeno"))
+        prijmeni = str(get_prop(elem, "osoba/prijmeni"))
+        datum_narozeni = str(get_prop(elem, "osoba/narozDatum"))
+        titulPred = str(get_prop(elem, "osoba/titulPred"))
+        titulZa = str(get_prop(elem, "osoba/titulZa"))
+        insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni)
+        osoba_id = find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni)
+        return osoba_id
+    except:
+        pass
+
+def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni):
+    try:
+        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz) VALUES (?,?,?,?,?)", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni,))
+    except:
+        pass
+
+def find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni):
+    try:
+        anciallary_table_key = c.execute("SELECT id FROM fyzicke_osoby WHERE titul_pred = (?) and jmeno = (?) and prijmeni = (?) and titul_za = (?) and datum_naroz = (?)", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni,))
+        anciallary_table_key = c.fetchone()[0]
+        return anciallary_table_key
+    except Exception as f:
+        print(f) 
+
+def find_and_store_address(c, elem):
+    try:
+        addr = str(adresa(get_SIDLO_v3(elem)))
+        insert_address(c, addr)
+        address_id = find_address_id(c, addr)
+        return address_id
+    except Exception as f:
+        print(f)
+
+def find_address_id(c, addr):
+    try:
+        anciallary_table_key = c.execute("SELECT id FROM adresy WHERE adresa_text = (?)", (addr,))
+        anciallary_table_key = c.fetchone()[0]
+        return anciallary_table_key
+    except Exception as f:
+        print(f)
+
+def get_relationship_table_key(c, primary_sql_key, ancillary_table_key):
+    c.execute("SELECT id FROM statutarni_organ_relation WHERE company_id = (?) and statutarni_organ_id = (?)", (primary_sql_key,ancillary_table_key,))
+    return c.fetchone()[0]
+
+def insert_address(c, addr):
+    try:
+        c.execute("INSERT into adresy (adresa_text) VALUES (?)", (addr,))
+    except:
+        pass
+
+# def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
+#     try:
+#         zapis_datum = str(get_prop(elem2, "zapisDatum"))
+#         vymaz_datum = str(get_prop(elem2, "vymazDatum"))
+#         oznaceni_statutar_organu = str(get_prop(elem2, ".//hlavicka"))
+#         # print(ICO, zapis_datum, vymaz_datum, oznaceni_statutar_organu)
+#         insert_instructions = [(oznaceni_statutar_organu,"statutarni_organy", "statutarni_organ_text", "statutarni_organ_relation")]
+#         for elem in insert_instructions:
+#             insert_into_ancillary_table(c, elem, oznaceni_statutar_organu)
+#             ancillary_table_key = get_anciallary_table_key(c, elem, oznaceni_statutar_organu)
+#             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+#             relationship_table_key = c.execute("SELECT id FROM statutarni_organ_relation WHERE company_id = (?) and statutarni_organ_id = (?)", (primary_sql_key,ancillary_table_key,))
+#             relationship_table_key = c.fetchone()[0]
+#         my_iter = elem2.findall("podudaje/Udaj") 
+#         for elem in my_iter:
+#             udajTyp_name = str(get_prop(elem, "udajTyp/kod"))
+#             if udajTyp_name == "POCET_CLENU":
+#                 find_pocet_clenu(c, ICO, elem, conn, relationship_table_key, element)
+#             elif udajTyp_name == "ZPUSOB_JEDNANI":
+#                 find_zpusob_jednani(c, ICO, elem, conn, relationship_table_key, element)
+#             elif udajTyp_name == "STATUTARNI_ORGAN_CLEN":
+#                 pass
+#             else:
+#                 print(str(get_prop(elem, "udajTyp/kod")))
+#     except Exception as f:
+#         print(f)
 
 def find_pocet_clenu(c, ICO, elem, conn, relationship_table_key, element):
     try:
@@ -390,7 +497,7 @@ def get_anciallary_table_key(c, elem, inserted_figure):
         return anciallary_table_key
     except Exception as f:
         print(f)
-
+ 
 def insert_relation_information(c, elem, primary_sql_key, ancillary_table_key):
     try:
         c.execute("INSERT INTO " + elem[3] + " VALUES(?, ?)", (primary_sql_key, ancillary_table_key,))
@@ -781,6 +888,7 @@ purge_DB()
 # general_update("db_update")
 
 parse_to_DB("as-full-ostrava-2021.xml")
+# parse_to_DB("sro-full-ceske_budejovice-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
@@ -790,4 +898,4 @@ parse_to_DB("as-full-ostrava-2021.xml")
 
 # do_both()
 
-# cProfile.run('do_both()')
+# cProfile.run('general_update("db_update")')

@@ -65,6 +65,8 @@
 {% endif %}
 {% endfor %}
 
+<p>Test: {{ row.statutarni_organ_text[1].clenove[0].funkce }}</p>
+
 <p><a href="/">Zpět na vyhledání.</a></p>
 
 <table class= "table" style="width: 100%">
@@ -462,7 +464,7 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].pocet_clenu[0].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].zpusoby_jednani[0].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[0].zapis_datum }} {% if row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>
     {% for j in range (1, row.statutarni_organ_text[i].zpusoby_jednani|length) %}
@@ -475,7 +477,7 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].pocet_clenu[j].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].zpusoby_jednani[j].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[j].zapis_datum }} {% if row.statutarni_organ_text[i].zpusoby_jednani[j].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[j].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
     {% endfor %}

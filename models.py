@@ -165,8 +165,6 @@ class Pravni_Forma_Association_v2(db.Model):
     pravni_forma_text = db.relationship("Pravni_Formy", back_populates="company_pravni_forma")
     company = db.relationship("Company", back_populates="pravni_forma_text")
 
-
-
 class Statutarni_Organ_Association(db.Model):
     __tablename__ = 'statutarni_organ_relation'
     id = db.Column(db.Integer)
@@ -178,7 +176,23 @@ class Statutarni_Organ_Association(db.Model):
     company = db.relationship("Company", back_populates="statutarni_organ_text")
     pocet_clenu = db.relationship("Pocty_Clenu_Organu", backref="statutarni_organ_relation")
     zpusoby_jednani = db.relationship("Zpusob_Jednani_Association", back_populates="statutarni_organ")
+    clenove = db.relationship("Statutarni_Organ_Clen_Association")
 
+class Statutarni_Organ_Clen_Association(db.Model):
+    __tablename__ = 'statutarni_organ_clen_relation'
+    id = db.Column(db.Integer, primary_key=True)
+    statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organ_relation.id'), nullable=False)
+    osoba_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'), nullable=False)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    funkce_od = db.Column(MyType)
+    funkce_do = db.Column(MyType)
+    clenstvi_od = db.Column(MyType)
+    clenstvi_do = db.Column(MyType)
+    funkce = db.Column(db.String)
+    adresa = db.relationship("Sidlo")
+    jmeno = db.relationship("Fyzicka_Osoba")
 
 class Zpusob_Jednani_Association(db.Model):
     __tablename__ = 'zpusoby_jednani_relation'
@@ -216,7 +230,6 @@ class Company(db.Model):
     sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
     pravni_forma_text = db.relationship("Pravni_Forma_Association_v2", back_populates="company")
     statutarni_organ_text = db.relationship("Statutarni_Organ_Association", back_populates="company")
-
 
 class Obce(db.Model):
     __tablename__ = "obce"
@@ -347,3 +360,12 @@ class Zpusob_Jednani(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     zpusob_jednani_text = db.Column(db.String)
     zpusob_jednani_rship = db.relationship("Zpusob_Jednani_Association", back_populates="zpusob_jednani")
+
+class Fyzicka_Osoba(db.Model):
+    __tablename__ = "fyzicke_osoby"
+    id = db.Column(db.Integer, primary_key=True)
+    titul_pred = db.Column(db.String)
+    jmeno = db.Column(db.String)
+    prijmeni = db.Column(db.String)
+    titul_za = db.Column(db.String)
+    datum_naroz = db.Column(db.String)
