@@ -65,8 +65,6 @@
 {% endif %}
 {% endfor %}
 
-<p>Test: {{ row.statutarni_organ_text[1].clenove[0].funkce }}</p>
-
 <p><a href="/">Zpět na vyhledání.</a></p>
 
 <table class= "table" style="width: 100%">
@@ -352,6 +350,24 @@
         <td>{{ underlne_style_open|safe }}  {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].zapis_datum }} {% if row.statutarni_organ_text[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>
+    
+    <!-- Zde zacinam -->
+    {% if row.statutarni_organ_text[0].clenove|length > 0 %}
+    <tr>
+        <td style = padding-left:2em>{{ row.statutarni_organ_text[0].clenove[0].funkce }}</td>
+        <td>{{ row.statutarni_organ_text[0].clenove[0].jmeno.jmeno }} {{ row.statutarni_organ_text[0].clenove[0].jmeno.prijmeni }}, nar. {{ row.statutarni_organ_text[0].clenove[0].jmeno.datum_naroz }} <br> {{ row.statutarni_organ_text[0].clenove[0].adresa.adresa_text }} </td>
+        <td></td>
+    </tr>
+    {% for i in range (1, row.statutarni_organ_text[0].clenove|length) %}
+    <tr>
+        <td style = padding-left:2em>{{ row.statutarni_organ_text[0].clenove[i].funkce }}</td>
+        <td>{{ row.statutarni_organ_text[0].clenove[i].jmeno.jmeno }} {{ row.statutarni_organ_text[0].clenove[i].jmeno.prijmeni }}, nar. {{ row.statutarni_organ_text[0].clenove[i].jmeno.datum_naroz }} <br> {{ row.statutarni_organ_text[0].clenove[i].adresa.adresa_text }} </td>
+        <td></td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    <!-- Zde koncim -->   
+    
     {% if row.statutarni_organ_text[0].pocet_clenu|length > 0 %}
         <tr>    
             <td style = padding-left:2em>Počet členů orgánů:</td>
@@ -424,6 +440,24 @@
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].zapis_datum }} {% if row.statutarni_organ_text[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>
     
+    <!-- Zde zacinam -->
+    {% if row.statutarni_organ_text[i].clenove|length > 0 %}
+    <tr>
+        <td style = padding-left:2em>{{ row.statutarni_organ_text[i].clenove[0].funkce }}</td>
+        <td>{{ row.statutarni_organ_text[i].clenove[0].jmeno.jmeno }} {{ row.statutarni_organ_text[i].clenove[0].jmeno.prijmeni }}, nar. {{ row.statutarni_organ_text[i].clenove[0].jmeno.datum_naroz }} <br> {{ row.statutarni_organ_text[i].clenove[0].adresa.adresa_text }} </td>
+        <td></td>
+    </tr>
+    {% for j in range (1, row.statutarni_organ_text[i].clenove|length) %}
+    <tr>
+        <td style = padding-left:2em>{{ row.statutarni_organ_text[i].clenove[j].funkce }}</td>
+        <td>{{ row.statutarni_organ_text[i].clenove[j].jmeno.jmeno }} {{ row.statutarni_organ_text[i].clenove[j].jmeno.prijmeni }}, nar. {{ row.statutarni_organ_text[i].clenove[j].jmeno.datum_naroz }} <br> {{ row.statutarni_organ_text[i].clenove[j].adresa.adresa_text }} </td>
+        <td></td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    <!-- Zde koncim -->      
+
+
     {% if row.statutarni_organ_text[i].pocet_clenu|length > 0 %}
     <tr>    
         <td style = padding-left:2em>Počet členů orgánů:</td>

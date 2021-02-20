@@ -166,10 +166,8 @@ def find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element):
         clenstviDo = str(get_prop(elem, "clenstviDo"))
         if typ_osoby == "AngazmaFyzicke":
             osoba_id = find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element)
-        else:
-            osoba_id = "1111111"
-        adresa_id = find_and_store_address(c, elem)
-        c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+            adresa_id = find_and_store_address(c, elem)
+            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(f)
 

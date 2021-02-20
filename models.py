@@ -368,4 +368,4 @@ class Fyzicka_Osoba(db.Model):
     jmeno = db.Column(db.String)
     prijmeni = db.Column(db.String)
     titul_za = db.Column(db.String)
-    datum_naroz = db.Column(db.String)
+    datum_naroz = db.Column(MyType)
