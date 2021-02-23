@@ -43,6 +43,8 @@ def purge_DB():
         c.execute("DELETE FROM adresy")
         c.execute("DELETE FROM akcie")
         c.execute("DELETE FROM companies")
+        c.execute("DELETE FROM dozorci_rada_relation")
+        c.execute("DELETE FROM dr_organ_clen_relation")
         c.execute("DELETE FROM fyzicke_osoby")
         c.execute("DELETE FROM insolvency_events")
         c.execute("DELETE FROM konkurz_events")
@@ -51,6 +53,7 @@ def purge_DB():
         c.execute("DELETE FROM obce_relation")
         c.execute("DELETE FROM osoby")
         c.execute("DELETE FROM ostatni_skutecnosti")
+        c.execute("DELETE FROM pocty_clenu_DR")
         c.execute("DELETE FROM pocty_clenu_organu")
         c.execute("DELETE FROM pravni_formy")
         c.execute("DELETE FROM pravni_formy_relation")
@@ -79,9 +82,11 @@ def purge_DB():
 
 def find_other_properties(c, ICO, element, conn, primary_sql_key):
     try:
-        my_iter = element.iter("udaje")
+        # my_iter = element.iter("udaje")
+        my_iter = element.findall("udaje")
         for elem in my_iter:
-            my_iter2 = elem.iter("Udaj")
+            # my_iter2 = elem.iter("Udaj")
+            my_iter2 = elem.findall("Udaj")
             for elem2 in my_iter2:
                 udajTyp_name = str(get_prop(elem2, ".//udajTyp/kod"))
                 if udajTyp_name == "SIDLO":
@@ -108,6 +113,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "PRAVNI_FORMA":
                     find_pravni_forma(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "DOZORCI_RADA":
+                    find_dozorci_rada(c, ICO, elem2, conn, primary_sql_key, element)
     except:
         pass
 
@@ -154,6 +161,25 @@ def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
     except Exception as f:
         print(f)
 
+def find_dozorci_rada(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        zapis_datum = str(get_prop(elem2, "zapisDatum"))
+        vymaz_datum = str(get_prop(elem2, "vymazDatum"))
+        c.execute("INSERT into dozorci_rada_relation (company_id, zapis_datum, vymaz_datum) VALUES (?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum,))
+        c.execute("SELECT id FROM dozorci_rada_relation WHERE company_id = (?) and zapis_datum = (?)", (primary_sql_key,zapis_datum,))
+        relationship_table_key = c.fetchone()[0]
+        my_iter = elem2.findall("podudaje/Udaj") 
+        for elem in my_iter:
+            udajTyp_name = str(get_prop(elem, "udajTyp/kod"))
+            if udajTyp_name == "POCET_CLENU_DOZORCI_RADA":
+                find_pocet_clenu_dr(c, ICO, elem, conn, relationship_table_key, element)        
+            elif udajTyp_name == "DOZORCI_RADA_CLEN":
+                find_clen_dr(c, ICO, elem, conn, relationship_table_key, element)
+            # find_clen_dr(c, ICO, elem, conn, relationship_table_key, element)    
+    except Exception as f:
+        print(f)        
+
+
 def find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element):
     try:
         zapis_datum = str(get_prop(elem, "zapisDatum"))
@@ -168,6 +194,23 @@ def find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element):
             osoba_id = find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element)
             adresa_id = find_and_store_address(c, elem)
             c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+    except Exception as f:
+        print(f)
+
+def find_clen_dr(c, ICO, elem, conn, relationship_table_key, element):
+    try:
+        zapis_datum = str(get_prop(elem, "zapisDatum"))
+        vymaz_datum = str(get_prop(elem, "vymazDatum"))
+        funkce_statutar_organu = str(get_prop(elem, "funkce"))
+        typ_osoby = str(get_prop(elem, "hodnotaText"))
+        funkceOd = str(get_prop(elem, "funkceOd"))
+        clenstviOd = str(get_prop(elem, "clenstviOd")) 
+        funkceDo = str(get_prop(elem, "funkceDo"))
+        clenstviDo = str(get_prop(elem, "clenstviDo"))
+        if typ_osoby == "AngazmaFyzicke":
+            osoba_id = find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element)
+            adresa_id = find_and_store_address(c, elem)
+            c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(f)
 
@@ -258,6 +301,17 @@ def find_pocet_clenu(c, ICO, elem, conn, relationship_table_key, element):
         vymaz_datum = str(get_prop(elem, "vymazDatum"))
         pocet_clenu_number = str(get_prop(elem, "hodnotaText"))
         c.execute("INSERT into pocty_clenu_organu (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (?,?,?,?)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum,))        
+        # print(ICO, zapis_datum, vymaz_datum, pocet_clenu_number)
+    except Exception as f:
+        print(f)
+
+# COMBINE WITH THE ABOVE
+def find_pocet_clenu_dr(c, ICO, elem, conn, relationship_table_key, element):
+    try:
+        zapis_datum = str(get_prop(elem, "zapisDatum"))
+        vymaz_datum = str(get_prop(elem, "vymazDatum"))
+        pocet_clenu_number = str(get_prop(elem, "hodnotaText"))
+        c.execute("INSERT into pocty_clenu_DR (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (?,?,?,?)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum,))        
         # print(ICO, zapis_datum, vymaz_datum, pocet_clenu_number)
     except Exception as f:
         print(f)
@@ -727,6 +781,10 @@ class adresa(object):
                         return str(self.obec + " " + self.cisloText + " " + "okres " +  self.okres + ", PSČ " + self.psc)
                     elif self.ulice == None:
                         return str(self.obec + " " + self.cisloText + " " + "okres " +  self.okres)
+                    elif self.obec != None and self.ulice != None and self.psc != None:
+                        return str(self.obec + ", " + self.ulice + " " + self.cisloText + ", PSČ " + self.psc)
+                    elif self.obec != None and self.ulice != None:
+                        return str(self.obec + ", " + self.ulice + " " + self.cisloText)
             if self.ulice != None :
                 if self.cisloOr != None:
                     if self.cisloPo == None:
@@ -883,17 +941,16 @@ def delete_archive(file):
     send2trash.send2trash(file)
 
 purge_DB()
-# general_update("db_update")
 
-parse_to_DB("as-full-ostrava-2021.xml")
+# parse_to_DB("data/as-full-ceske_budejovice-2021.xml")
 # parse_to_DB("sro-full-ceske_budejovice-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
-# def do_both():
-#     general_update("down")
-#     general_update("db_update")
+def do_both():
+    general_update("down")
+    general_update("db_update")
 
 # do_both()
 
-# cProfile.run('general_update("db_update")')
+cProfile.run('general_update("db_update")')

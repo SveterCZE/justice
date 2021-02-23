@@ -12,12 +12,15 @@ import sqlalchemy.types as types
 
 
 def convert_date_to_string(converted_date):
-    if converted_date == 0:
-        return converted_date
-    else:
-        separated_string = converted_date.split("-")
-        converted_string = "".join([strip_zero_from_date(separated_string[2]), ". ", convert_month_to_string(separated_string[1]), " ", separated_string[0]])
-    return converted_string
+    try:
+        if converted_date == 0:
+            return converted_date
+        else:
+            separated_string = converted_date.split("-")
+            converted_string = "".join([strip_zero_from_date(separated_string[2]), ". ", convert_month_to_string(separated_string[1]), " ", separated_string[0]])
+        return converted_string
+    except:
+        return ""
 
 def strip_zero_from_date(converted_date):
     if converted_date[0] == "0":
@@ -178,10 +181,39 @@ class Statutarni_Organ_Association(db.Model):
     zpusoby_jednani = db.relationship("Zpusob_Jednani_Association", back_populates="statutarni_organ")
     clenove = db.relationship("Statutarni_Organ_Clen_Association")
 
+class Dozorci_Rada_Association(db.Model):
+    __tablename__ = 'dozorci_rada_relation'
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    # statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organy.id'), nullable=False, primary_key=True)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    # statutarni_organ_text = db.relationship("Statutarni_Organy", back_populates="company_statutarni_organ")
+    # company = db.relationship("Company", back_populates="statutarni_organ_text")
+    pocet_clenu = db.relationship("Pocty_Clenu_DR", backref="dozorci_rada_relation")
+    # zpusoby_jednani = db.relationship("Zpusob_Jednani_Association", back_populates="statutarni_organ")
+    clenove = db.relationship("Dozorci_Rada_Clen_Association")
+
 class Statutarni_Organ_Clen_Association(db.Model):
     __tablename__ = 'statutarni_organ_clen_relation'
     id = db.Column(db.Integer, primary_key=True)
     statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organ_relation.id'), nullable=False)
+    osoba_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'), nullable=False)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    funkce_od = db.Column(MyType)
+    funkce_do = db.Column(MyType)
+    clenstvi_od = db.Column(MyType)
+    clenstvi_do = db.Column(MyType)
+    funkce = db.Column(db.String)
+    adresa = db.relationship("Sidlo")
+    jmeno = db.relationship("Fyzicka_Osoba")
+
+class Dozorci_Rada_Clen_Association(db.Model):
+    __tablename__ = 'dr_organ_clen_relation'
+    id = db.Column(db.Integer, primary_key=True)
+    dozorci_rada_id = db.Column(db.Integer, db.ForeignKey('dozorci_rada_relation.id'), nullable=False)
     osoba_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'), nullable=False)
     adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
     zapis_datum = db.Column(MyType)
@@ -203,7 +235,6 @@ class Zpusob_Jednani_Association(db.Model):
     vymaz_datum = db.Column(MyType)
     zpusob_jednani = relationship("Zpusob_Jednani", back_populates="zpusob_jednani_rship")
     statutarni_organ = relationship("Statutarni_Organ_Association", back_populates="zpusoby_jednani")      
-
 
 class Company(db.Model):
     __tablename__ = "companies"
@@ -230,6 +261,7 @@ class Company(db.Model):
     sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
     pravni_forma_text = db.relationship("Pravni_Forma_Association_v2", back_populates="company")
     statutarni_organ_text = db.relationship("Statutarni_Organ_Association", back_populates="company")
+    dozorci_rada_text = db.relationship("Dozorci_Rada_Association")
 
 class Obce(db.Model):
     __tablename__ = "obce"
@@ -351,6 +383,14 @@ class Pocty_Clenu_Organu(db.Model):
     __tablename__ = "pocty_clenu_organu"
     id = db.Column(db.Integer, primary_key=True)
     organ_id = db.Column(db.String, db.ForeignKey("statutarni_organ_relation.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    pocet_clenu_value = db.Column(db.String)
+
+class Pocty_Clenu_DR(db.Model):
+    __tablename__ = "pocty_clenu_DR"
+    id = db.Column(db.Integer, primary_key=True)
+    organ_id = db.Column(db.String, db.ForeignKey("dozorci_rada_relation.id"))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     pocet_clenu_value = db.Column(db.String)
