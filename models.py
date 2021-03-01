@@ -226,6 +226,35 @@ class Dozorci_Rada_Clen_Association(db.Model):
     adresa = db.relationship("Sidlo")
     jmeno = db.relationship("Fyzicka_Osoba")
 
+class Spolecnici_Association(db.Model):
+    __tablename__ = "spolecnici"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    spolecnik_fo_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'), nullable=False)
+    spolecnik_po_id = db.Column(db.Integer, db.ForeignKey('pravnicke_osoby.id'), nullable=False)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    text_spolecnik = db.Column(db.String)
+    adresa = db.relationship("Sidlo")
+    jmeno = db.relationship("Fyzicka_Osoba")
+    oznaceni_po = db.relationship("Pravnicka_Osoba")
+    podily = db.relationship("Podily_Association")
+
+class Podily_Association(db.Model):
+    __tablename__ = "podily"
+    id = db.Column(db.Integer, primary_key=True)
+    spolecnik_id = db.Column(db.Integer, db.ForeignKey('spolecnici.id'), nullable=False)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    druh_podilu_id = db.Column(db.Integer, db.ForeignKey('druhy_podilu.id'), nullable=False)
+    vklad_typ = db.Column(db.String)
+    vklad_text = db.Column(db.String)
+    souhrn_typ = db.Column(db.String)
+    souhrn_text = db.Column(db.String)
+    splaceni_typ = db.Column(db.String)
+    splaceni_text = db.Column(db.String)
+
 class Zpusob_Jednani_Association(db.Model):
     __tablename__ = 'zpusoby_jednani_relation'
     id = db.Column(db.Integer, primary_key=True)
@@ -262,6 +291,7 @@ class Company(db.Model):
     pravni_forma_text = db.relationship("Pravni_Forma_Association_v2", back_populates="company")
     statutarni_organ_text = db.relationship("Statutarni_Organ_Association", back_populates="company")
     dozorci_rada_text = db.relationship("Dozorci_Rada_Association")
+    spolecnici = db.relationship("Spolecnici_Association")
 
 class Obce(db.Model):
     __tablename__ = "obce"
@@ -401,6 +431,11 @@ class Zpusob_Jednani(db.Model):
     zpusob_jednani_text = db.Column(db.String)
     zpusob_jednani_rship = db.relationship("Zpusob_Jednani_Association", back_populates="zpusob_jednani")
 
+class Druhy_Podilu(db.Model):
+    __tablename__ = "druhy_podilu"
+    id = db.Column(db.Integer, primary_key=True)
+    druh_podilu = db.Column(db.String)
+
 class Fyzicka_Osoba(db.Model):
     __tablename__ = "fyzicke_osoby"
     id = db.Column(db.Integer, primary_key=True)
@@ -409,3 +444,10 @@ class Fyzicka_Osoba(db.Model):
     prijmeni = db.Column(db.String)
     titul_za = db.Column(db.String)
     datum_naroz = db.Column(MyType)
+
+class Pravnicka_Osoba(db.Model):
+    __tablename__ = "pravnicke_osoby"
+    id = db.Column(db.Integer, primary_key=True)
+    ico = db.Column(db.String)
+    reg_cislo = db.Column(db.String)
+    nazev = db.Column(db.String)

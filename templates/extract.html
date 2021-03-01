@@ -758,6 +758,20 @@
 
 <!--SUPERVISORY BOARD END-->
 
+<!-- BEGINNING OF SPOLECNIK -->
+    {% if row.spolecnici|length > 0 %}
+    {% for i in range (row.spolecnici|length) %}
+    <tr>
+        <td>{% if i == 0 %}Společníci:{% endif %}</td>
+        <td>{% if row.spolecnici[i].spolecnik_po_id == None %} {{ row.spolecnici[i].jmeno.jmeno }} {{ row.spolecnici[i].jmeno.prijmeni }}{% if row.spolecnici[i].jmeno.datum_naroz != "" %}, nar. {{ row.spolecnici[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+            {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }}{% if row.spolecnici[i].oznaceni_po.reg_cislo == 0 %}, IČ {{ row.spolecnici[i].oznaceni_po.ico }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico == 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %} {% endif %} 
+            <br>{{row.spolecnici[i].adresa.adresa_text}}</td>
+        <td>Zapsáno: {{ row.spolecnici[i].zapis_datum }} {% if row.spolecnici[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici[i].vymaz_datum }} {% endif %} {{ row.spolecnici[i].podily}}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+<!-- END OF SPOLECNIK -->
+
     {% if row.akcie|length > 0 %}
     <tr>
         <td>Akcie:</td>

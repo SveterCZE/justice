@@ -45,6 +45,7 @@ def purge_DB():
         c.execute("DELETE FROM companies")
         c.execute("DELETE FROM dozorci_rada_relation")
         c.execute("DELETE FROM dr_organ_clen_relation")
+        c.execute("DELETE FROM druhy_podilu")
         c.execute("DELETE FROM fyzicke_osoby")
         c.execute("DELETE FROM insolvency_events")
         c.execute("DELETE FROM konkurz_events")
@@ -55,6 +56,7 @@ def purge_DB():
         c.execute("DELETE FROM ostatni_skutecnosti")
         c.execute("DELETE FROM pocty_clenu_DR")
         c.execute("DELETE FROM pocty_clenu_organu")
+        c.execute("DELETE FROM podily")
         c.execute("DELETE FROM pravni_formy")
         c.execute("DELETE FROM pravni_formy_relation")
         c.execute("DELETE FROM predmety_cinnosti")
@@ -63,6 +65,7 @@ def purge_DB():
         c.execute("DELETE FROM predmety_podnikani_relation")
         c.execute("DELETE FROM sidla")
         c.execute("DELETE FROM sidlo_relation")
+        c.execute("DELETE FROM spolecnici")
         c.execute("DELETE FROM sqlite_sequence")
         c.execute("DELETE FROM statutarni_organ_clen_relation")
         c.execute("DELETE FROM statutarni_organ_relation")
@@ -95,6 +98,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_nazev(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "STATUTARNI_ORGAN":
                     find_statutar(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "SPOLECNIK":
+                    find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "INSOLVENCE_SEKCE":
                     find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
                 elif udajTyp_name == "KONKURS_SEKCE":
@@ -115,6 +120,113 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_pravni_forma(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "DOZORCI_RADA":
                     find_dozorci_rada(c, ICO, elem2, conn, primary_sql_key, element)
+    except:
+        pass
+
+
+def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        # zapis_datum = str(get_prop(elem2, "zapisDatum"))
+        # vymaz_datum = str(get_prop(elem2, "vymazDatum"))
+        # if vymaz_datum != "0":
+        #     print(ICO, zapis_datum, vymaz_datum)
+        my_iter = elem2.findall("podudaje/Udaj")
+        for elem in my_iter:
+            spolecnik_type = str(get_prop(elem, "udajTyp/kod"))
+            zapis_datum = str(get_prop(elem, "zapisDatum"))
+            vymaz_datum = str(get_prop(elem, "vymazDatum"))
+            spolecnik_oznaceni = str(get_prop(elem, "hlavicka"))
+            if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_oznaceni == "Společník":
+                # TODO alternativy pro None, Spolecny podil a Uvolneny podil
+                spol_ico = str(get_prop(elem, "osoba/ico"))
+                regCislo = str(get_prop(elem, "osoba/regCislo"))
+                text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
+                if spol_ico == "0" and regCislo == "0":
+                    # I probably do not need the primary sql key
+                    spolecnik_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
+                    adresa_id = find_and_store_address(c, elem)
+                    c.execute("INSERT INTO spolecnici (company_id, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
+                    c.execute ("SELECT last_insert_rowid()")
+                    spolecnik_id = c.fetchone()[0]
+                    # print(ICO, spolecnik_fo_id, adresa_id)
+                else:
+                    spolecnik_po_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo)
+                    adresa_id = find_and_store_address(c, elem)
+                    c.execute("INSERT INTO spolecnici (company_id, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
+                    c.execute ("SELECT last_insert_rowid()")
+                    spolecnik_id = c.fetchone()[0]
+                insert_podily(c, elem, spolecnik_id)
+
+                    # nazev = str(get_prop(elem, "osoba/nazev"))
+                    # addr = str(adresa(get_SIDLO_v3(elem)))
+                    # print(ICO, nazev, spol_ico, addr)
+                
+    except Exception as f:
+        print(f)
+
+def insert_podily(c, elem, spolecnik_id):
+    try:
+        podil_iter = elem.findall("podudaje/Udaj")
+        for podil_elem in podil_iter:
+            zapisDatum = str(get_prop(podil_elem, "zapisDatum"))
+            vymazDatum = str(get_prop(podil_elem, "vymazDatum"))
+            druh_podilu_id = get_druh_podilu_id(c, podil_elem)
+            # druhPodilu = str(get_prop(podil_elem, "hodnotaUdaje/druhPodilu"))
+            vklad_typ = str(get_prop(podil_elem, "hodnotaUdaje/vklad/typ"))
+            vklad_text = str(get_prop(podil_elem, "hodnotaUdaje/vklad/textValue"))
+            souhrn_typ = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/typ"))
+            souhrn_text = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue"))
+            splaceni_typ = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/typ"))
+            splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
+            c.execute("INSERT INTO podily (spolecnik_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
+            # print(spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text)
+
+    except Exception as f:
+        print(f)
+
+def get_druh_podilu_id(c, podil_elem):
+    try:
+        druhPodilu = str(get_prop(podil_elem, "hodnotaUdaje/druhPodilu"))
+        insert_druh_podilu(c, podil_elem, druhPodilu)
+        druh_podilu_id = find_druh_podilu_id(c, druhPodilu)
+        return druh_podilu_id
+    except Exception as f:
+        print(f)
+
+def insert_druh_podilu(c, podil_elem, druhPodilu):
+    try:
+        c.execute("INSERT INTO druhy_podilu (druh_podilu) VALUES (?)", (druhPodilu,))
+    except:
+        pass
+
+def find_druh_podilu_id(c, druhPodilu):
+    try:
+        druh_podilu_id = c.execute("SELECT id FROM druhy_podilu WHERE druh_podilu = (?)", (druhPodilu,))
+        druh_podilu_id = c.fetchone()[0]
+        return druh_podilu_id
+    except Exception as f:
+        print(f) 
+
+def find_pravnicka_osoba(c, elem, spol_ico, regCislo):
+    try:
+        nazev = str(get_prop(elem, "osoba/nazev"))
+        insert_pravnicka_osoba(c, elem, spol_ico, regCislo, nazev)
+        osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev)
+        return osoba_id
+    except Exception as f:
+        print(f)
+
+def find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev):
+    try:
+        anciallary_table_key = c.execute("SELECT id FROM pravnicke_osoby WHERE ico = (?) and reg_cislo = (?) and nazev = (?)", (spol_ico, regCislo, nazev,))
+        anciallary_table_key = c.fetchone()[0]
+        return anciallary_table_key
+    except Exception as f:
+        print(f) 
+
+def insert_pravnicka_osoba(c, elem, spol_ico, regCislo, nazev):
+    try:
+        c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev) VALUES (?,?,?)", (spol_ico, regCislo, nazev,))
     except:
         pass
 
@@ -157,7 +269,8 @@ def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
             elif udajTyp_name == "STATUTARNI_ORGAN_CLEN":
                 find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element)
             else:
-                print(str(get_prop(elem, "udajTyp/kod")))
+                # print(str(get_prop(elem, "udajTyp/kod")))
+                pass
     except Exception as f:
         print(f)
 
@@ -943,7 +1056,7 @@ def delete_archive(file):
 purge_DB()
 
 # parse_to_DB("data/as-full-ceske_budejovice-2021.xml")
-# parse_to_DB("sro-full-ceske_budejovice-2021.xml")
+# parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
 
@@ -951,6 +1064,6 @@ def do_both():
     general_update("down")
     general_update("db_update")
 
-# do_both()
+do_both()
 
-cProfile.run('general_update("db_update")')
+# cProfile.run('general_update("db_update")')
