@@ -48,6 +48,7 @@ def purge_DB():
         c.execute("DELETE FROM druhy_podilu")
         c.execute("DELETE FROM fyzicke_osoby")
         c.execute("DELETE FROM insolvency_events")
+        c.execute("DELETE FROM jediny_akcionar")
         c.execute("DELETE FROM konkurz_events")
         c.execute("DELETE FROM nazvy")
         c.execute("DELETE FROM obce")
@@ -63,6 +64,8 @@ def purge_DB():
         c.execute("DELETE FROM predmety_cinnosti_relation")
         c.execute("DELETE FROM predmety_podnikani")
         c.execute("DELETE FROM predmety_podnikani_relation")
+        c.execute("DELETE FROM prokura_common_texts")
+        c.execute("DELETE FROM prokuriste")
         c.execute("DELETE FROM sidla")
         c.execute("DELETE FROM sidlo_relation")
         c.execute("DELETE FROM spolecnici")
@@ -96,14 +99,14 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_registered_office(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "NAZEV":
                     find_nazev(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "SPIS_ZN":
+                    find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "PRAVNI_FORMA":
+                    find_pravni_forma(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "STATUTARNI_ORGAN":
                     find_statutar(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "SPOLECNIK":
                     find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element)
-                elif udajTyp_name == "INSOLVENCE_SEKCE":
-                    find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
-                elif udajTyp_name == "KONKURS_SEKCE":
-                    find_active_konkurz(c, ICO, elem2, conn, primary_sql_key)
                 elif udajTyp_name == "PREDMET_PODNIKANI_SEKCE":
                     find_predmet_podnikani(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
@@ -114,15 +117,60 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_ostatni_skutecnosti(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "AKCIE_SEKCE":
                     find_akcie(c, ICO, elem2, conn, primary_sql_key, element)
-                elif udajTyp_name == "SPIS_ZN":
-                    find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element)
-                elif udajTyp_name == "PRAVNI_FORMA":
-                    find_pravni_forma(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "DOZORCI_RADA":
                     find_dozorci_rada(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "PROKURA":
+                    find_prokura(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "AKCIONAR_SEKCE":
+                    find_sole_shareholder(c, ICO, elem2, conn, primary_sql_key, element)    
+                elif udajTyp_name == "INSOLVENCE_SEKCE":
+                    find_active_insolvency(c, ICO, elem2, conn, primary_sql_key)
+                elif udajTyp_name == "KONKURS_SEKCE":
+                    find_active_konkurz(c, ICO, elem2, conn, primary_sql_key)
     except:
         pass
 
+def find_sole_shareholder(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        my_iter = elem2.findall("podudaje/Udaj")
+        for elem in my_iter:
+            zapis_datum = str(get_prop(elem, "zapisDatum"))
+            vymaz_datum = str(get_prop(elem, "vymazDatum"))
+            text_akcionar = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))                
+            typ_akcionar = str(get_prop(elem, "hodnotaUdaje/T"))
+            if typ_akcionar == "P":
+                spol_ico = str(get_prop(elem, "osoba/ico"))
+                regCislo = str(get_prop(elem, "osoba/regCislo"))
+                akcionar_po_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo)
+                adresa_id = find_and_store_address(c, elem)
+                c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id,))
+            elif typ_akcionar == "F":
+                akcionar_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
+                adresa_id = find_and_store_address(c, elem)
+                c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id,))    
+    except Exception as f:
+        print(f)
+
+def find_prokura(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        my_iter = elem2.findall("podudaje/Udaj")
+        for elem in my_iter:
+            typ_zapis = str(get_prop(elem, "udajTyp/kod"))
+            if typ_zapis == "PROKURA_OSOBA":
+                zapis_datum = str(get_prop(elem, "zapisDatum"))
+                vymaz_datum = str(get_prop(elem, "vymazDatum"))
+                text_prokurista = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
+                prokurista_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
+                adresa_id = find_and_store_address(c, elem)
+                # print(ICO, zapis_datum, vymaz_datum, text_osoba, prokurista_fo_id, adresa_id)
+                c.execute("INSERT INTO prokuriste (company_id, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista,))
+            else:
+                zapis_datum = str(get_prop(elem, "zapisDatum"))
+                vymaz_datum = str(get_prop(elem, "vymazDatum"))
+                prokura_text = str(get_prop(elem, "hodnotaText"))
+                c.execute("INSERT INTO prokura_common_texts (company_id, zapis_datum, vymaz_datum, prokura_text) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, prokura_text,)) 
+    except Exception as f:
+        print(f)
 
 def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
     try:
