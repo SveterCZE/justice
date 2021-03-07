@@ -2,39 +2,9 @@
 
 {% for row in results %}
 
-{% set zapis_split = row.zapis.split("-") %}
-{% if zapis_split[1] == "01" %}
-    {% set mesic = "ledna" %}
-{% elif zapis_split[1] == "02" %}
-    {% set mesic = "února" %}
-{% elif zapis_split[1] == "03" %}
-    {% set mesic = "března" %}
-{% elif zapis_split[1] == "04" %}
-    {% set mesic = "dubna" %}
-{% elif zapis_split[1] == "05" %}
-    {% set mesic = "května" %}
-{% elif zapis_split[1] == "06" %}
-    {% set mesic = "června" %}
-{% elif zapis_split[1] == "07" %}
-    {% set mesic = "července" %}
-{% elif zapis_split[1] == "08" %}
-    {% set mesic = "srpna" %}
-{% elif zapis_split[1] == "09" %}
-    {% set mesic = "září" %}
-{% elif zapis_split[1] == "10" %}
-    {% set mesic = "října" %}
-{% elif zapis_split[1] == "11" %}
-    {% set mesic = "listopadu" %}
-{% elif zapis_split[1] == "12" %}
-    {% set mesic = "prosince" %}
-{% endif %}
 
-{% if zapis_split[2][0] == "0" %}
-    {% set den = zapis_split[2][1]  %}
-{% else %}
-    {% set den = zapis_split[2]  %}
-{% endif %}
 
+<!-- DO I NEED THIS HERE? -->
 {% if insolvency_notes|length > 0 %}
     {% set table_style = "table table-danger" %}
 {% elif loop.index % 2 == 0 %}
@@ -53,8 +23,6 @@
     {% set ico_buffer = "" %}
 {% endif %}
 
-
-
 {% set undedrline_open_deleted = "<u>" %}
 {% set undedrline_closed_deleted = "</u>" %}
 
@@ -70,26 +38,14 @@
 <table class= "table" style="width: 100%">
     <tr>
         <td style="width:15%">Datum vzniku a zápisu:</td>
-        <td style="width:60%">{{den}}. {{mesic}} {{zapis_split[0]}}</td>
+        <td style="width:60%">{{row.zapis}}</td>
         <td style="width:25%"></td>
     </tr>
+    <!-- Display court registration -->
     {% if row.soudni_zapis|length > 0 %}
+    {% for i in range (row.soudni_zapis|length) %}
     <tr>
-        <td>Spisová značka:</td>
-        {% if row.soudni_zapis[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.soudni_zapis[0].oddil }} {{ row.soudni_zapis[0].vlozka }} vedená u {{ row.soudni_zapis[0].soud }}  {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.soudni_zapis[0].zapis_datum }} {% if row.soudni_zapis[0].vymaz_datum != 0 %} <br> Vymazáno: {{ row.soudni_zapis[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-
-    {% for i in range (1, row.soudni_zapis|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Spisová značka:{% endif %}</td>
         {% if row.soudni_zapis[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -102,23 +58,13 @@
     </tr>    
     {% endfor %}
     {% endif %} 
-    
+    <!-- END Display court registrations -->
+
+    <!-- Display business names -->
     {% if row.obchodni_firma|length > 0 %}
+    {% for i in range (row.obchodni_firma|length) %}
     <tr>
-        <td>Obchodní firma:</td>
-        {% if row.obchodni_firma[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.obchodni_firma[0].nazev_text }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.obchodni_firma[0].zapis_datum }} {% if row.obchodni_firma[0].vymaz_datum != 0 %} <br> Vymazáno: {{ row.obchodni_firma[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.obchodni_firma|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Obchodní firma:{% endif %}</td>
         {% if row.obchodni_firma[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -131,23 +77,13 @@
     </tr>    
     {% endfor %}
     {% endif %}    
+    <!-- END Display business names -->
 
+    <!-- Display registered office -->
     {% if row.sidlo_text|length > 0 %}
+    {% for i in range (row.sidlo_text|length) %}
     <tr>
-        <td>Sídlo:</td>
-        {% if row.sidlo_text[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.sidlo_text[0].sidlo_text.adresa_text }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.sidlo_text[0].zapis_datum }} {% if row.sidlo_text[0].vymaz_datum != 0 %} <br> Vymazáno: {{ row.sidlo_text[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.sidlo_text|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Sídlo:{% endif %}</td>
         {% if row.sidlo_text[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -159,31 +95,23 @@
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.sidlo_text[i].zapis_datum }} {% if row.sidlo_text[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.sidlo_text[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
     {% endfor %}
-    {% endif %}  
-
+    {% endif %}
+    
+    <!-- END Display registered office -->
+    
+    <!-- Display ICO -->
     <tr>
         <td>Identifikační číslo:</td>
         <td>{{ ico_buffer|join("") }}{{ row.ico }}</td>
-        <td>Zapsáno: {{den}}. {{mesic}} {{zapis_split[0]}}</td>
+        <td>Zapsáno: {{row.zapis}}</td>
     </tr>
+    <!-- END Display ICO -->
 
-
+    <!-- Display legal form -->
     {% if row.pravni_forma_text|length > 0 %}
+    {% for i in range (row.pravni_forma_text|length) %}
     <tr>
-        <td>Právní forma</td>
-        {% if row.pravni_forma_text[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.pravni_forma_text[0].pravni_forma_text.pravni_forma }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.pravni_forma_text[0].zapis_datum }} {% if row.pravni_forma_text[0].vymaz_datum != 0 %} <br> Vymazáno: {{ row.pravni_forma_text[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.pravni_forma_text|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Právní forma:{% endif %}</td>
         {% if row.pravni_forma_text[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -196,49 +124,13 @@
     </tr>    
     {% endfor %}
     {% endif %}    
+    <!-- END Display legal form -->
 
+    <!-- Display registered capital -->
     {% if row.zakladni_kapital|length > 0 %}
+    {% for i in range (row.zakladni_kapital|length) %}
     <tr>
-        <td>Základní kapitál:</td>
-        {% if row.zakladni_kapital[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-
-        {% if row.zakladni_kapital[0].vklad_typ == "KORUNY" %}
-            {% set vklad_typ_symbol = "Kč" %}
-            {% set vklad_typ_description = row.zakladni_kapital[0].vklad_hodnota %}
-        {% elif row.zakladni_kapital[0].vklad_typ == "EURA" %}
-            {% set vklad_typ_symbol = "euro" %}
-            {% set vklad_typ_description = row.zakladni_kapital[0].vklad_hodnota %}
-        {% else %}
-            {% set vklad_typ_symbol = "" %}
-            {% set vklad_typ_description = row.zakladni_kapital[0].vklad_hodnota %}
-        {% endif %}           
-
-        {% if row.zakladni_kapital[0].splaceni_typ == "KORUNY" %}
-            {% set splaceni_typ_symbol = "Kč" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
-        {% elif row.zakladni_kapital[0].splaceni_typ == "PROCENTA" %}
-            {% set splaceni_typ_symbol = "%" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
-        {% elif row.zakladni_kapital[0].splaceni_typ == "EURA" %}
-            {% set splaceni_typ_symbol = "euro" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
-        {% else %}
-            {% set splaceni_typ_symbol = "" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[0].splaceni_hodnota %}
-        {% endif %}  
-
-        <td>{{ underlne_style_open|safe }} {{ vklad_typ_description }} {{ vklad_typ_symbol }} {% if splaceni_typ_description != "0" %} <br> Splaceno: {{ splaceni_typ_description }} {{ splaceni_typ_symbol }} {% endif %}  {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.zakladni_kapital[0].zapis_datum }} {% if row.zakladni_kapital[0].vymaz_datum != 0 %} <br> Vymazáno: {{ row.zakladni_kapital[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.zakladni_kapital|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Základní kapitál:{% endif %}</td>
         {% if row.zakladni_kapital[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -247,6 +139,7 @@
             {% set underlne_style_close = "" %}
         {% endif %}
 
+        <!-- TODO: Have backend handle this -->
         {% if row.zakladni_kapital[i].vklad_typ == "KORUNY" %}
             {% set vklad_typ_symbol = "Kč" %}
             {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
@@ -277,24 +170,13 @@
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Display registered capital -->
 
-
+    <!-- Display area of business -->
     {% if row.predmet_podnikani|length > 0 %}
+    {% for i in range (row.predmet_podnikani|length) %}
     <tr>
-        <td>Předmět podnikání:</td>
-        {% if row.predmet_podnikani[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.predmet_podnikani[0].predmet_podnikani.predmet_podnikani }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.predmet_podnikani[0].zapis_datum }} {% if row.predmet_podnikani[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.predmet_podnikani[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.predmet_podnikani|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Předmět podnikání:{% endif %}</td>
         {% if row.predmet_podnikani[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -307,23 +189,13 @@
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Display area of business -->
 
+    <!-- Display areas of activities -->
     {% if row.predmet_cinnosti|length > 0 %}
+    {% for i in range (row.predmet_cinnosti|length) %}
     <tr>
-        <td>Předmět činnosti:</td>
-        {% if row.predmet_cinnosti[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.predmet_cinnosti[0].predmet_cinnosti.predmet_cinnosti }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.predmet_cinnosti[0].zapis_datum }} {% if row.predmet_cinnosti[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.predmet_cinnosti[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.predmet_cinnosti|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Předmět činnosti:{% endif %}</td>
         {% if row.predmet_cinnosti[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -336,7 +208,9 @@
     </tr>    
     {% endfor %}
     {% endif %}
-    
+    <!-- END Display areas of activities -->
+
+    <!-- Display statutory bodies -->
     {% if row.statutarni_organ_text|length > 0 %}
     <tr>
         <td>{{ row.statutarni_organ_text[0].statutarni_organ_text.statutarni_organ_text }}:</td>
@@ -571,7 +445,7 @@
 
     {% endfor %}
     {% endif %}
- 
+<!-- END Display statutory bodies -->
 
 <!--SUPERVISORY BOARD BEGINNING-->
     {% if row.dozorci_rada_text|length > 0 %}

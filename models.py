@@ -305,7 +305,7 @@ class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ico = db.Column(db.String)
     nazev = db.Column(db.String)
-    zapis = db.Column(db.String)
+    zapis = db.Column(MyType)
     sidlo = db.Column(db.String)
     oddil = db.Column(db.String)
     vlozka = db.Column(db.String)
