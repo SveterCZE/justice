@@ -2,8 +2,6 @@
 
 {% for row in results %}
 
-
-
 <!-- DO I NEED THIS HERE? -->
 {% if insolvency_notes|length > 0 %}
     {% set table_style = "table table-danger" %}
@@ -33,14 +31,17 @@
 {% endif %}
 {% endfor %}
 
-<p><a href="/">Zpět na vyhledání.</a></p>
+<p><a href="/">Zpět na vyhledání</a></p>
 
 <table class= "table" style="width: 100%">
+    <!-- Display registration date -->
     <tr>
         <td style="width:15%">Datum vzniku a zápisu:</td>
         <td style="width:60%">{{row.zapis}}</td>
         <td style="width:25%"></td>
     </tr>
+    <!-- END Display registration date -->
+
     <!-- Display court registration -->
     {% if row.soudni_zapis|length > 0 %}
     {% for i in range (row.soudni_zapis|length) %}
@@ -96,7 +97,6 @@
     </tr>    
     {% endfor %}
     {% endif %}
-    
     <!-- END Display registered office -->
     
     <!-- Display ICO -->
@@ -212,121 +212,7 @@
 
     <!-- Display statutory bodies -->
     {% if row.statutarni_organ_text|length > 0 %}
-    <tr>
-        <td>{{ row.statutarni_organ_text[0].statutarni_organ_text.statutarni_organ_text }}:</td>
-        {% if row.statutarni_organ_text[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }}  {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].zapis_datum }} {% if row.statutarni_organ_text[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    
-    <!-- Insert board members -->
-    {% if row.statutarni_organ_text[0].clenove|length > 0 %}
-    <tr>
-        <td style = padding-left:2em>{% if row.statutarni_organ_text[0].clenove[0].funkce != "0" %} {{ row.statutarni_organ_text[0].clenove[0].funkce }} {% endif %}</td>
-        {% if row.statutarni_organ_text[0].clenove[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}        
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].clenove[0].jmeno.jmeno }} {{ row.statutarni_organ_text[0].clenove[0].jmeno.prijmeni }}{% if row.statutarni_organ_text[0].clenove[0].jmeno.datum_naroz != "" %}, nar. {{ row.statutarni_organ_text[0].clenove[0].jmeno.datum_naroz }} {% endif %} <br> 
-            {{ row.statutarni_organ_text[0].clenove[0].adresa.adresa_text }} 
-            {% if row.statutarni_organ_text[0].clenove[0].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.statutarni_organ_text[0].clenove[0].funkce_od}}{% endif %}
-            {% if row.statutarni_organ_text[0].clenove[0].funkce_do != 0 %}<br>Den zániku funkce: {{ row.statutarni_organ_text[0].clenove[0].funkce_do}}{% endif %}
-            {% if row.statutarni_organ_text[0].clenove[0].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.statutarni_organ_text[0].clenove[0].clenstvi_od}}{% endif %}
-            {% if row.statutarni_organ_text[0].clenove[0].clenstvi_do != 0 %}<br>Den zániku členství: {{ row.statutarni_organ_text[0].clenove[0].clenstvi_do}}{% endif %}
-            {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].clenove[0].zapis_datum }} {% if row.statutarni_organ_text[0].clenove[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].clenove[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.statutarni_organ_text[0].clenove|length) %}
-    <tr>
-        <td style = padding-left:2em>{% if row.statutarni_organ_text[0].clenove[i].funkce != "0" %} {{ row.statutarni_organ_text[0].clenove[i].funkce }} {% endif %}</td>
-        {% if row.statutarni_organ_text[0].clenove[i].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}     
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].clenove[i].jmeno.jmeno }} {{ row.statutarni_organ_text[0].clenove[i].jmeno.prijmeni }}{% if row.statutarni_organ_text[0].clenove[i].jmeno.datum_naroz != "" %}, nar. {{ row.statutarni_organ_text[0].clenove[i].jmeno.datum_naroz }}{% endif %} <br> 
-            {{ row.statutarni_organ_text[0].clenove[i].adresa.adresa_text }} 
-            {% if row.statutarni_organ_text[0].clenove[i].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.statutarni_organ_text[0].clenove[i].funkce_od}}{% endif %}
-            {% if row.statutarni_organ_text[0].clenove[i].funkce_do != 0 %}<br>Den zániku funkce: {{ row.statutarni_organ_text[0].clenove[i].funkce_do}}{% endif %}
-            {% if row.statutarni_organ_text[0].clenove[i].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.statutarni_organ_text[0].clenove[i].clenstvi_od}}{% endif %}
-            {% if row.statutarni_organ_text[0].clenove[i].clenstvi_do != 0 %}<br>Den zániku členství: {{ row.statutarni_organ_text[0].clenove[i].clenstvi_do}}{% endif %}
-            {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].clenove[i].zapis_datum }} {% if row.statutarni_organ_text[0].clenove[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].clenove[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% endfor %}
-    {% endif %}
-    <!-- End insert of board members -->   
-    
-    {% if row.statutarni_organ_text[0].pocet_clenu|length > 0 %}
-        <tr>    
-            <td style = padding-left:2em>Počet členů orgánů:</td>
-            {% if row.statutarni_organ_text[0].pocet_clenu[0].vymaz_datum != 0 %}
-                {% set underlne_style_open = undedrline_open_deleted %}
-                {% set underlne_style_close = undedrline_closed_deleted %}
-            {% else %}
-                {% set underlne_style_open = "" %}
-                {% set underlne_style_close = "" %}
-            {% endif %}
-            <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].pocet_clenu[0].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
-            <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].pocet_clenu[0].zapis_datum }} {% if row.statutarni_organ_text[0].pocet_clenu[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].pocet_clenu[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-        </tr>
-    {% for i in range (1, row.statutarni_organ_text[0].pocet_clenu|length) %}
-    <tr>    
-        <td></td>
-        {% if row.statutarni_organ_text[0].pocet_clenu[i].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].pocet_clenu[i].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].pocet_clenu[i].zapis_datum }} {% if row.statutarni_organ_text[0].pocet_clenu[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].pocet_clenu[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>    
-    {% endfor %}
-    {% endif %}
-
-    {% if row.statutarni_organ_text[0].zpusoby_jednani|length > 0 %}
-    <tr>    
-        <td style = padding-left:2em>Způsob jednání:</td>
-        {% if row.statutarni_organ_text[0].zpusoby_jednani[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].zpusoby_jednani[0].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[0].zapis_datum }} {% if row.statutarni_organ_text[0].zpusoby_jednani[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.statutarni_organ_text[0].zpusoby_jednani|length) %}
-    <tr>    
-        <td></td>
-        {% if row.statutarni_organ_text[0].zpusoby_jednani[i].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-    <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[0].zpusoby_jednani[i].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
-    <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[i].zapis_datum }} {% if row.statutarni_organ_text[0].zpusoby_jednani[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[0].zpusoby_jednani[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>    
-    {% endfor %}
-    {% endif %}
-
-    {% for i in range (1, row.statutarni_organ_text|length) %}
+    {% for i in range (row.statutarni_organ_text|length) %}
     <tr>
         <td>{{ row.statutarni_organ_text[i].statutarni_organ_text.statutarni_organ_text }}:</td>
         {% if row.statutarni_organ_text[i].vymaz_datum != 0 %}
@@ -342,25 +228,7 @@
     
     <!-- Insert Board Members -->
     {% if row.statutarni_organ_text[i].clenove|length > 0 %}
-    <tr>
-        <td style = padding-left:2em>{% if row.statutarni_organ_text[i].clenove[0].funkce != "0" %} {{ row.statutarni_organ_text[i].clenove[0].funkce }} {% endif %}</td>
-        {% if row.statutarni_organ_text[i].clenove[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}     
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].clenove[0].jmeno.jmeno }} {{ row.statutarni_organ_text[i].clenove[0].jmeno.prijmeni }}{% if row.statutarni_organ_text[i].clenove[0].jmeno.datum_naroz != "" %}, nar. {{ row.statutarni_organ_text[i].clenove[0].jmeno.datum_naroz }}{% endif %} <br> 
-            {{ row.statutarni_organ_text[i].clenove[0].adresa.adresa_text }} 
-            {% if row.statutarni_organ_text[i].clenove[0].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.statutarni_organ_text[i].clenove[0].funkce_od}}{% endif %}
-            {% if row.statutarni_organ_text[i].clenove[0].funkce_do != 0 %}<br>Den zániku funkce: {{ row.statutarni_organ_text[i].clenove[0].funkce_do}}{% endif %}
-            {% if row.statutarni_organ_text[i].clenove[0].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.statutarni_organ_text[i].clenove[0].clenstvi_od}}{% endif %}
-            {% if row.statutarni_organ_text[i].clenove[0].clenstvi_do != 0 %}<br>Den zániku členství: {{ row.statutarni_organ_text[i].clenove[0].clenstvi_do}}{% endif %}
-            {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].clenove[0].zapis_datum }} {% if row.statutarni_organ_text[i].clenove[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].clenove[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for j in range (1, row.statutarni_organ_text[i].clenove|length) %}
+    {% for j in range (row.statutarni_organ_text[i].clenove|length) %}
     <tr>
         <td style = padding-left:2em>{% if row.statutarni_organ_text[i].clenove[j].funkce != "0" %} {{ row.statutarni_organ_text[i].clenove[j].funkce }} {% endif %}</td>
         {% if row.statutarni_organ_text[i].clenove[j].vymaz_datum != 0 %}
@@ -383,23 +251,11 @@
     {% endif %}
     <!-- End Insert of Board Members -->      
 
-
+    <!-- Insert Number of Members -->
     {% if row.statutarni_organ_text[i].pocet_clenu|length > 0 %}
+    {% for j in range (row.statutarni_organ_text[i].pocet_clenu|length) %}
     <tr>    
-        <td style = padding-left:2em>Počet členů orgánů:</td>
-        {% if row.statutarni_organ_text[i].pocet_clenu[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].pocet_clenu[0].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].pocet_clenu[0].zapis_datum }} {% if row.statutarni_organ_text[i].pocet_clenu[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].pocet_clenu[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for j in range (1, row.statutarni_organ_text[i].pocet_clenu|length) %}
-    <tr>    
-        <td></td>
+        <td style = padding-left:2em>{% if j == 0%}Počet členů orgánů:{% endif %}</td>
         {% if row.statutarni_organ_text[i].pocet_clenu[j].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -412,24 +268,13 @@
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Insert Number of Members -->
 
-
+    <!-- Display method of representation -->
     {% if row.statutarni_organ_text[i].zpusoby_jednani|length > 0 %}
+    {% for j in range (row.statutarni_organ_text[i].zpusoby_jednani|length) %}
     <tr>    
-        <td style = padding-left:2em>Způsob jednání:</td>
-        {% if row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.statutarni_organ_text[i].zpusoby_jednani[0].zpusob_jednani.zpusob_jednani_text }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[0].zapis_datum }} {% if row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.statutarni_organ_text[i].zpusoby_jednani[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for j in range (1, row.statutarni_organ_text[i].zpusoby_jednani|length) %}
-    <tr>    
-        <td></td>
+        <td style = padding-left:2em>{% if j == 0%}Způsob jednání:{% endif %}</td>
         {% if row.statutarni_organ_text[i].zpusoby_jednani[j].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -442,103 +287,15 @@
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Display method of representation -->
 
     {% endfor %}
     {% endif %}
-<!-- END Display statutory bodies -->
+    <!-- END Display statutory bodies -->
 
-<!--SUPERVISORY BOARD BEGINNING-->
+    <!--Display supervisory board-->
     {% if row.dozorci_rada_text|length > 0 %}
-    <tr>
-        <td>Dozorčí rada:</td>
-        {% if row.dozorci_rada_text[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }}  {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[0].zapis_datum }} {% if row.dozorci_rada_text[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-
-    <!-- Insert supervisory board members -->
-    {% if row.dozorci_rada_text[0].clenove|length > 0 %}
-    <tr>
-        <td style = padding-left:2em>{% if row.dozorci_rada_text[0].clenove[0].funkce != "0" %} {{ row.dozorci_rada_text[0].clenove[0].funkce }} {% endif %}</td>
-        {% if row.dozorci_rada_text[0].clenove[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}        
-        <td>{{ underlne_style_open|safe }} {{ row.dozorci_rada_text[0].clenove[0].jmeno.jmeno }} {{ row.dozorci_rada_text[0].clenove[0].jmeno.prijmeni }}{% if row.dozorci_rada_text[0].clenove[0].jmeno.datum_naroz != "" %}, nar. {{ row.dozorci_rada_text[0].clenove[0].jmeno.datum_naroz }} {% endif %} <br> 
-            {{ row.dozorci_rada_text[0].clenove[0].adresa.adresa_text }} 
-            {% if row.dozorci_rada_text[0].clenove[0].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.dozorci_rada_text[0].clenove[0].funkce_od}}{% endif %}
-            {% if row.dozorci_rada_text[0].clenove[0].funkce_do != 0 %}<br>Den zániku funkce: {{ row.dozorci_rada_text[0].clenove[0].funkce_do}}{% endif %}
-            {% if row.dozorci_rada_text[0].clenove[0].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.dozorci_rada_text[0].clenove[0].clenstvi_od}}{% endif %}
-            {% if row.dozorci_rada_text[0].clenove[0].clenstvi_do != 0 %}<br>Den zániku členství: {{ row.dozorci_rada_text[0].clenove[0].clenstvi_do}}{% endif %}
-            {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[0].clenove[0].zapis_datum }} {% if row.dozorci_rada_text[0].clenove[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[0].clenove[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.dozorci_rada_text[0].clenove|length) %}
-    <tr>
-        <td style = padding-left:2em>{% if row.dozorci_rada_text[0].clenove[i].funkce != "0" %} {{ row.dozorci_rada_text[0].clenove[i].funkce }} {% endif %}</td>
-        {% if row.dozorci_rada_text[0].clenove[i].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}     
-        <td>{{ underlne_style_open|safe }} {{ row.dozorci_rada_text[0].clenove[i].jmeno.jmeno }} {{ row.dozorci_rada_text[0].clenove[i].jmeno.prijmeni }}{% if row.dozorci_rada_text[0].clenove[i].jmeno.datum_naroz != "" %}, nar. {{ row.dozorci_rada_text[0].clenove[i].jmeno.datum_naroz }}{% endif %} <br> 
-            {{ row.dozorci_rada_text[0].clenove[i].adresa.adresa_text }} 
-            {% if row.dozorci_rada_text[0].clenove[i].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.dozorci_rada_text[0].clenove[i].funkce_od}}{% endif %}
-            {% if row.dozorci_rada_text[0].clenove[i].funkce_do != 0 %}<br>Den zániku funkce: {{ row.dozorci_rada_text[0].clenove[i].funkce_do}}{% endif %}
-            {% if row.dozorci_rada_text[0].clenove[i].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.dozorci_rada_text[0].clenove[i].clenstvi_od}}{% endif %}
-            {% if row.dozorci_rada_text[0].clenove[i].clenstvi_do != 0 %}<br>Den zániku členství: {{ row.dozorci_rada_text[0].clenove[i].clenstvi_do}}{% endif %}
-            {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[0].clenove[i].zapis_datum }} {% if row.dozorci_rada_text[0].clenove[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[0].clenove[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% endfor %}
-    {% endif %}
-    <!-- Insert supervisory board members END -->
-
-    <!-- Insert number of supervisory board members -->
-    {% if row.dozorci_rada_text[0].pocet_clenu|length > 0 %}
-    <tr>    
-        <td style = padding-left:2em>Počet členů orgánů:</td>
-        {% if row.dozorci_rada_text[0].pocet_clenu[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.dozorci_rada_text[0].pocet_clenu[0].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[0].pocet_clenu[0].zapis_datum }} {% if row.dozorci_rada_text[0].pocet_clenu[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[0].pocet_clenu[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.dozorci_rada_text[0].pocet_clenu|length) %}
-    <tr>    
-        <td></td>
-        {% if row.dozorci_rada_text[0].pocet_clenu[i].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.dozorci_rada_text[0].pocet_clenu[i].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[0].pocet_clenu[i].zapis_datum }} {% if row.dozorci_rada_text[0].pocet_clenu[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[0].pocet_clenu[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>    
-    {% endfor %}
-    {% endif %}
-<!-- Insert number of supervisory board members -->
-
-<!--Alternative if there are more records for supervisory board-->
-
-    {% for i in range (1, row.dozorci_rada_text|length) %}
+    {% for i in range (row.dozorci_rada_text|length) %}
     <tr>
         <td>Dozorčí rada:</td>
         {% if row.dozorci_rada_text[i].vymaz_datum != 0 %}
@@ -552,27 +309,9 @@
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[i].zapis_datum }} {% if row.dozorci_rada_text[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>
 
-    <!-- Insert Supervisory Board Members -->
+    <!-- Display Supervisory Board Members -->
     {% if row.dozorci_rada_text[i].clenove|length > 0 %}
-    <tr>
-        <td style = padding-left:2em>{% if row.dozorci_rada_text[i].clenove[0].funkce != "0" %} {{ row.dozorci_rada_text[i].clenove[0].funkce }} {% endif %}</td>
-        {% if row.dozorci_rada_text[i].clenove[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}     
-        <td>{{ underlne_style_open|safe }} {{ row.dozorci_rada_text[i].clenove[0].jmeno.jmeno }} {{ row.dozorci_rada_text[i].clenove[0].jmeno.prijmeni }}{% if row.dozorci_rada_text[i].clenove[0].jmeno.datum_naroz != "" %}, nar. {{ row.dozorci_rada_text[i].clenove[0].jmeno.datum_naroz }}{% endif %} <br> 
-            {{ row.dozorci_rada_text[i].clenove[0].adresa.adresa_text }} 
-            {% if row.dozorci_rada_text[i].clenove[0].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.dozorci_rada_text[i].clenove[0].funkce_od}}{% endif %}
-            {% if row.dozorci_rada_text[i].clenove[0].funkce_do != 0 %}<br>Den zániku funkce: {{ row.dozorci_rada_text[i].clenove[0].funkce_do}}{% endif %}
-            {% if row.dozorci_rada_text[i].clenove[0].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.dozorci_rada_text[i].clenove[0].clenstvi_od}}{% endif %}
-            {% if row.dozorci_rada_text[i].clenove[0].clenstvi_do != 0 %}<br>Den zániku členství: {{ row.dozorci_rada_text[i].clenove[0].clenstvi_do}}{% endif %}
-            {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[i].clenove[0].zapis_datum }} {% if row.dozorci_rada_text[i].clenove[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[i].clenove[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for j in range (1, row.dozorci_rada_text[i].clenove|length) %}
+    {% for j in range (row.dozorci_rada_text[i].clenove|length) %}
     <tr>
         <td style = padding-left:2em>{% if row.dozorci_rada_text[i].clenove[j].funkce != "0" %} {{ row.dozorci_rada_text[i].clenove[j].funkce }} {% endif %}</td>
         {% if row.dozorci_rada_text[i].clenove[j].vymaz_datum != 0 %}
@@ -593,25 +332,13 @@
     </tr>
     {% endfor %}
     {% endif %}
-    <!-- End Insert of Board Members -->      
+    <!-- End Display Supervisory Board Members -->      
 
-
+    <!-- Display Number of Supervisory Board Members -->
     {% if row.dozorci_rada_text[i].pocet_clenu|length > 0 %}
+    {% for j in range (row.dozorci_rada_text[i].pocet_clenu|length) %}
     <tr>    
-        <td style = padding-left:2em>Počet členů orgánů:</td>
-        {% if row.dozorci_rada_text[i].pocet_clenu[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.dozorci_rada_text[i].pocet_clenu[0].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[i].pocet_clenu[0].zapis_datum }} {% if row.dozorci_rada_text[i].pocet_clenu[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[i].pocet_clenu[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for j in range (1, row.dozorci_rada_text[i].pocet_clenu|length) %}
-    <tr>    
-        <td></td>
+        <td style = padding-left:2em>{% if j == 0%}Počet členů:{% endif %}</td>
         {% if row.dozorci_rada_text[i].pocet_clenu[j].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -621,18 +348,17 @@
         {% endif %}
         <td>{{ underlne_style_open|safe }} {{ row.dozorci_rada_text[i].pocet_clenu[j].pocet_clenu_value }} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.dozorci_rada_text[i].pocet_clenu[j].zapis_datum }} {% if row.dozorci_rada_text[i].pocet_clenu[j].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.dozorci_rada_text[i].pocet_clenu[j].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>    
+    </tr>
+    <!-- END Display Number of Supervisory Board Members -->    
     {% endfor %}
     {% endif %}
 
     {% endfor %}
     {% endif %}
 
-<!--Alternative if there are more records for supervisory board END-->
+    <!--END Display supervisory board-->
 
-<!--SUPERVISORY BOARD END-->
-
-<!-- BEGINNING OF PROKURISTA -->
+    <!-- Display prokurist -->
     {% if row.prokurista|length > 0 %}
     <tr>
         <td>Prokura:</td>
@@ -671,9 +397,9 @@
     {% endfor %}
     <!-- End of a common text for prokura -->
     {% endif %}
-<!--PROKURISTA END-->
+    <!-- END Display prokurist -->
 
-<!-- BEGINNING OF JEDINY AKCIONAR -->
+    <!-- Display sole shareholder -->
     {% if row.jediny_akcionar|length > 0 %}
     <tr>
         <td>Jediný akcionář:</td>
@@ -691,17 +417,15 @@
             {% set underlne_style_close = "" %}
         {% endif %}
         <td>{{ underlne_style_open|safe }} {% if row.jediny_akcionar[i].akcionar_po_id == None %} {{ row.jediny_akcionar[i].jmeno.jmeno }} {{ row.jediny_akcionar[i].jmeno.prijmeni }}{% if row.jediny_akcionar[i].jmeno.datum_naroz != "" %}, nar. {{ row.jediny_akcionar[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
-            {% if row.jediny_akcionar[i].akcionar_fo_id == None %} {{ row.jediny_akcionar[i].oznaceni_po.nazev }}{% if row.jediny_akcionar[i].oznaceni_po.reg_cislo == 0 %}, IČ {{ row.jediny_akcionar[i].oznaceni_po.ico }}{% endif %}{% if row.jediny_akcionar[i].oznaceni_po.ico == 0 %}, reg č. {{ row.jediny_akcionar[i].oznaceni_po.reg_cislo }}{% endif %} {% endif %} 
+            {% if row.jediny_akcionar[i].akcionar_fo_id == None %} {{ row.jediny_akcionar[i].oznaceni_po.nazev }}{% if row.jediny_akcionar[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.jediny_akcionar[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.jediny_akcionar[i].oznaceni_po.ico != 0 %}, IČ {{ row.jediny_akcionar[i].oznaceni_po.ico }}{% endif %} {% endif %} 
             <br>{{row.jediny_akcionar[i].adresa.adresa_text}} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.jediny_akcionar[i].zapis_datum }} {% if row.jediny_akcionar[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.jediny_akcionar[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>
     {% endfor %}
     {% endif %}
+    <!-- END Display sole shareholder -->
 
-<!-- JEDINY AKCIONAR END -->
-
-
-<!-- BEGINNING OF SPOLECNIK -->
+    <!-- Display shareholders -->
     {% if row.spolecnici|length > 0 %}
     <tr>
         <td>Společníci:</td>
@@ -719,7 +443,7 @@
             {% set underlne_style_close = "" %}
         {% endif %}
         <td>{{ underlne_style_open|safe }} {% if row.spolecnici[i].spolecnik_po_id == None %} {{ row.spolecnici[i].jmeno.jmeno }} {{ row.spolecnici[i].jmeno.prijmeni }}{% if row.spolecnici[i].jmeno.datum_naroz != "" %}, nar. {{ row.spolecnici[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
-            {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }}{% if row.spolecnici[i].oznaceni_po.reg_cislo == 0 %}, IČ {{ row.spolecnici[i].oznaceni_po.ico }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico == 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %} {% endif %} 
+            {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }} {% if row.spolecnici[i].oznaceni_po.reg_cislo == 0 %}, IČ {{ row.spolecnici[i].oznaceni_po.ico }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico == 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %} {% endif %} 
             <br>{{row.spolecnici[i].adresa.adresa_text}} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici[i].zapis_datum }} {% if row.spolecnici[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
         <!-- Insert individual ownership interests -->
@@ -777,69 +501,13 @@
     </tr>
     {% endfor %}
     {% endif %}
-<!-- END OF SPOLECNIK -->
+    <!-- END Display shareholders -->
 
+    <!-- Display shares -->
     {% if row.akcie|length > 0 %}
+    {% for i in range (row.akcie|length) %}
     <tr>
-        <td>Akcie:</td>
-        {% if row.akcie[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-
-        {% if row.akcie[0].akcie_podoba == "LISTINNA" %}
-            {% set akcie_podoba_description = "v listinné podobě" %}
-        {% elif row.akcie[0].akcie_podoba == "ZAKNIHOVANA" %}
-            {% set akcie_podoba_description = "v zaknihované podobě" %}
-        {% elif row.akcie[0].akcie_podoba == "IMOBILIZOVANA" %}
-            {% set akcie_podoba_description = "v imobilizované podobě" %}            
-        {% else %}
-            {% set akcie_podoba_description = "" %}    
-        {% endif %}
-        
-        {% if row.akcie[0].akcie_typ == "KMENOVE_NA_JMENO" %}
-            {% set akcie_typ_description = "kmenové akcie na jméno" %}
-        {% elif row.akcie[0].akcie_typ == "KMENOVE_NA_MAJITELE" %}
-            {% set akcie_typ_description = "kmenové akcie na majitele" %}
-        {% elif row.akcie[0].akcie_typ == "KUSOVE_NA_JMENO" %}
-            {% set akcie_typ_description = "kusové akcie" %}
-        {% elif row.akcie[0].akcie_typ == "NA_JMENO" %}
-            {% set akcie_typ_description = "akcie na jméno" %}
-        {% elif row.akcie[0].akcie_typ == "NA_MAJITELE" %}
-            {% set akcie_typ_description = "akcie na majitele" %}
-        {% elif row.akcie[0].akcie_typ == "PRIORITNI_NA_JMENO" %}
-            {% set akcie_typ_description = "prioritní akcie na jméno" %}
-        {% elif row.akcie[0].akcie_typ == "PRIORITNI_NA_MAJITELE" %}
-            {% set akcie_typ_description = "prioritní akcie na majitele" %}                           
-        {% elif row.akcie[0].akcie_typ == "ZAMESTNANECKE_NA_JMENO" %}
-            {% set akcie_typ_description = "zaměstnanecké akcie na jméno" %}
-        {% elif row.akcie[0].akcie_typ == "ZVLASTNI_PRAVA" %}
-            {% set akcie_typ_description = "akcie se zvláštními právy" %}
-        {% elif row.akcie[0].akcie_typ == "HROMANDA" %}
-            {% set akcie_typ_description = "hromadná akcie" %}
-        {% elif row.akcie[0].akcie_typ == "NA_JMENO_A_MAJITELE" %}
-            {% set akcie_typ_description = "akcie na jméno a majitele" %}
-            {% else %}
-            {% set akcie_typ_description = "" %}    
-        {% endif %}  
-
-        {% if row.akcie[0].akcie_hodnota_typ == "KORUNY" %}
-            {% set akcie_hodnota_typ_symbol = "Kč" %}
-        {% elif row.akcie[0].akcie_hodnota_typ == "EURA" %}
-            {% set akcie_hodnota_typ_symbol = "euro" %}  
-        {% else %}
-            {% set akcie_hodnota_typ_symbol = "" %}
-        {% endif %}      
-
-        <td>{{ underlne_style_open|safe }} {{ row.akcie[0].akcie_pocet }} ks {{ akcie_typ_description }} {{ akcie_podoba_description }}  ve jmenovité hodnotě {{ row.akcie[0].akcie_hodnota_value }} {{ akcie_hodnota_typ_symbol }} {% if row.akcie[0].akcie_text != "0" %} <br> {{ row.akcie[0].akcie_text }} {% endif %} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.akcie[0].zapis_datum }} {% if row.akcie[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.akcie[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.akcie|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Akcie:{% endif %}</td>
         {% if row.akcie[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -891,23 +559,13 @@
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Display shares -->
 
+    <!-- Description of insolvency event -->
     {% if row.insolvence|length > 0 %}
+    {% for i in range (row.insolvence|length) %}
     <tr>
-        <td>Údaje o insolvencích:</td>
-        {% if row.insolvence[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.insolvence[0].insolvency_event }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.insolvence[0].zapis_datum }} {% if row.insolvence[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.insolvence[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.insolvence|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Údaje o insolvencích:{% endif %}</td>
         {% if row.insolvence[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -920,23 +578,13 @@
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Description of insolvency event -->
 
+<!-- Description of bankruptcy event -->
     {% if row.konkurz|length > 0 %}
+    {% for i in range (row.konkurz|length) %}
     <tr>
-        <td>Údaje o konkurzech:</td>
-        {% if row.konkurz[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.konkurz[0].konkurz_event }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.konkurz[0].zapis_datum }} {% if row.konkurz[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.konkurz[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.konkurz|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Údaje o konkurzech:{% endif %}</td>
         {% if row.konkurz[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -949,24 +597,13 @@
     </tr>    
     {% endfor %}
     {% endif %}    
+<!-- END Description of bankruptcy event -->
 
-
+<!-- Insert other information -->
     {% if row.ostatni_skutecnosti|length > 0 %}
+    {% for i in range (row.ostatni_skutecnosti|length) %}
     <tr>
-        <td>Ostatní skutečnosti:</td>
-        {% if row.ostatni_skutecnosti[0].vymaz_datum != 0 %}
-            {% set underlne_style_open = undedrline_open_deleted %}
-            {% set underlne_style_close = undedrline_closed_deleted %}
-        {% else %}
-            {% set underlne_style_open = "" %}
-            {% set underlne_style_close = "" %}
-        {% endif %}
-        <td>{{ underlne_style_open|safe }} {{ row.ostatni_skutecnosti[0].ostatni_skutecnost }} {{ underlne_style_close|safe }}</td>
-        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ostatni_skutecnosti[0].zapis_datum }} {% if row.ostatni_skutecnosti[0].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.ostatni_skutecnosti[0].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
-    </tr>
-    {% for i in range (1, row.ostatni_skutecnosti|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Ostatní skutečnosti:{% endif %}</td>
         {% if row.ostatni_skutecnosti[i].vymaz_datum != 0 %}
             {% set underlne_style_open = undedrline_open_deleted %}
             {% set underlne_style_close = undedrline_closed_deleted %}
@@ -979,7 +616,7 @@
     </tr>    
     {% endfor %}
     {% endif %}
-
+<!-- END Insert other information -->
 </table>
     
 {% endfor %}

@@ -11,76 +11,71 @@
 {% for i in range (row.predmet_podnikani|length) %}
     {% if row.predmet_podnikani[i].vymaz_datum == 0 %}
         {% set predmety_podnikani_notes = predmety_podnikani_notes.append(row.predmet_podnikani[i].predmet_podnikani.predmet_podnikani) %}
-        {% endif %}
+    {% endif %}
 {% endfor %}
 
 {% set predmety_cinnosti_notes = [] %}
 {% for i in range (row.predmet_cinnosti|length) %}
     {% if row.predmet_cinnosti[i].vymaz_datum == 0 %}
         {% set predmety_cinnosti_notes = predmety_cinnosti_notes.append(row.predmet_cinnosti[i].predmet_cinnosti.predmet_cinnosti) %}
-        {% endif %}
+    {% endif %}
 {% endfor %}
 
 {% set zakladni_kapital_notes = [] %}
 {% for i in range (row.zakladni_kapital|length) %}
     {% if row.zakladni_kapital[i].vymaz_datum == 0 %}
         {% set zakladni_kapital_notes = zakladni_kapital_notes.append(row.zakladni_kapital[i]) %}
-        {% endif %}
+    {% endif %}
+{% endfor %}
+
+{% set sole_shareholder_notes = [] %}
+{% for i in range (row.jediny_akcionar|length) %}
+    {% if row.jediny_akcionar[i].vymaz_datum == 0 %}
+        {% set sole_shareholder_notes = sole_shareholder_notes.append(row.jediny_akcionar[i]) %}
+    {% endif %}
+{% endfor %}
+
+{% set shares_notes = [] %}
+{% for i in range (row.akcie|length) %}
+    {% if row.akcie[i].vymaz_datum == 0 %}
+        {% set shares_notes = shares_notes.append(row.akcie[i]) %}
+    {% endif %}
+{% endfor %}
+
+{% set prokurist_notes = [] %}
+{% for i in range (row.prokurista|length) %}
+    {% if row.prokurista[i].vymaz_datum == 0 %}
+        {% set prokurist_notes = prokurist_notes.append(row.prokurista[i]) %}
+    {% endif %}
+{% endfor %}
+
+{% set prokurist_common_text_notes = [] %}
+{% for i in range (row.prokura_common_text|length) %}
+    {% if row.prokura_common_text[i].vymaz_datum == 0 %}
+        {% set prokurist_common_text_notes = prokurist_common_text_notes.append(row.prokura_common_text[i]) %}
+    {% endif %}
 {% endfor %}
 
 {% set ostatni_skutecnosti_notes = [] %}
 {% for i in range (row.ostatni_skutecnosti|length) %}
     {% if row.ostatni_skutecnosti[i].vymaz_datum == 0 %}
         {% set ostatni_skutecnosti_notes = ostatni_skutecnosti_notes.append(row.ostatni_skutecnosti[i]) %}
-        {% endif %}
+    {% endif %}
 {% endfor %}
 
 {% set insolvency_notes = [] %}
 {% for i in range (row.insolvence|length) %}
     {% if row.insolvence[i].vymaz_datum == 0 %}
         {% set insolvency_notes = insolvency_notes.append(row.insolvence[i].insolvency_event) %}
-        {% endif %}
+    {% endif %}
 {% endfor %}
 
 {% set konkurz_notes = [] %}
 {% for i in range (row.konkurz|length) %}
     {% if row.konkurz[i].vymaz_datum == 0 %}
         {% set konkurz_notes = konkurz_notes.append(row.konkurz[i].konkurz_event) %}
-        {% endif %}
+    {% endif %}
 {% endfor %}
-
-{% set zapis_split = row.zapis.split("-") %}
-{% if zapis_split[1] == "01" %}
-    {% set mesic = "ledna" %}
-{% elif zapis_split[1] == "02" %}
-    {% set mesic = "února" %}
-{% elif zapis_split[1] == "03" %}
-    {% set mesic = "března" %}
-{% elif zapis_split[1] == "04" %}
-    {% set mesic = "dubna" %}
-{% elif zapis_split[1] == "05" %}
-    {% set mesic = "května" %}
-{% elif zapis_split[1] == "06" %}
-    {% set mesic = "června" %}
-{% elif zapis_split[1] == "07" %}
-    {% set mesic = "července" %}
-{% elif zapis_split[1] == "08" %}
-    {% set mesic = "srpna" %}
-{% elif zapis_split[1] == "09" %}
-    {% set mesic = "září" %}
-{% elif zapis_split[1] == "10" %}
-    {% set mesic = "října" %}
-{% elif zapis_split[1] == "11" %}
-    {% set mesic = "listopadu" %}
-{% elif zapis_split[1] == "12" %}
-    {% set mesic = "prosince" %}
-{% endif %}
-
-{% if zapis_split[2][0] == "0" %}
-    {% set den = zapis_split[2][1]  %}
-{% else %}
-    {% set den = zapis_split[2]  %}
-{% endif %}
 
 {% if row.soud == "MSPH" %}
     {% set soud = "Městského soudu v Praze" %}
@@ -122,13 +117,17 @@
 <h2>{{ row.nazev }}, {{ row.soudni_zapis[i].oddil }} {{ row.soudni_zapis[i].vlozka }} vedená u {{ row.soudni_zapis[i].soud }}</h2>
 {% endif %}
 {% endfor %}
-<p><a href="/">Zpět na vyhledání.</a></p>
+<p><a href="/">Zpět na vyhledání</a></p>
 
 <table class= "table" style="width: 100%">
+    <!-- Display registration date -->
     <tr>
         <td style="width:15%">Datum vzniku a zápisu:</td>
-        <td style="width:85%">{{den}}. {{mesic}} {{zapis_split[0]}}</td>
+        <td style="width:85%">{{row.zapis}}</td>
     </tr>
+    <!-- END Display registration date -->
+    
+    <!-- Display court registration -->
     <tr>
         <td>Spisová značka:</td>
         {% for i in range (row.soudni_zapis|length) %}
@@ -137,6 +136,9 @@
             {% endif %}
         {% endfor %}
     </tr>
+    <!-- END Display court registrations -->
+
+    <!-- Display business names -->
     <tr>
         <td>Obchodní firma:</td>
         {% for i in range (row.obchodni_firma|length) %}
@@ -145,19 +147,38 @@
             {% endif %}
         {% endfor %}
     </tr>
+    <!-- END Display business names -->
+
+    <!-- Display registered office -->
     <tr>
-        <td>Sídlo:</td>
-        <td>{{ row.sidlo }}</td>
+        <td>Sídlo:{{ row.sidlo_text[0]}}</td>
+        {% for i in range (row.sidlo_text|length) %}
+            {% if row.sidlo_text[i].vymaz_datum == 0 %}
+            <td>{{ row.sidlo_text[i].sidlo_text.adresa_text }}</td>
+            {% endif %}
+        {% endfor %}
     </tr>
+    <!-- END Display registered office -->
+
+    <!-- Display ICO -->
     <tr>
         <td>Identifikační číslo:</td>
         <td>{{ ico_buffer|join("") }}{{ row.ico }}</td>
     </tr>
+    <!-- END Display ICO -->
+
+    <!-- Display legal form -->
     <tr>
         <td>Právní forma:</td>
-        <td>{{ row.pravni_forma[0].pravni_forma }}</td>
+        {% for i in range (row.pravni_forma_text|length) %}
+            {% if row.pravni_forma_text[i].vymaz_datum == 0 %}
+            <td>{{ row.pravni_forma_text[i].pravni_forma_text.pravni_forma }}</td>
+            {% endif %}
+        {% endfor %}
     </tr>
+    <!-- END Display legal form -->
 
+    <!-- Display registered capital -->
     {% if zakladni_kapital_notes|length > 0 %}
     <tr>
         {% if zakladni_kapital_notes[0].vklad_typ == "KORUNY" %}
@@ -189,79 +210,150 @@
         <td>{{ underlne_style_open|safe }} {{ vklad_typ_description }} {{ vklad_typ_symbol }} {% if splaceni_typ_description != "0" %} <br> Splaceno: {{ splaceni_typ_description }} {{ splaceni_typ_symbol }} {% endif %}  {{ underlne_style_close|safe }}</td>
     </tr>
     {% endif %}
-    
+    <!-- END Display registered capital -->
+
+    <!-- Display area of business -->
     {% if predmety_podnikani_notes|length > 0 %}
+    {% for i in range (predmety_podnikani_notes|length) %}
     <tr>
-        <td>Předmět podnikání:</td>
-        <td>{{ predmety_podnikani_notes[0] }}</td>
-    </tr>
-    {% for i in range (1, predmety_podnikani_notes|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Předmět podnikání:{% endif %}</td>
         <td>{{ predmety_podnikani_notes[i] }}</td>
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Display area of business -->
 
+    <!-- Display areas of activities -->
     {% if predmety_cinnosti_notes|length > 0 %}
+    {% for i in range (predmety_cinnosti_notes|length) %}
     <tr>
-        <td>Předmět činnosti:</td>
-        <td>{{ predmety_cinnosti_notes[0] }}</td>
-    </tr>
-    {% for i in range (1, predmety_cinnosti_notes|length) %}
-    <tr>
-        <td></td>
+        <td>{% if i == 0%}Předmět činnosti:{% endif %}</td>
         <td>{{ predmety_cinnosti_notes[i] }}</td>
     </tr>    
     {% endfor %}
     {% endif %}
+    <!-- END Display areas of activities -->
 
-    {% if insolvency_notes|length > 0 %}
+    <!-- Display statutory bodies -->
+    <!-- END Display statutory bodies -->
+
+    <!-- Display supervisory board-->
+    <!-- END Display supervisory board-->
+
+    <!-- Display prokurist -->
+    {% if prokurist_notes|length > 0 %}
+    {% for i in range (prokurist_notes|length) %}
     <tr>
-        <td>Údaje o insolvencích:</td>
-        <td>{{ insolvency_notes[0] }}</td>
+        <td>{% if i == 0%}Prokura:{% endif %}</td>
+        <td>{{ prokurist_notes[i].jmeno.jmeno }} {{ prokurist_notes[i].jmeno.prijmeni }}{% if prokurist_notes[i].jmeno.datum_naroz != "" %}, nar. {{ prokurist_notes[i].jmeno.datum_naroz }}{% endif %}<br> 
+            {{ prokurist_notes[i].adresa.adresa_text }}{% if prokurist_notes[i].text_prokurista != "0" %}<br>{{ prokurist_notes[i].text_prokurista }}{% endif %}</td>
+    </tr>    
+    {% endfor %}
+    {% if prokurist_common_text_notes|length > 0 %}
+    <tr>
         <td></td>
-    </tr>        
-        {% for i in range (1, insolvency_notes|length) %}
+        <td>{{ prokurist_common_text_notes.prokura_text }}</td>
+    </tr>    
+    {% endif %}
+    {% endif %}
+    <!-- END Display prokurist -->
+
+    <!-- Display sole shareholder -->
+    {% if sole_shareholder_notes|length > 0 %}
+        {% for i in range (sole_shareholder_notes|length) %}
         <tr>
-            <td></td>
+            <td>{% if i == 0%}Jediný akcionář:{% endif %}</td>
+            <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %} {{ sole_shareholder_notes[i].jmeno.jmeno }} {{ sole_shareholder_notes[i].jmeno.prijmeni }}{% if sole_shareholder_notes[i].jmeno.datum_naroz != "" %}, nar. {{ sole_shareholder_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+                {% if sole_shareholder_notes[i].akcionar_fo_id == None %} {{ sole_shareholder_notes[i].oznaceni_po.nazev }}{% if sole_shareholder_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ sole_shareholder_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if sole_shareholder_notes[i].oznaceni_po.ico != 0 %}, IČ {{ sole_shareholder_notes[i].oznaceni_po.ico }}{% endif %} {% endif %} 
+                <br>{{sole_shareholder_notes[i].adresa.adresa_text}}</td>
+        </tr>   
+        {% endfor %}
+    {% endif %}
+    <!-- END Display sole shareholder -->
+
+    <!-- Display shareholders -->
+    <!-- END Display shareholders -->
+
+    <!-- Display shares -->
+    {% if shares_notes|length > 0 %}
+        {% for i in range (shares_notes|length) %}
+        <tr>
+            <td>{% if i == 0%}Akcie:{% endif %}</td>
+            {% if shares_notes[i].akcie_podoba == "LISTINNA" %}
+                {% set akcie_podoba_description = "v listinné podobě" %}
+            {% elif shares_notes[i].akcie_podoba == "ZAKNIHOVANA" %}
+                {% set akcie_podoba_description = "v zaknihované podobě" %}
+            {% elif shares_notes[i].akcie_podoba == "IMOBILIZOVANA" %}
+                {% set akcie_podoba_description = "v imobilizované podobě" %}            
+            {% else %}
+                {% set akcie_podoba_description = "" %}    
+            {% endif %}
+            
+            {% if shares_notes[i].akcie_typ == "KMENOVE_NA_JMENO" %}
+                {% set akcie_typ_description = "kmenové akcie na jméno" %}
+            {% elif shares_notes[i].akcie_typ == "KMENOVE_NA_MAJITELE" %}
+                {% set akcie_typ_description = "kmenové akcie na majitele" %}
+            {% elif shares_notes[i].akcie_typ == "KUSOVE_NA_JMENO" %}
+                {% set akcie_typ_description = "kusové akcie" %}
+            {% elif shares_notes[i].akcie_typ == "NA_JMENO" %}
+                {% set akcie_typ_description = "akcie na jméno" %}
+            {% elif shares_notes[i].akcie_typ == "NA_MAJITELE" %}
+                {% set akcie_typ_description = "akcie na majitele" %}
+            {% elif shares_notes[i].akcie_typ == "PRIORITNI_NA_JMENO" %}
+                {% set akcie_typ_description = "prioritní akcie na jméno" %}                   
+            {% elif shares_notes[i].akcie_typ == "ZAMESTNANECKE_NA_JMENO" %}
+                {% set akcie_typ_description = "zaměstnanecké akcie na jméno" %}
+            {% elif shares_notes[i].akcie_typ == "ZVLASTNI_PRAVA" %}
+                {% set akcie_typ_description = "akcie se zvláštními právy" %}
+            {% else %}
+                {% set akcie_typ_description = "" %}    
+            {% endif %}  
+
+            {% if shares_notes[i].akcie_hodnota_typ == "KORUNY" %}
+                {% set akcie_hodnota_typ_symbol = "Kč" %}
+            {% elif shares_notes[i].akcie_hodnota_typ == "EURA" %}
+                {% set akcie_hodnota_typ_symbol = "euro" %}  
+            {% else %}
+                {% set akcie_hodnota_typ_symbol = "" %}
+            {% endif %}
+            <td>{{ shares_notes[i].akcie_pocet }} ks {{ akcie_typ_description }} {{ akcie_podoba_description }}  ve jmenovité hodnotě {{ shares_notes[i].akcie_hodnota_value }} {{ akcie_hodnota_typ_symbol }} {% if shares_notes[i].akcie_text != "0"  %} <br> {{ shares_notes[i].akcie_text }} {% endif %}</td>
+        </tr>   
+        {% endfor %}
+    {% endif %}
+    <!-- END Display shares -->
+
+    <!-- Insolvency Events -->
+    {% if insolvency_notes|length > 0 %}    
+        {% for i in range (insolvency_notes|length) %}
+        <tr>
+            <td>{% if i == 0%}Údaje o insolvencích:{% endif %}</td>
             <td>{{ insolvency_notes[i] }}</td>
-            <td></td>
         </tr>            
         {% endfor %}
     {% endif %}
+    <!-- END Insolvency Events -->
 
+    <!-- Konkurz Events -->
     {% if konkurz_notes|length > 0 %}
-    <tr>
-        <td>Údaje o konkurzech:</td>
-        <td>{{ konkurz_notes[0] }}</td>
-        <td></td>
-    </tr>        
-        {% for i in range (1, konkurz_notes|length) %}
+        {% for i in range (konkurz_notes|length) %}
         <tr>
-            <td></td>
+            <td>{% if i == 0%}Údaje o konkurzech:{% endif %}</td>
             <td>{{ konkurz_notes[i] }}</td>
-            <td></td>
         </tr>            
         {% endfor %}
     {% endif %}
+    <!-- END Konkurz Events -->
 
-
-
-    {% if ostatni_skutecnosti_notes|length > 0 %}
-    <tr>
-        <td>Ostatní skutečnosti:</td>
-        <td>{{ ostatni_skutecnosti_notes[0].ostatni_skutecnost }}</td>
-        <td></td>
-    </tr>        
-        {% for i in range (1, ostatni_skutecnosti_notes|length) %}
+    <!-- Ostatni skutecnosti -->
+    {% if ostatni_skutecnosti_notes|length > 0 %}   
+        {% for i in range (ostatni_skutecnosti_notes|length) %}
         <tr>
-            <td></td>
+            <td>{% if i == 0%}Ostatní skutečnosti:{% endif %}</td>
             <td>{{ ostatni_skutecnosti_notes[i].ostatni_skutecnost }}</td>
-            <td></td>
         </tr>            
         {% endfor %}
     {% endif %}
+    <!-- END Ostatni skutecnosti -->
 
 </table>
     

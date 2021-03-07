@@ -189,6 +189,7 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
                 spol_ico = str(get_prop(elem, "osoba/ico"))
                 regCislo = str(get_prop(elem, "osoba/regCislo"))
                 text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
+                # TODO Fix - make reference to type of person - some foreign persons have no ico or regCo, so they are assigned a number for a natural person
                 if spol_ico == "0" and regCislo == "0":
                     # I probably do not need the primary sql key
                     spolecnik_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
@@ -1103,7 +1104,7 @@ def delete_archive(file):
 
 purge_DB()
 
-# parse_to_DB("data/as-full-ceske_budejovice-2021.xml")
+parse_to_DB("data/as-full-plzen-2021.xml")
 # parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
@@ -1112,6 +1113,6 @@ def do_both():
     general_update("down")
     general_update("db_update")
 
-do_both()
+# do_both()
 
 # cProfile.run('general_update("db_update")')
