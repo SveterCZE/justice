@@ -443,7 +443,7 @@
             {% set underlne_style_close = "" %}
         {% endif %}
         <td>{{ underlne_style_open|safe }} {% if row.spolecnici[i].spolecnik_po_id == None %} {{ row.spolecnici[i].jmeno.jmeno }} {{ row.spolecnici[i].jmeno.prijmeni }}{% if row.spolecnici[i].jmeno.datum_naroz != "" %}, nar. {{ row.spolecnici[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
-            {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }} {% if row.spolecnici[i].oznaceni_po.reg_cislo == 0 %}, IČ {{ row.spolecnici[i].oznaceni_po.ico }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico == 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %} {% endif %} 
+            {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }} {% if row.spolecnici[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico != 0 %}, IČ {{ row.spolecnici[i].oznaceni_po.ico }}{% endif %} {% endif %} 
             <br>{{row.spolecnici[i].adresa.adresa_text}} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici[i].zapis_datum }} {% if row.spolecnici[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
         <!-- Insert individual ownership interests -->

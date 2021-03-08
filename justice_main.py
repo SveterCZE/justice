@@ -186,11 +186,11 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
             spolecnik_oznaceni = str(get_prop(elem, "hlavicka"))
             if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_oznaceni == "Společník":
                 # TODO alternativy pro None, Spolecny podil a Uvolneny podil
-                spol_ico = str(get_prop(elem, "osoba/ico"))
-                regCislo = str(get_prop(elem, "osoba/regCislo"))
                 text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
+                nazev = str(get_prop(elem, "osoba/nazev"))
                 # TODO Fix - make reference to type of person - some foreign persons have no ico or regCo, so they are assigned a number for a natural person
-                if spol_ico == "0" and regCislo == "0":
+                # if spol_ico == "0" and regCislo == "0":
+                if nazev == "0":
                     # I probably do not need the primary sql key
                     spolecnik_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
                     adresa_id = find_and_store_address(c, elem)
@@ -199,6 +199,8 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
                     spolecnik_id = c.fetchone()[0]
                     # print(ICO, spolecnik_fo_id, adresa_id)
                 else:
+                    spol_ico = str(get_prop(elem, "osoba/ico"))
+                    regCislo = str(get_prop(elem, "osoba/regCislo"))
                     spolecnik_po_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo)
                     adresa_id = find_and_store_address(c, elem)
                     c.execute("INSERT INTO spolecnici (company_id, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
@@ -517,8 +519,11 @@ def find_registered_office(c, ICO, elem2, conn, primary_sql_key, element):
             ancillary_table_key = get_anciallary_table_key(c, elem, sidlo)
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
         return 0
-    except:
-        pass
+    except Exception as f:
+        if ICO == "49790498":
+            print(f)
+        else:
+            pass
 
 def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
     try:
@@ -1104,7 +1109,7 @@ def delete_archive(file):
 
 purge_DB()
 
-parse_to_DB("data/as-full-plzen-2021.xml")
+parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
 # parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")

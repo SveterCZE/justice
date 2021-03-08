@@ -150,9 +150,9 @@ class Predmety_Cinnosti_Association(db.Model):
 
 class Sidlo_Association(db.Model):
     __tablename__ = 'sidlo_relation'
-    id = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
-    sidlo_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False, primary_key=True)
+    sidlo_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     sidlo_text = db.relationship("Sidlo", back_populates="company_sidlo")
@@ -160,9 +160,9 @@ class Sidlo_Association(db.Model):
 
 class Pravni_Forma_Association_v2(db.Model):
     __tablename__ = 'pravni_formy_relation'
-    id = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
-    pravni_forma_id = db.Column(db.Integer, db.ForeignKey('pravni_formy.id'), nullable=False, primary_key=True)
+    pravni_forma_id = db.Column(db.Integer, db.ForeignKey('pravni_formy.id'), nullable=False)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     pravni_forma_text = db.relationship("Pravni_Formy", back_populates="company_pravni_forma")

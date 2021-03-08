@@ -251,8 +251,10 @@
     {% endfor %}
     {% if prokurist_common_text_notes|length > 0 %}
     <tr>
+        {% for i in range (prokurist_common_text_notes|length) %}
         <td></td>
-        <td>{{ prokurist_common_text_notes.prokura_text }}</td>
+        <td>{{ prokurist_common_text_notes[i].prokura_text }}</td>
+        {% endfor %}
     </tr>    
     {% endif %}
     {% endif %}
