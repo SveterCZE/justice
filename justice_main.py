@@ -1109,7 +1109,7 @@ def delete_archive(file):
 
 purge_DB()
 
-parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
+# parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
 # parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
@@ -1118,6 +1118,6 @@ def do_both():
     general_update("down")
     general_update("db_update")
 
-# do_both()
+do_both()
 
 # cProfile.run('general_update("db_update")')

@@ -28,6 +28,13 @@
     {% endif %}
 {% endfor %}
 
+{% set spolecnici_notes = [] %}
+{% for i in range (row.spolecnici|length) %}
+    {% if row.spolecnici[i].vymaz_datum == 0 %}
+        {% set spolecnici_notes = spolecnici_notes.append(row.spolecnici[i]) %}
+    {% endif %}
+{% endfor %}
+
 {% set sole_shareholder_notes = [] %}
 {% for i in range (row.jediny_akcionar|length) %}
     {% if row.jediny_akcionar[i].vymaz_datum == 0 %}
@@ -39,6 +46,13 @@
 {% for i in range (row.akcie|length) %}
     {% if row.akcie[i].vymaz_datum == 0 %}
         {% set shares_notes = shares_notes.append(row.akcie[i]) %}
+    {% endif %}
+{% endfor %}
+
+{% set dozorci_rada_notes = [] %}
+{% for i in range (row.dozorci_rada_text|length) %}
+    {% if row.dozorci_rada_text[i].vymaz_datum == 0 %}
+        {% set dozorci_rada_notes = dozorci_rada_notes.append(row.dozorci_rada_text[i]) %}
     {% endif %}
 {% endfor %}
 
@@ -151,7 +165,7 @@
 
     <!-- Display registered office -->
     <tr>
-        <td>Sídlo:{{ row.sidlo_text[0]}}</td>
+        <td>Sídlo:</td>
         {% for i in range (row.sidlo_text|length) %}
             {% if row.sidlo_text[i].vymaz_datum == 0 %}
             <td>{{ row.sidlo_text[i].sidlo_text.adresa_text }}</td>
@@ -238,6 +252,41 @@
     <!-- END Display statutory bodies -->
 
     <!-- Display supervisory board-->
+    {% if dozorci_rada_notes|length > 0 %}
+    {% for i in range (dozorci_rada_notes|length) %}
+    <tr>
+        <td>Dozorčí rada:</td>
+        <td></td>
+    </tr>
+    <!-- Display individual supervisory board members -->
+    {% if dozorci_rada_notes[i].clenove|length > 0 %}
+        {% for j in range (dozorci_rada_notes[i].clenove|length) %}
+            {% if dozorci_rada_notes[i].clenove[j].vymaz_datum == 0 %}
+            <tr>
+                <td style = padding-left:2em>{% if dozorci_rada_notes[i].clenove[j].funkce != "0" %} {{dozorci_rada_notes[i].clenove[j].funkce }} {% endif %}</td>     
+                <td>{{ dozorci_rada_notes[i].clenove[j].jmeno.jmeno }} {{ dozorci_rada_notes[i].clenove[j].jmeno.prijmeni }}{% if dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+                    {{ dozorci_rada_notes[i].clenove[j].adresa.adresa_text }} 
+                    {% if dozorci_rada_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ dozorci_rada_notes[i].clenove[j].funkce_od}}{% endif %}
+                    {% if dozorci_rada_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ dozorci_rada_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <!-- END Display individual supervisory board members -->
+    {% if dozorci_rada_notes[i].pocet_clenu|length > 0 %}
+        {% for j in range (dozorci_rada_notes[i].pocet_clenu|length) %}
+            {% if dozorci_rada_notes[i].pocet_clenu[j].vymaz_datum == 0 %}
+            <tr>
+                <td style = padding-left:2em>Počet členů:</td>
+                <td>{{ dozorci_rada_notes[i].pocet_clenu[j].pocet_clenu_value }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    {% endfor %}
+    {% endif %}
+
     <!-- END Display supervisory board-->
 
     <!-- Display prokurist -->
@@ -274,6 +323,66 @@
     <!-- END Display sole shareholder -->
 
     <!-- Display shareholders -->
+    {% if spolecnici_notes|length > 0 %}
+    <tr>
+        <td>Společníci:</td>
+        <td></td>
+    </tr>  
+        {% for i in range (spolecnici_notes|length) %}
+        <tr>
+            <td style = padding-left:2em>Společník:</td>
+            <td>{% if spolecnici_notes[i].spolecnik_po_id == None %} {{ spolecnici_notes[i].jmeno.jmeno }} {{ spolecnici_notes[i].jmeno.prijmeni }}{% if spolecnici_notes[i].jmeno.datum_naroz != "" %}, nar. {{ spolecnici_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+                {% if spolecnici_notes[i].spolecnik_fo_id == None %} {{ spolecnici_notes[i].oznaceni_po.nazev }}{% if spolecnici_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ spolecnici_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if spolecnici_notes[i].oznaceni_po.ico != 0 %}, IČ {{ spolecnici_notes[i].oznaceni_po.ico }}{% endif %} {% endif %} 
+                <br>{{spolecnici_notes[i].adresa.adresa_text}}</td>
+        </tr>
+        {% set spolecnik_podily = [] %}
+        {% for j in range (spolecnici_notes[i].podily|length) %}
+            {% if spolecnici_notes[i].podily[j].vymaz_datum == 0 %}
+                {% set spolecnik_podily = spolecnik_podily.append(spolecnici_notes[i].podily[j]) %}
+            {% endif %}
+        {% endfor %}
+        
+        {% for k in range (spolecnik_podily|length) %}
+        <tr>
+            <td style = padding-left:4em>Podíl:</td>
+                <!-- Set type of deposit -->
+                {% if spolecnik_podily[k].vklad_typ == "KORUNY" %}
+                    {% set vklad_typ_string = "Kč" %}
+                {% elif spolecnik_podily[k].vklad_typ == "EURA" %}
+                    {% set vklad_typ_string = "Euro" %}
+                {% else %}
+                    {% set vklad_typ_string = "" %}
+                {% endif %}
+
+                <!-- Set type of repaid contribution -->
+                {% if spolecnik_podily[k].splaceni_typ == "KORUNY" %}
+                    {% set splaceni_typ_string = "Kč" %}
+                {% elif spolecnik_podily[k].splaceni_typ == "PROCENTA" %}
+                    {% set splaceni_typ_string = "%" %}                      
+                {% elif spolecnik_podily[k].splaceni_typ == "EURA" %}
+                    {% set splaceni_typ_string = "Euro" %}
+                {% else %}
+                    {% set splaceni_typ_string = "" %}
+                {% endif %}
+                
+                <!-- Set type of share -->
+                {% if spolecnik_podily[k].souhrn_typ == "PROCENTA" %}
+                    {% set souhrn_typ_string = "%" %}
+                {% else %}
+                    {% set souhrn_typ_string = "" %}
+                {% endif %}            
+            <td>Vklad: {{ spolecnik_podily[k].vklad_text }} {{ vklad_typ_string }}<br>
+                    Splaceno: {{ spolecnik_podily[k].splaceni_text }} {{ splaceni_typ_string }}<br>
+                    {% if spolecnik_podily[k].souhrn_text != "0"%}Podíl: {{ spolecnik_podily[k].souhrn_text }} {{ souhrn_typ_string }}{% endif %}
+                    {% if spolecnik_podily[k].druh_podilu.druh_podilu != "0" %}<br>Druh podílu: {{ spolecnik_podily[k].druh_podilu.druh_podilu }}{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+
+
+        
+        {% endfor %}
+    {% endif %}
     <!-- END Display shareholders -->
 
     <!-- Display shares -->
