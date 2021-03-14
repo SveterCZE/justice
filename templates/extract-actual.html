@@ -28,6 +28,13 @@
     {% endif %}
 {% endfor %}
 
+{% set statutarni_organ_notes = [] %}
+{% for i in range (row.statutarni_organ_text|length) %}
+    {% if row.statutarni_organ_text[i].vymaz_datum == 0 %}
+        {% set statutarni_organ_notes = statutarni_organ_notes.append(row.statutarni_organ_text[i]) %}
+    {% endif %}
+{% endfor %}
+
 {% set spolecnici_notes = [] %}
 {% for i in range (row.spolecnici|length) %}
     {% if row.spolecnici[i].vymaz_datum == 0 %}
@@ -249,6 +256,58 @@
     <!-- END Display areas of activities -->
 
     <!-- Display statutory bodies -->
+    {% if statutarni_organ_notes|length > 0 %}
+    {% for i in range (statutarni_organ_notes|length) %}
+    <tr>
+        <td>{{ statutarni_organ_notes[i].statutarni_organ_text.statutarni_organ_text }}:</td>
+        <td></td>
+    </tr>
+
+    <!-- Display individual members -->
+    {% if statutarni_organ_notes[i].clenove|length > 0 %}
+        {% for j in range (statutarni_organ_notes[i].clenove|length) %}
+            {% if statutarni_organ_notes[i].clenove[j].vymaz_datum == 0 %}
+            <tr>
+                <td style = padding-left:2em>{% if statutarni_organ_notes[i].clenove[j].funkce != "0" %} {{ statutarni_organ_notes[i].clenove[j].funkce }} {% endif %}</td>        
+                <td>{% if statutarni_organ_notes[i].clenove[j].jmeno.jmeno != "0" %}{{ statutarni_organ_notes[i].clenove[j].jmeno.jmeno }} {% endif %}
+                    {{ statutarni_organ_notes[i].clenove[j].jmeno.prijmeni }}{% if statutarni_organ_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ statutarni_organ_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+                    {{ statutarni_organ_notes[i].clenove[j].adresa.adresa_text }} 
+                    {% if statutarni_organ_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ statutarni_organ_notes[i].clenove[j].funkce_od}}{% endif %}
+                    {% if statutarni_organ_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ statutarni_organ_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <!-- END Display individual members -->
+
+    <!-- Display number of members -->
+    {% if statutarni_organ_notes[i].pocet_clenu|length > 0 %}
+        {% for j in range (statutarni_organ_notes[i].pocet_clenu|length) %}
+            {% if statutarni_organ_notes[i].pocet_clenu[j].vymaz_datum == 0 %}
+            <tr>    
+                <td style = padding-left:2em>Počet členů:</td>
+                <td>{{ statutarni_organ_notes[i].pocet_clenu[j].pocet_clenu_value }}</td>
+            </tr>
+            {% endif %}    
+        {% endfor %}
+    {% endif %}   
+    <!-- END Display number of members -->
+
+    <!-- Display method of representation -->
+    {% if statutarni_organ_notes[i].zpusoby_jednani|length > 0 %}
+        {% for j in range (statutarni_organ_notes[i].zpusoby_jednani|length) %}
+            {% if statutarni_organ_notes[i].zpusoby_jednani[j].vymaz_datum == 0 %}
+            <tr>    
+                <td style = padding-left:2em>Způsob jednání:</td>
+                <td>{{ statutarni_organ_notes[i].zpusoby_jednani[j].zpusob_jednani.zpusob_jednani_text }}</td>
+            </tr>
+            {% endif %}    
+        {% endfor %}
+    {% endif %}   
+    <!-- END Display method of representation -->
+
+    {% endfor %}
+    {% endif %}
     <!-- END Display statutory bodies -->
 
     <!-- Display supervisory board-->
@@ -264,7 +323,8 @@
             {% if dozorci_rada_notes[i].clenove[j].vymaz_datum == 0 %}
             <tr>
                 <td style = padding-left:2em>{% if dozorci_rada_notes[i].clenove[j].funkce != "0" %} {{dozorci_rada_notes[i].clenove[j].funkce }} {% endif %}</td>     
-                <td>{{ dozorci_rada_notes[i].clenove[j].jmeno.jmeno }} {{ dozorci_rada_notes[i].clenove[j].jmeno.prijmeni }}{% if dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+                <td>{% if dozorci_rada_notes[i].clenove[j].jmeno.jmeno != 0 %}{{ dozorci_rada_notes[i].clenove[j].jmeno.jmeno }} {% endif %}
+                    {{ dozorci_rada_notes[i].clenove[j].jmeno.prijmeni }}{% if dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
                     {{ dozorci_rada_notes[i].clenove[j].adresa.adresa_text }} 
                     {% if dozorci_rada_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ dozorci_rada_notes[i].clenove[j].funkce_od}}{% endif %}
                     {% if dozorci_rada_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ dozorci_rada_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
@@ -294,7 +354,8 @@
     {% for i in range (prokurist_notes|length) %}
     <tr>
         <td>{% if i == 0%}Prokura:{% endif %}</td>
-        <td>{{ prokurist_notes[i].jmeno.jmeno }} {{ prokurist_notes[i].jmeno.prijmeni }}{% if prokurist_notes[i].jmeno.datum_naroz != "" %}, nar. {{ prokurist_notes[i].jmeno.datum_naroz }}{% endif %}<br> 
+        <td>{% if prokurist_notes[i].jmeno.jmeno != "0" %}{{ prokurist_notes[i].jmeno.jmeno }} {% endif %}
+            {{ prokurist_notes[i].jmeno.prijmeni }}{% if prokurist_notes[i].jmeno.datum_naroz != "" %}, nar. {{ prokurist_notes[i].jmeno.datum_naroz }}{% endif %}<br> 
             {{ prokurist_notes[i].adresa.adresa_text }}{% if prokurist_notes[i].text_prokurista != "0" %}<br>{{ prokurist_notes[i].text_prokurista }}{% endif %}</td>
     </tr>    
     {% endfor %}
@@ -314,7 +375,9 @@
         {% for i in range (sole_shareholder_notes|length) %}
         <tr>
             <td>{% if i == 0%}Jediný akcionář:{% endif %}</td>
-            <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %} {{ sole_shareholder_notes[i].jmeno.jmeno }} {{ sole_shareholder_notes[i].jmeno.prijmeni }}{% if sole_shareholder_notes[i].jmeno.datum_naroz != "" %}, nar. {{ sole_shareholder_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+            <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %} 
+                {% if sole_shareholder_notes[i].jmeno.jmeno != "0" %}{{ sole_shareholder_notes[i].jmeno.jmeno }} {% endif %}
+                {{ sole_shareholder_notes[i].jmeno.prijmeni }}{% if sole_shareholder_notes[i].jmeno.datum_naroz != "" %}, nar. {{ sole_shareholder_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
                 {% if sole_shareholder_notes[i].akcionar_fo_id == None %} {{ sole_shareholder_notes[i].oznaceni_po.nazev }}{% if sole_shareholder_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ sole_shareholder_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if sole_shareholder_notes[i].oznaceni_po.ico != 0 %}, IČ {{ sole_shareholder_notes[i].oznaceni_po.ico }}{% endif %} {% endif %} 
                 <br>{{sole_shareholder_notes[i].adresa.adresa_text}}</td>
         </tr>   
@@ -331,7 +394,9 @@
         {% for i in range (spolecnici_notes|length) %}
         <tr>
             <td style = padding-left:2em>Společník:</td>
-            <td>{% if spolecnici_notes[i].spolecnik_po_id == None %} {{ spolecnici_notes[i].jmeno.jmeno }} {{ spolecnici_notes[i].jmeno.prijmeni }}{% if spolecnici_notes[i].jmeno.datum_naroz != "" %}, nar. {{ spolecnici_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+            <td>{% if spolecnici_notes[i].spolecnik_po_id == None %} 
+                {% if spolecnici_notes[i].jmeno.jmeno != "0" %}{{ spolecnici_notes[i].jmeno.jmeno }} {% endif %}
+                {{ spolecnici_notes[i].jmeno.prijmeni }}{% if spolecnici_notes[i].jmeno.datum_naroz != "" %}, nar. {{ spolecnici_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
                 {% if spolecnici_notes[i].spolecnik_fo_id == None %} {{ spolecnici_notes[i].oznaceni_po.nazev }}{% if spolecnici_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ spolecnici_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if spolecnici_notes[i].oznaceni_po.ico != 0 %}, IČ {{ spolecnici_notes[i].oznaceni_po.ico }}{% endif %} {% endif %} 
                 <br>{{spolecnici_notes[i].adresa.adresa_text}}</td>
         </tr>

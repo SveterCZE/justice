@@ -20,18 +20,31 @@ class JusticeSearchForm(Form):
              ("text_beginning","Začátek výrazu"),
              ("text_exact","Přesný výraz"),
              ]
+    actual_options = [("actual_results","Jen platné"),
+                    ("complete_results","Platné i neplatné"),]
     nazev_subjektu = StringField(u'Název subjektu:')
     nazev_subjektu_selection = SelectField('', choices=search_options)
+    nazev_search_actual = SelectField('', choices=actual_options)
+
     ico_search = StringField(u'Identifikační číslo:')
     ico_search_selection = SelectField('', choices=search_options) 
+    
     obec_search = StringField(u'Obec:')
-    obec_search_selection = SelectField('', choices=search_options) 
+    obec_search_selection = SelectField('', choices=search_options)
+    obec_search_actual = SelectField('', choices=actual_options) 
+    
     ulice_search = StringField(u'Ulice:')
-    ulice_search_selection = SelectField('', choices=search_options) 
+    ulice_search_selection = SelectField('', choices=search_options)
+    ulice_search_actual = SelectField('', choices=actual_options) 
+    
     oddil_search = StringField(u'Oddíl:')
     oddil_search_selection = SelectField('', choices=search_options) 
+    oddil_search_actual = SelectField('', choices=actual_options)
+    
     vlozka_search = StringField(u'Vložka:')
-    vlozka_search_selection = SelectField('', choices=search_options) 
+    vlozka_search_selection = SelectField('', choices=search_options)
+    vlozka_search_actual = SelectField('', choices=actual_options)
+    
     formy = [       ("",""),
                     ('Akciová společnost', 'Akciová společnost'),
                    ('Společnost s ručením omezeným', 'Společnost s ručením omezeným'),
@@ -57,6 +70,8 @@ class JusticeSearchForm(Form):
                    ('Evropská družstevní společnost', 'Evropská družstevní společnost'),
                    ]
     pravni_forma_search = SelectField(u'Právní forma:', choices=formy)
+    pravni_forma_actual = SelectField('', choices=actual_options)
+
     soudy = [("",""),
              ("MSPH","Městský soud v Praze"),
              ("KSCB","Krajský soud v Českých Budějovicích"),
@@ -66,7 +81,9 @@ class JusticeSearchForm(Form):
              ("KSBR","Krajský soud v Brně"),
              ("KSOS","Krajský soud v Ostravě"),
              ] 
-    soud_search = SelectField(u'Rejstříkjový soud:', choices=soudy)   
+    soud_search = SelectField(u'Rejstříkjový soud:', choices=soudy)
+    soud_search_actual = SelectField('', choices=actual_options)
+
     insolvent_only_search = BooleanField("Pouze společnosti s insolvenčním zápisem")
     zapis_do = DateField(u'Zapsáno do:', format='%Y-%m-%d')
     zapis_od = DateField(u'Zapsáno od:', format='%Y-%m-%d')
@@ -83,5 +100,6 @@ class CompanyForm(Form):
     oddil = SelectField('oddil', choices=oddil)
     vlozka = StringField('vlozka')
     soud = StringField('soud')
-    
+
+
     

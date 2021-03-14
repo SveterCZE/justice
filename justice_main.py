@@ -184,7 +184,9 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
             zapis_datum = str(get_prop(elem, "zapisDatum"))
             vymaz_datum = str(get_prop(elem, "vymazDatum"))
             spolecnik_oznaceni = str(get_prop(elem, "hlavicka"))
-            if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_oznaceni == "Společník":
+            # TODO Chech these conditions, they sometimes cause a person not being stored (IC 27650081)
+            # if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_oznaceni == "Společník":
+            if spolecnik_type == "SPOLECNIK_OSOBA":
                 # TODO alternativy pro None, Spolecny podil a Uvolneny podil
                 text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
                 nazev = str(get_prop(elem, "osoba/nazev"))

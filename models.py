@@ -78,8 +78,8 @@ class MyType(types.TypeDecorator):
 
     impl = types.Unicode
 
-    def process_bind_param(self, value, dialect):
-        return convert_date_to_string(value)
+    # def process_bind_param(self, value, dialect):
+    #     return convert_date_to_string(value)
 
     def process_result_value(self, value, dialect):
         # return "PREFIX:" + value
@@ -321,7 +321,7 @@ class Company(db.Model):
     ostatni_skutecnosti = db.relationship("Ostatni_Skutecnosti", backref="companies")
     akcie = db.relationship("Akcie", backref="companies")
     obchodni_firma = db.relationship("Nazvy", backref="companies")
-    soudni_zapis = db.relationship("Soudni_Zapisy", backref="companies")
+    soudni_zapis = db.relationship("Soudni_Zapisy")
     sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
     pravni_forma_text = db.relationship("Pravni_Forma_Association_v2", back_populates="company")
     statutarni_organ_text = db.relationship("Statutarni_Organ_Association", back_populates="company")

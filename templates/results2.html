@@ -6,28 +6,23 @@
     {% for row in results %}
     
         {% set insolvency_notes = [] %}
-        {% for elem in row.insolvence %}
-            {% set insolvency_notes = insolvency_notes.append(elem.insolvency_event) %}
+        {% for i in range (row.insolvence|length) %}
+            {% if row.insolvence[i].vymaz_datum == 0 %}
+                {% set insolvency_notes = insolvency_notes.append(row.insolvence[i].insolvency_event) %}
+            {% endif %}    
         {% endfor %}
-    
 
-        
-        {% if row.soud == "MSPH" %}
-            {% set soud = "Městského soudu v Praze" %}
-        {% elif row.soud == "KSCB" %}
-            {% set soud = "Krajského soudu v Českých Budějovicích" %}
-        {% elif row.soud == "KSOS" %}
-            {% set soud = "Krajského soudu v Ostravě" %}
-        {% elif row.soud == "KSPL" %}
-            {% set soud = "Krajského soudu v Plzni" %}
-        {% elif row.soud == "KSBR" %}
-            {% set soud = "Krajského soudu v Brně" %}
-        {% elif row.soud == "KSHK" %}
-            {% set soud = "Krajského soudu v Hradci Králové" %}
-        {% elif row.soud == "KSUL" %}
-            {% set soud = "Krajského soudu v Ústí nad Labem" %}
-        {% endif %}
-        
+        {% set soud = [] %}
+        {% set oddil = [] %}
+        {% set vlozka = [] %}
+        {% for i in range (row.soudni_zapis|length) %}
+            {% if row.soudni_zapis[i].vymaz_datum == 0 %}
+                {% set soud = soud.append(row.soudni_zapis[i].soud) %}
+                {% set oddil = oddil.append(row.soudni_zapis[i].oddil) %}
+                {% set vlozka = vlozka.append(row.soudni_zapis[i].vlozka) %}
+            {% endif %}
+        {% endfor %}
+
         {% if insolvency_notes|length > 0 %}
             {% set table_style = "table table-danger" %}
         {% elif loop.index % 2 == 0 %}
@@ -46,9 +41,13 @@
             {% set ico_buffer = "" %}
         {% endif %}
     
+        {% set sidlo = [] %}
+        {% for i in range (row.sidlo_text|length) %}
+            {% if row.sidlo_text[i].vymaz_datum == 0 %}
+                {% set sidlo = sidlo.append(row.sidlo_text[i].sidlo_text.adresa_text) %}
+            {% endif %}
+        {% endfor %}
 
-        
-        
     <table class= "{{table_style}}" style="width: 100%">
     <p></p>
     <tr>
@@ -59,13 +58,13 @@
     </tr>
     <tr>
         <td>Spisová značka:</td>
-        <td>{{ row.oddil }} {{ row.vlozka }} vedená u {{ soud }}</td>
+        <td>{{ oddil|join("") }} {{ vlozka|join("") }} vedená u {{ soud|join("") }}</td>
         <td>Den zápisu:</td>
         <td>{{row.zapis}}</td>
     </tr>
     <tr>
         <td>Sídlo:</td>
-        <td>{{ row.sidlo }}</td>
+        <td>{{ sidlo|join("") }}</td>
         <td><a href="/{{ row.ico }}">Úplný výpis</a></td>
         <td><a href="/{{ row.ico }}-actual">Aktuální výpis</a></td>
     </tr>
