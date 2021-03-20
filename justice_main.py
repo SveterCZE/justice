@@ -22,10 +22,10 @@ def parse_to_DB(file):
         else:
             ICO = get_ICO(element)
             # Vlozit prazdny radek s ICO
-            insert_new_ICO(c, ICO, conn)
+            insert_new_ICO(c, ICO, conn, element)
             primary_sql_key = get_primary_sql_key(c, ICO)
             # Vlozit jednolive parametry
-            insert_primary_company_figures(c, ICO, element, conn)
+            # insert_primary_company_figures(c, ICO, element, conn)
             insert_company_relations(c, ICO, element, conn, primary_sql_key)
             # insert_obec_relation(c, conn, ICO, element, primary_sql_key)
             find_other_properties(c, ICO, element, conn, primary_sql_key)
@@ -41,6 +41,7 @@ def purge_DB():
         conn = sqlite3.connect('justice.db')
         c = conn.cursor()
         c.execute("DELETE FROM adresy")
+        c.execute("DELETE FROM adresy_v2")
         c.execute("DELETE FROM akcie")
         c.execute("DELETE FROM companies")
         c.execute("DELETE FROM dozorci_rada_relation")
@@ -183,10 +184,11 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
             spolecnik_type = str(get_prop(elem, "udajTyp/kod"))
             zapis_datum = str(get_prop(elem, "zapisDatum"))
             vymaz_datum = str(get_prop(elem, "vymazDatum"))
-            spolecnik_oznaceni = str(get_prop(elem, "hlavicka"))
+            # spolecnik_oznaceni = str(get_prop(elem, "hlavicka"))
+            spolecnik_typ =  str(get_prop(elem, "hodnotaUdaje/typ"))
             # TODO Chech these conditions, they sometimes cause a person not being stored (IC 27650081)
             # if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_oznaceni == "Společník":
-            if spolecnik_type == "SPOLECNIK_OSOBA":
+            if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_typ == "OSOBA":
                 # TODO alternativy pro None, Spolecny podil a Uvolneny podil
                 text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
                 nazev = str(get_prop(elem, "osoba/nazev"))
@@ -502,6 +504,9 @@ def find_registered_office(c, ICO, elem2, conn, primary_sql_key, element):
         vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
         sidlo = str(adresa(get_SIDLO_v3(elem2)))
         if vymaz_datum == "0":
+            sidlo2(c, elem2, primary_sql_key)
+            # Insert current seat into the main table
+            c.execute("UPDATE companies SET sidlo = (?) WHERE id = (?)",(sidlo,primary_sql_key,))
             insert_prop(c, sidlo, conn, ICO, "sidlo")
             obec = str(get_prop(elem2, ".//adresa/obec"))
             insert_instructions = [(obec,"obce", "obec_jmeno", "obce_relation")]
@@ -522,10 +527,24 @@ def find_registered_office(c, ICO, elem2, conn, primary_sql_key, element):
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
         return 0
     except Exception as f:
-        if ICO == "49790498":
-            print(f)
-        else:
-            pass
+        print(f)
+
+def sidlo2(c, elem, primary_sql_key):
+    try:
+        statNazev = get_prop(elem, ".//statNazev")
+        obec = get_prop(elem, ".//obec")
+        ulice = get_prop(elem, ".//ulice")
+        castObce = get_prop(elem, ".//castObce")
+        cisloPo = get_prop(elem, ".//cisloPo")
+        cisloOr = get_prop(elem, ".//cisloOr")
+        psc = get_prop(elem, ".//psc")
+        okres = get_prop(elem, ".//okres")
+        adresaText = get_prop(elem, ".//adresaText")
+        cisloEv = get_prop(elem, ".//cisloEv")
+        cisloText = get_prop(elem, ".//cisloText")
+        c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText, company_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText, primary_sql_key))
+    except Exception as f:
+        print(f)
 
 def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
     try:
@@ -571,6 +590,8 @@ def find_sp_zn(c, ICO, elem2, conn, primary_sql_key, element):
         oddil = str(get_prop(elem2, ".//spisZn/oddil"))
         vlozka = str(get_prop(elem2, ".//spisZn/vlozka"))
         c.execute("INSERT INTO zapis_soudy (company_id, zapis_datum, vymaz_datum, oddil, vlozka, soud) VALUES(?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, oddil, vlozka, soud,))
+        if vymaz_datum == "0":
+            c.execute("UPDATE companies SET oddil = (?), vlozka = (?), soud = (?) WHERE id = (?)",(oddil,vlozka,soud,primary_sql_key,))
     except:
         pass
 
@@ -821,17 +842,19 @@ def insert_prop_v2(c, prop, conn, ICO, column, table, sql_id):
 
 
 # Function to attempt to insert a placeholder for a new company based on ICO
-def insert_new_ICO(c, ICO, conn):
+def insert_new_ICO(c, ICO, conn, element):
 
     try:
-        c.execute("INSERT INTO companies (ico) VALUES (?);", (ICO,))
+        datum_zapis = str(get_prop(element, "zapisDatum"))
+        nazev = str(get_prop(element, "nazev"))
+        c.execute("INSERT INTO companies (ico, zapis, nazev) VALUES (?,?,?);", (ICO,datum_zapis,nazev,))
         return c.lastrowid
 
     # c.execute("INSERT INTO companies VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (ICO, "", "", "", "", "", "", "", "", "", ""))
 
     #     # conn.commit()
-    except:
-           pass
+    except Exception as f:
+           print(f)
 
 def get_ICO(element):
     try:
@@ -1111,7 +1134,7 @@ def delete_archive(file):
 
 purge_DB()
 
-# parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
+parse_to_DB("data/as-full-ceske_budejovice-2021.xml")
 # parse_to_DB("data/sro-full-ceske_budejovice-2021.xml")
 
 # parse_to_DB("sro-actual-praha-2020.xml")
@@ -1120,6 +1143,6 @@ def do_both():
     general_update("down")
     general_update("db_update")
 
-do_both()
+# do_both()
 
 # cProfile.run('general_update("db_update")')

@@ -4,10 +4,11 @@ from db_setup import init_db, db_session
 from forms import JusticeSearchForm, CompanyForm
 from flask import flash, render_template, request, redirect
 # from models import Company, Soud
-from models import Company, Obce, Ulice, Insolvency_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
+from models import Company, Obce, Ulice, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
 from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_Clen_Association, Fyzicka_Osoba, Spolecnici_Association, Podily_Association, Druhy_Podilu, Pravnicka_Osoba
 from models import Prokurista_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy
+from models import Adresy_v2
 from tables import Results
 
 init_db()
@@ -52,13 +53,21 @@ def search_results(search):
     soud = search.soud_search.data
     soud_actual_or_full = search.soud_search_actual.data
 
-
     insolvent_only = search.insolvent_only_search.data
     
     zapsano_od = search.zapis_od.data
     zapsano_do = search.zapis_do.data
     
     qry = Company.query
+
+    if insolvent_only:
+        qry = qry.join(Insolvency_Events, Company.insolvence)
+        qry = qry.filter(Insolvency_Events.vymaz_datum == 0)
+        qry_konkurz = Company.query
+        qry_konkurz = qry_konkurz.join(Konkurz_Events, Company.konkurz)
+        qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == 0)
+        qry = qry.union(qry_konkurz)
+
     if ico:
         if ico_search_method == "text_anywhere":
             qry = qry.filter(Company.ico.contains(ico))
@@ -132,8 +141,6 @@ def search_results(search):
         qry = qry.filter(Soudni_Zapisy.soud == soud)  
         
         # qry = qry.filter(Company.soud.contains(soud))
-    
-    
     
     if zapsano_od:
         qry = qry.filter(Company.zapis >= zapsano_od)

@@ -115,19 +115,6 @@ ulice_association = db.Table("ulice_relation",
                                 # db.PrimaryKeyConstraint('company_id', 'obec_id')
                                 )
 
-# pravni_forma_association=db.Table("pravni_formy_relation",
-#                                   db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
-#                                   db.Column("pravni_forma_id", db.Integer, db.ForeignKey("pravni_formy.id"), nullable=False),
-#                                   )
-
-# predmety_podnikani_association = db.Table("predmety_podnikani_relation",
-#                                 db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
-#                                 db.Column("predmet_podnikani_id", db.Integer, db.ForeignKey("predmety_podnikani.id"), nullable=False),
-#                                 db.Column("zapis_datum", db.String),
-#                                 db.Column("vymaz_datum", db.String),
-#                                 )
-
-
 class Predmety_Podnikani_Association(db.Model):
     __tablename__ = 'predmety_podnikani_relation'
     id = db.Column(db.Integer)
@@ -309,10 +296,9 @@ class Company(db.Model):
     sidlo = db.Column(db.String)
     oddil = db.Column(db.String)
     vlozka = db.Column(db.String)
-    soud = db.Column(db.String)
+    soud = db.Column(MySoud)
     obec = db.relationship("Obce", secondary=association_table, backref="companies")
     ulice = db.relationship("Ulice", secondary=ulice_association, backref="companies")
-    # pravni_forma = db.relationship("Pravni_Forma", secondary=pravni_forma_association, backref="companies")
     insolvence = db.relationship("Insolvency_Events", backref="companies")
     konkurz = db.relationship("Konkurz_Events", backref="companies")
     predmet_podnikani = db.relationship("Predmety_Podnikani_Association", back_populates="company")
@@ -330,6 +316,53 @@ class Company(db.Model):
     prokurista = db.relationship("Prokurista_Association")
     prokura_common_text = db.relationship("Prokura_Common_Text_Association")
     jediny_akcionar = db.relationship("Jediny_Akcionar_Association")
+    sidlo_v2 = db.relationship("Adresy_v2")
+
+class Adresy_v2(db.Model):
+    __tablename__ = "adresy_v2"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    stat = db.Column(db.String)
+    obec = db.Column(db.String)
+    ulice = db.Column(db.String)
+    castObce = db.Column(db.String)
+    cisloPo = db.Column(db.Integer)
+    cisloOr = db.Column(db.Integer)
+    psc = db.Column(db.String)
+    okres = db.Column(db.String)
+    komplet_adresa = db.Column(db.String)
+    cisloEv = db.Column(db.Integer)
+    cisloText = db.Column(db.String)
+
+    def __repr__(self):
+        joined_address = ""
+        if self.komplet_adresa != "0":
+            return self.komplet_adresa
+        if self.ulice != "0":
+            joined_address += self.ulice + " "
+        if self.cisloText != "0":
+            joined_address += self.cisloText + ", "   
+        if self.cisloPo != 0:
+            if self.ulice == "0":
+                joined_address += "č.p. "
+            joined_address += str(self.cisloPo)
+            if self.cisloOr != 0:
+                joined_address += "/"
+            else:
+                joined_address += ", "
+        if self.cisloOr != 0:
+            joined_address += str(self.cisloOr) + ", "
+        if self.cisloEv != 0:
+            joined_address += str(self.cisloEv) + ", "
+        if (self.castObce != "0") and (self.castObce != self.obec):
+            joined_address += self.castObce + ", "
+        if self.psc != "0":
+            joined_address += self.psc + " "
+        if self.obec != "0":
+            joined_address += self.obec
+        if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno"):
+            joined_address += ", " + self.stat
+        return joined_address
 
 class Obce(db.Model):
     __tablename__ = "obce"

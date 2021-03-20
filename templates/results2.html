@@ -11,16 +11,10 @@
                 {% set insolvency_notes = insolvency_notes.append(row.insolvence[i].insolvency_event) %}
             {% endif %}    
         {% endfor %}
-
-        {% set soud = [] %}
-        {% set oddil = [] %}
-        {% set vlozka = [] %}
-        {% for i in range (row.soudni_zapis|length) %}
-            {% if row.soudni_zapis[i].vymaz_datum == 0 %}
-                {% set soud = soud.append(row.soudni_zapis[i].soud) %}
-                {% set oddil = oddil.append(row.soudni_zapis[i].oddil) %}
-                {% set vlozka = vlozka.append(row.soudni_zapis[i].vlozka) %}
-            {% endif %}
+        {% for i in range (row.konkurz|length) %}
+            {% if row.konkurz[i].vymaz_datum == 0 %}
+                {% set insolvency_notes = insolvency_notes.append(row.konkurz[i].konkurz_event) %}
+            {% endif %}    
         {% endfor %}
 
         {% if insolvency_notes|length > 0 %}
@@ -39,14 +33,8 @@
             
         {% else %}
             {% set ico_buffer = "" %}
-        {% endif %}
-    
-        {% set sidlo = [] %}
-        {% for i in range (row.sidlo_text|length) %}
-            {% if row.sidlo_text[i].vymaz_datum == 0 %}
-                {% set sidlo = sidlo.append(row.sidlo_text[i].sidlo_text.adresa_text) %}
-            {% endif %}
-        {% endfor %}
+        {% endif %}    
+
 
     <table class= "{{table_style}}" style="width: 100%">
     <p></p>
@@ -58,13 +46,15 @@
     </tr>
     <tr>
         <td>Spisová značka:</td>
-        <td>{{ oddil|join("") }} {{ vlozka|join("") }} vedená u {{ soud|join("") }}</td>
+        <!-- <td>{{ oddil|join("") }} {{ vlozka|join("") }} vedená u {{ soud|join("") }}</td> -->
+        <td>{{row.oddil}} {{row.vlozka}} vedená u {{row.soud}}</td>
         <td>Den zápisu:</td>
         <td>{{row.zapis}}</td>
     </tr>
     <tr>
         <td>Sídlo:</td>
-        <td>{{ sidlo|join("") }}</td>
+        <!-- <td>{{ sidlo|join("") }}</td> -->
+        <td>{{ row.sidlo }} {{ row.sidlo_v2 }} </td>
         <td><a href="/{{ row.ico }}">Úplný výpis</a></td>
         <td><a href="/{{ row.ico }}-actual">Aktuální výpis</a></td>
     </tr>
