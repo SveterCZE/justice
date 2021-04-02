@@ -12,7 +12,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///justice.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///justice_db.db'
 app.config["SQLALCHEMY_ECHO"] = True
 app.secret_key = "123456"
 app.debug = True
