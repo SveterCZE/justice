@@ -491,6 +491,10 @@ def create_indices(conn):
 	"akcie_text"
 ); """
 
+	akcie2 = """ CREATE INDEX "index akcie 2" ON "akcie" (
+	"company_id"
+); """
+
     akcionari = """ CREATE INDEX "index akcionari" ON "jediny_akcionar" (
 	"id",
 	"company_id",
@@ -562,6 +566,10 @@ def create_indices(conn):
 	"nazev_text"
 ); """
 
+	nazvy2 = """ CREATE INDEX "index nazvy 2" ON "nazvy" (
+	"company_id"
+); """
+
     obce = """ CREATE INDEX "index obce" ON "obce" (
 	"id",
 	"obec_jmeno"
@@ -624,6 +632,10 @@ def create_indices(conn):
 	"pravni_forma"
 ); """
 
+	pravni_formy_relation_2 = """ CREATE INDEX "index pravni_formy_relation_2" ON "pravni_formy_relation" (
+	"company_id"
+); """
+
     predmety_cinnosti_relation_v2 = """ CREATE INDEX "index predmety cinnosti relation v2" ON "predmety_cinnosti_relation" (
 	"company_id",
 	"id",
@@ -672,6 +684,10 @@ def create_indices(conn):
 	"sidlo_id",
 	"zapis_datum",
 	"vymaz_datum"
+); """
+
+	sidlo_relation_2 = """ CREATE INDEX "index sidlo relation 2" ON "sidlo_relation" (
+	"company_id"
 ); """
 
     sidlo2 = """ CREATE INDEX "index sidlo2" ON "sidla" (
@@ -737,13 +753,21 @@ def create_indices(conn):
 	"funkce"
 ); """
 
+	statutarni_organy_relation_3 = """ CREATE INDEX "index statutarni organ relation 3" ON "statutarni_organ_relation" (
+	"company_id"
+); """
+
     v2 = """ CREATE INDEX "index v2" ON "statutarni_organ_relation" (
 	"statutarni_organ_id",
 	"company_id",
 	"id"
 ); """
 
-    zapis2 = """ CREATE INDEX "index zapis2" ON "zapis_soudy" (
+    zakladni_kapital = """ CREATE INDEX "index zakladni kapital" ON "zakladni_kapital" (
+	"company_id"
+); """
+	
+	zapis2 = """ CREATE INDEX "index zapis2" ON "zapis_soudy" (
 	"company_id"
 ); """
 
@@ -770,6 +794,10 @@ def create_indices(conn):
 	"vymaz_datum"
 ); """
 
+	zpusob_jednani_relation_2 = """ CREATE INDEX "index zpusob jednani relation 2" ON "zpusoby_jednani_relation" (
+	"statutarni_organ_id"
+); """
+
     zpusoby_jednani = """ CREATE INDEX "index zpusoby_jednani" ON "zpusoby_jednani" (
 	"zpusob_jednani_text"
 ); """
@@ -780,9 +808,9 @@ def create_indices(conn):
 	"nazev"
 ); """
 
-    list_of_indices = [companies, adresy, adresa_text, akcie, akcionari, companies_ico, companies_nazvy, companies_vznik, dr_clen_relation, dr_relation, dr_relation2, insolvency_events, insolvency2, jmena_firem, nazvy_nazev_text, obce, obec_jmeno, osoby, ostatni_skutecnosti2, 
-    pocty_clenu_organ, podily, podily_spolecnik, pravni_formy, predmety_cinnosti_relation_v2, predmety_podnikani_relation, predmety_cinnosti, predmety_podnikani, prokuriste, sidlo, sidlo_relation, sidlo2, soudni_zapis, spolecnici, spolecnici2, statutarni_organy, statutarni_organy_relation, 
-    statutarni_organy_relation_v2, v2, zapis2, zapis_soudy, zpusob_jednani, zpusob_jednani_relation, zpusoby_jednani, pravnicke_osoby_index]
+    list_of_indices = [companies, adresy, adresa_text, akcie, akcie2, akcionari, companies_ico, companies_nazvy, companies_vznik, dr_clen_relation, dr_relation, dr_relation2, insolvency_events, insolvency2, jmena_firem, nazvy_nazev_text, nazvy2, obce, obec_jmeno, osoby, ostatni_skutecnosti2, 
+    pocty_clenu_organ, podily, podily_spolecnik, pravni_formy, pravni_formy_relation_2, predmety_cinnosti_relation_v2, predmety_podnikani_relation, predmety_cinnosti, predmety_podnikani, prokuriste, sidlo, sidlo_relation, sidlo_relation_2, sidlo2, soudni_zapis, spolecnici, spolecnici2, statutarni_organy, statutarni_organy_relation, 
+    statutarni_organy_relation_v2, statutarni_organy_relation_3, v2, zakladni_kapital, zapis2, zapis_soudy, zpusob_jednani, zpusob_jednani_relation, zpusob_jednani_relation_2, zpusoby_jednani, pravnicke_osoby_index]
     for elem in list_of_indices:
         try:
             c = conn.cursor()
