@@ -33,7 +33,15 @@
             
         {% else %}
             {% set ico_buffer = "" %}
-        {% endif %}    
+        {% endif %}
+        
+        {% set current_seat = [] %}
+        {% for i in range (row.sidlo_text|length) %}
+            {% if row.sidlo_text[i].vymaz_datum == 0 %}
+                {% set current_seat = current_seat.append(row.sidlo_text[i]) %}
+            {% endif %}    
+        {% endfor %}        
+
 
 
     <table class= "{{table_style}}" style="width: 100%">
@@ -53,8 +61,7 @@
     </tr>
     <tr>
         <td>Sídlo:</td>
-        <!-- <td>{{ sidlo|join("") }}</td> -->
-        <td>{{ row.sidlo }} </td>
+        <td>{{ current_seat[0].sidlo_text }} </td>
         <td><a href="/{{ row.ico }}">Úplný výpis</a></td>
         <td><a href="/{{ row.ico }}-actual">Aktuální výpis</a></td>
     </tr>

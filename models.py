@@ -135,14 +135,24 @@ class Predmety_Cinnosti_Association(db.Model):
     predmet_cinnosti = db.relationship("Predmet_Cinnosti", back_populates="company_predmet_cinnosti")
     company = db.relationship("Company", back_populates="predmet_cinnosti")
 
+# class Sidlo_Association(db.Model):
+#     __tablename__ = 'sidlo_relation'
+#     id = db.Column(db.Integer, primary_key=True)
+#     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+#     sidlo_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+#     zapis_datum = db.Column(MyType)
+#     vymaz_datum = db.Column(MyType)
+#     sidlo_text = db.relationship("Sidlo", back_populates="company_sidlo")
+#     company = db.relationship("Company", back_populates="sidlo_text")
+
 class Sidlo_Association(db.Model):
     __tablename__ = 'sidlo_relation'
     id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
-    sidlo_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    sidlo_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'), nullable=False)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
-    sidlo_text = db.relationship("Sidlo", back_populates="company_sidlo")
+    sidlo_text = db.relationship("Adresy_v2", back_populates="company_sidlo")
     company = db.relationship("Company", back_populates="sidlo_text")
 
 class Pravni_Forma_Association_v2(db.Model):
@@ -186,7 +196,8 @@ class Statutarni_Organ_Clen_Association(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organ_relation.id'), nullable=False)
     osoba_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'), nullable=False)
-    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    # adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'), nullable=False)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     funkce_od = db.Column(MyType)
@@ -194,7 +205,8 @@ class Statutarni_Organ_Clen_Association(db.Model):
     clenstvi_od = db.Column(MyType)
     clenstvi_do = db.Column(MyType)
     funkce = db.Column(db.String)
-    adresa = db.relationship("Sidlo")
+    # adresa = db.relationship("Sidlo")
+    adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
 
 class Dozorci_Rada_Clen_Association(db.Model):
@@ -202,7 +214,8 @@ class Dozorci_Rada_Clen_Association(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dozorci_rada_id = db.Column(db.Integer, db.ForeignKey('dozorci_rada_relation.id'), nullable=False)
     osoba_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'), nullable=False)
-    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    # adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'), nullable=False)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     funkce_od = db.Column(MyType)
@@ -210,7 +223,8 @@ class Dozorci_Rada_Clen_Association(db.Model):
     clenstvi_od = db.Column(MyType)
     clenstvi_do = db.Column(MyType)
     funkce = db.Column(db.String)
-    adresa = db.relationship("Sidlo")
+    # adresa = db.relationship("Sidlo")
+    adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
 
 class Spolecnici_Association(db.Model):
@@ -221,9 +235,11 @@ class Spolecnici_Association(db.Model):
     spolecnik_po_id = db.Column(db.Integer, db.ForeignKey('pravnicke_osoby.id'), nullable=False)
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
-    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    # adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'), nullable=False)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'), nullable=False)
     text_spolecnik = db.Column(db.String)
-    adresa = db.relationship("Sidlo")
+    # adresa = db.relationship("Sidlo")
+    adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
     oznaceni_po = db.relationship("Pravnicka_Osoba")
     podily = db.relationship("Podily_Association")
@@ -235,8 +251,10 @@ class Prokurista_Association(db.Model):
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     prokurista_fo_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
-    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'))
-    adresa = db.relationship("Sidlo")
+    # adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'))
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'), nullable=False)
+    # adresa = db.relationship("Sidlo")
+    adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
     text_prokurista = db.Column(db.String)
 
@@ -257,8 +275,10 @@ class Jediny_Akcionar_Association(db.Model):
     text_akcionar = db.Column(db.String)
     akcionar_fo_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
     akcionar_po_id = db.Column(db.Integer, db.ForeignKey('pravnicke_osoby.id'))
-    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'))
-    adresa = db.relationship("Sidlo")
+    # adresa_id = db.Column(db.Integer, db.ForeignKey('adresy.id'))
+    # adresa = db.relationship("Sidlo")
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'), nullable=False)
+    adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
     oznaceni_po = db.relationship("Pravnicka_Osoba")
 
@@ -308,7 +328,7 @@ class Company(db.Model):
     akcie = db.relationship("Akcie", backref="companies")
     obchodni_firma = db.relationship("Nazvy", backref="companies")
     soudni_zapis = db.relationship("Soudni_Zapisy")
-    sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
+    # sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
     pravni_forma_text = db.relationship("Pravni_Forma_Association_v2", back_populates="company")
     statutarni_organ_text = db.relationship("Statutarni_Organ_Association", back_populates="company")
     dozorci_rada_text = db.relationship("Dozorci_Rada_Association")
@@ -316,12 +336,11 @@ class Company(db.Model):
     prokurista = db.relationship("Prokurista_Association")
     prokura_common_text = db.relationship("Prokura_Common_Text_Association")
     jediny_akcionar = db.relationship("Jediny_Akcionar_Association")
-    sidlo_v2 = db.relationship("Adresy_v2")
+    sidlo_text = db.relationship("Sidlo_Association", back_populates="company")
 
 class Adresy_v2(db.Model):
     __tablename__ = "adresy_v2"
     id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
     stat = db.Column(db.String)
     obec = db.Column(db.String)
     ulice = db.Column(db.String)
@@ -333,6 +352,7 @@ class Adresy_v2(db.Model):
     komplet_adresa = db.Column(db.String)
     cisloEv = db.Column(db.Integer)
     cisloText = db.Column(db.String)
+    company_sidlo = db.relationship("Sidlo_Association", back_populates="sidlo_text")
 
     def __repr__(self):
         joined_address = ""
@@ -427,7 +447,7 @@ class Sidlo(db.Model):
     __tablename__ = "adresy"
     id = db.Column(db.Integer, primary_key=True)
     adresa_text = db.Column(db.String)
-    company_sidlo = db.relationship("Sidlo_Association", back_populates="sidlo_text")
+    # company_sidlo = db.relationship("Sidlo_Association", back_populates="sidlo_text")
 
 class Pravni_Formy(db.Model):
     __tablename__ = "pravni_formy"

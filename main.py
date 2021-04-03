@@ -43,9 +43,11 @@ def search_results(search):
     
     obec = search.obec_search.data
     obec_search_method = search.obec_search_selection.data
+    obec_actual_or_full = search.obec_search_actual.data
     
     ulice = search.ulice_search.data
     ulice_search_method = search.ulice_search_selection.data
+    ulice_actual_or_full = search.ulice_search_actual.data
 
     pravni_forma = search.pravni_forma_search.data
     pravni_forma_actual_or_full = search.pravni_forma_actual.data
@@ -110,22 +112,36 @@ def search_results(search):
             qry = qry.filter(Soudni_Zapisy.vlozka == vlozka)
 
     if obec:
-        qry = qry.join(Obce, Company.obec)
-        if obec_search_method == "text_anywhere":
-            qry = qry.filter(Obce.obec_jmeno.contains(obec))
-        elif obec_search_method == "text_beginning":
-            qry = qry.filter(Obce.obec_jmeno.like(f'{obec}%'))
-        elif obec_search_method == "text_exact":
-            qry = qry.filter(Obce.obec_jmeno == obec)
-        
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if obec_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        qry = qry.filter(Adresy_v2.obec == obec)
+
     if ulice:
-        qry = qry.join(Ulice, Company.ulice)
-        if ulice_search_method == "text_anywhere":
-            qry = qry.filter(Ulice.ulice_jmeno.contains(ulice))
-        elif ulice_search_method == "text_beginning":
-            qry = qry.filter(Ulice.ulice_jmeno.like(f'{ulice}%'))
-        elif ulice_search_method == "text_exact":
-            qry = qry.filter(Ulice.ulice_jmeno == ulice)
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if ulice_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        qry = qry.filter(Adresy_v2.ulice == ulice)
+
+    # if obec:
+    #     qry = qry.join(Obce, Company.obec)
+    #     if obec_search_method == "text_anywhere":
+    #         qry = qry.filter(Obce.obec_jmeno.contains(obec))
+    #     elif obec_search_method == "text_beginning":
+    #         qry = qry.filter(Obce.obec_jmeno.like(f'{obec}%'))
+    #     elif obec_search_method == "text_exact":
+    #         qry = qry.filter(Obce.obec_jmeno == obec)
+        
+    # if ulice:
+    #     qry = qry.join(Ulice, Company.ulice)
+    #     if ulice_search_method == "text_anywhere":
+    #         qry = qry.filter(Ulice.ulice_jmeno.contains(ulice))
+    #     elif ulice_search_method == "text_beginning":
+    #         qry = qry.filter(Ulice.ulice_jmeno.like(f'{ulice}%'))
+    #     elif ulice_search_method == "text_exact":
+    #         qry = qry.filter(Ulice.ulice_jmeno == ulice)
     
     if pravni_forma:
         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
@@ -199,29 +215,19 @@ def search_results_BACKUP(search):
         table.border = True
         return render_template('results.html', table=table)
 
-
 @app.route("/<int:ico>", methods=['GET', 'POST'])
 def extract(ico):
-    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Insolvency_Events, isouter=True)
-    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
-    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence, isouter=True).join(Predmet_Podnikani, Company.predmet_podnikani).join(Predmet_Cinnosti, Company.predmet_cinnosti)
+    qry = Company.query
     qry = qry.filter(Company.ico == ico)
-    # qry = qry.filter(Company.nazev.contains("prigo"))
-    # qry = Obce.query
     results = qry.all()
     return render_template("extract.html", ico = ico, results = results)
 
 @app.route("/<int:ico>-actual", methods=['GET', 'POST'])
 def extract_actual(ico):
-    qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Insolvency_Events, isouter=True)
-    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, isouter=True)
-    # qry = Company.query.join(Obce, Company.obec).join(Ulice, Company.ulice).join(Pravni_Forma, Company.pravni_forma).join(Insolvency_Events, Company.insolvence, isouter=True).join(Predmet_Podnikani, Company.predmet_podnikani).join(Predmet_Cinnosti, Company.predmet_cinnosti)
+    qry = Company.query
     qry = qry.filter(Company.ico == ico)
-    # qry = qry.filter(Company.nazev.contains("prigo"))
-     # qry = Obce.query
     results = qry.all()
     return render_template("extract-actual.html", ico = ico, results = results)
-
 
 @app.route('/new_company', methods=['GET', 'POST'])
 def new_company():
