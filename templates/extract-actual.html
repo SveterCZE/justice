@@ -378,7 +378,7 @@
             <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %} 
                 {% if sole_shareholder_notes[i].jmeno.jmeno != "0" %}{{ sole_shareholder_notes[i].jmeno.jmeno }} {% endif %}
                 {{ sole_shareholder_notes[i].jmeno.prijmeni }}{% if sole_shareholder_notes[i].jmeno.datum_naroz != "" %}, nar. {{ sole_shareholder_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
-                {% if sole_shareholder_notes[i].akcionar_fo_id == None %} {{ sole_shareholder_notes[i].oznaceni_po.nazev }}{% if sole_shareholder_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ sole_shareholder_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if sole_shareholder_notes[i].oznaceni_po.ico != 0 %}, IČ {{ sole_shareholder_notes[i].oznaceni_po.ico }}{% endif %} {% endif %} 
+                {% if sole_shareholder_notes[i].akcionar_fo_id == None %} {{ sole_shareholder_notes[i].oznaceni_po.nazev }}{% if sole_shareholder_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ sole_shareholder_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if sole_shareholder_notes[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ sole_shareholder_notes[i].oznaceni_po.ico }}-actual">{{ sole_shareholder_notes[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
                 <br>{{sole_shareholder_notes[i].adresa}}</td>
         </tr>   
         {% endfor %}
@@ -397,7 +397,7 @@
             <td>{% if spolecnici_notes[i].spolecnik_po_id == None %} 
                 {% if spolecnici_notes[i].jmeno.jmeno != "0" %}{{ spolecnici_notes[i].jmeno.jmeno }} {% endif %}
                 {{ spolecnici_notes[i].jmeno.prijmeni }}{% if spolecnici_notes[i].jmeno.datum_naroz != "" %}, nar. {{ spolecnici_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
-                {% if spolecnici_notes[i].spolecnik_fo_id == None %} {{ spolecnici_notes[i].oznaceni_po.nazev }}{% if spolecnici_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ spolecnici_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if spolecnici_notes[i].oznaceni_po.ico != 0 %}, IČ {{ spolecnici_notes[i].oznaceni_po.ico }}{% endif %} {% endif %} 
+                {% if spolecnici_notes[i].spolecnik_fo_id == None %} {{ spolecnici_notes[i].oznaceni_po.nazev }}{% if spolecnici_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ spolecnici_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if spolecnici_notes[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ spolecnici_notes[i].oznaceni_po.ico }}-actual">{{ spolecnici_notes[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
                 <br>{{spolecnici_notes[i].adresa}}</td>
         </tr>
         {% set spolecnik_podily = [] %}
@@ -531,5 +531,9 @@
 </table>
     
 {% endfor %}
+
+{% if results|length == 0 %}
+<p>Nothing found here. <a href = "/">Back to search.</a></p>
+{% endif %}
 
 {% include 'footer.html' %}

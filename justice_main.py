@@ -8,7 +8,7 @@ def main():
     soudy = ["praha", "plzen", "brno", "ceske_budejovice", "hradec_kralove", "ostrava", "usti_nad_labem"]
     DB_name = "justice.db"
     create_DB(DB_name)
-    # download_data(typy_po, soudy)
+    download_data(typy_po, soudy)
     update_DB(typy_po, soudy, DB_name)
 
 main()

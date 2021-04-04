@@ -33,19 +33,12 @@ def create_tables(conn):
 	"ico"	TEXT NOT NULL UNIQUE,
 	"nazev"	TEXT,
 	"zapis"	DATE,
-	"sidlo"	TEXT,
 	"oddil"	TEXT,
 	"vlozka"	TEXT,
 	"soud"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
     ); """
     
-    adresy = """ CREATE TABLE "adresy" (
-	"id"	INTEGER NOT NULL,
-	"adresa_text"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-    ); """
-
     adresy_v2 = """ CREATE TABLE "adresy_v2" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"stat"	TEXT,
@@ -166,25 +159,6 @@ def create_tables(conn):
 	"vymaz_datum"	DATE,
 	"nazev_text"	TEXT,
 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    obce = """ CREATE TABLE "obce" (
-	"id"	INTEGER NOT NULL,
-	"obec_jmeno"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    obce_relation = """ CREATE TABLE "obce_relation" (
-	"company_id"	INTEGER NOT NULL UNIQUE,
-	"obec_id"	INTEGER NOT NULL,
-	FOREIGN KEY("obec_id") REFERENCES "obce"("id"),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-
-    osoby = """ CREATE TABLE "osoby" (
-	"id"	INTEGER NOT NULL,
-	"osoba_jmeno"	TEXT UNIQUE,
 	PRIMARY KEY("id" AUTOINCREMENT)
 ); """
 
@@ -319,16 +293,6 @@ def create_tables(conn):
 	PRIMARY KEY("id" AUTOINCREMENT)
 ); """
 
-    sidla = """ CREATE TABLE "sidla" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE NOT NULL,
-	"vymaz_datum"	DATE,
-	"sidlo_adresa"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-
     sidlo_relation = """ CREATE TABLE "sidlo_relation" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"company_id"	INTEGER NOT NULL,
@@ -390,19 +354,6 @@ def create_tables(conn):
 	PRIMARY KEY("id" AUTOINCREMENT)
 ); """
 
-    ulice = """ CREATE TABLE "ulice" (
-	"id"	INTEGER NOT NULL,
-	"ulice_jmeno"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    ulice_relation = """ CREATE TABLE "ulice_relation" (
-	"company_id"	INTEGER NOT NULL UNIQUE,
-	"ulice_id"	INTEGER NOT NULL,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("ulice_id") REFERENCES "ulice"("id")
-); """
-
     zakladni_kapital = """ CREATE TABLE "zakladni_kapital" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"company_id"	INTEGER NOT NULL,
@@ -445,11 +396,11 @@ def create_tables(conn):
 	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organ_relation"("id")
 ); """
 
-    list_of_tables = [companies, adresy, adresy_v2, akcie, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events, 
-    jediny_akcionar, konkurz_events, nazvy, obce, obce_relation, osoby, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, pravni_formy, 
+    list_of_tables = [companies, adresy_v2, akcie, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events, 
+    jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, pravni_formy, 
     pravni_formy_relation, pravnicke_osoby, predmety_cinnosti, predmety_cinnosti_relation, prdmety_podnikani, predmety_podnikani_relation,
-    prokura_common_texts, prokuriste, sidla, sidlo_relation, spolecnici, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, ulice, 
-    ulice_relation, zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
+    prokura_common_texts, prokuriste, sidlo_relation, spolecnici, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, 
+    zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
     for elem in list_of_tables:
         try:
             c = conn.cursor()
@@ -458,99 +409,71 @@ def create_tables(conn):
             print(e)
 
 def create_indices(conn):
-    companies = """ CREATE INDEX "companies index" ON "companies" (
-	"id",
-	"ico",
-	"nazev",
-	"zapis",
-	"sidlo",
-	"oddil",
-	"vlozka",
-	"soud"
-); """
-
-    adresy = """ CREATE INDEX "index adresy" ON "adresy" (
-	"adresa_text",
+    companies1 = """ CREATE INDEX "index companies1" ON "companies" (
 	"id"
 ); """
 
-    adresa_text = """ CREATE INDEX "index adresy_adresa_text" ON "adresy" (
-	"adresa_text"
-); """
-
-    akcie = """ CREATE INDEX "index akcie" ON "akcie" (
-	"id",
-	"company_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"akcie_podoba",
-	"akcie_typ",
-	"akcie_pocet",
-	"akcie_hodnota_typ",
-	"akcie_hodnota_value",
-	"akcie_text"
-); """
-
-	akcie2 = """ CREATE INDEX "index akcie 2" ON "akcie" (
-	"company_id"
-); """
-
-    akcionari = """ CREATE INDEX "index akcionari" ON "jediny_akcionar" (
-	"id",
-	"company_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"text_akcionar",
-	"akcionar_po_id",
-	"akcionar_fo_id",
-	"adresa_id"
-); """
-
-    companies_ico = """ CREATE INDEX "index companies_ico" ON "companies" (
+    companies2 = """ CREATE INDEX "index companies2" ON "companies" (
 	"ico"
 ); """
 
-    companies_nazvy = """ CREATE INDEX "index companies_nazvy" ON "companies" (
+    companies3 = """ CREATE INDEX "index companies3" ON "companies" (
 	"nazev"
 ); """
 
-    companies_vznik = """ CREATE INDEX "index companies_vznik" ON "companies" (
-	"zapis"
+    companies4 = """ CREATE INDEX "index companies4" ON "companies" (
+	"oddil"
 ); """
 
-    dr_clen_relation = """ CREATE INDEX "index dr clen relation" ON "dr_organ_clen_relation" (
-	"dozorci_rada_id",
-	"id",
-	"osoba_id",
-	"adresa_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"funkce_od",
-	"funkce_do",
-	"clenstvi_od",
-	"clenstvi_do",
-	"funkce"
+    companies5 = """ CREATE INDEX "index companies5" ON "companies" (
+	"vlozka"
 ); """
 
-    dr_relation = """ CREATE INDEX "index dr relation" ON "dozorci_rada_relation" (
-	"id",
-	"company_id",
-	"zapis_datum",
-	"vymaz_datum"
+    adresy1 = """ CREATE INDEX "index adresy1" ON "adresy_v2" (
+	"id"
 ); """
 
-    dr_relation2 = """ CREATE INDEX "index dr relation v2" ON "dozorci_rada_relation" (
-	"company_id",
-	"id",
-	"zapis_datum",
-	"vymaz_datum"
+    adresy2 = """ CREATE INDEX "index adresy2" ON "adresy_v2" (
+	"obec"
 ); """
 
-    insolvency_events = """ CREATE INDEX "index insolvency events" ON "insolvency_events" (
-	"company_id",
-	"vymaz_datum",
-	"insolvency_event",
-	"zapis_datum",
+    adresy3 = """ CREATE INDEX "index adresy3" ON "adresy_v2" (
+	"ulice"
+); """
+
+    akcie = """ CREATE INDEX "index akcie1" ON "akcie" (
+	"id"
+); """
+
+    akcie2 = """ CREATE INDEX "index akcie2" ON "akcie" (
+	"company_id"
+); """
+
+    akcionari1 = """ CREATE INDEX "index akcionari1" ON "jediny_akcionar" (
+	"id"
+); """
+
+    akcionari2 = """ CREATE INDEX "index akcionari2" ON "jediny_akcionar" (
+	"company_id"
+); """
+
+    dr_clen_relation1 = """ CREATE INDEX "index dr clen relation1" ON "dr_organ_clen_relation" (
+	"dozorci_rada_id"
+); """
+
+    dr_clen_relation2 = """ CREATE INDEX "index dr clen relation2" ON "dr_organ_clen_relation" (
+	"id"
+); """
+
+    dr_relation = """ CREATE INDEX "index dr relation1" ON "dozorci_rada_relation" (
+	"id"
+); """
+
+    dr_relation2 = """ CREATE INDEX "index dr relation2" ON "dozorci_rada_relation" (
+	"company_id"
+); """
+
+    insolvency1 = """ CREATE INDEX "index insolvency1" ON "insolvency_events" (
 	"id"
 ); """
 
@@ -558,172 +481,156 @@ def create_indices(conn):
 	"company_id"
 ); """
 
-    jmena_firem = """ CREATE INDEX "index jmena firem" ON "companies" (
-	"nazev"
-); """
-
-    nazvy_nazev_text = """ CREATE INDEX "index nazvy_nazev_text" ON "nazvy" (
-	"nazev_text"
-); """
-
-	nazvy2 = """ CREATE INDEX "index nazvy 2" ON "nazvy" (
+    konkurz1 = """CREATE INDEX "index konkurz1" ON "konkurz_events" (
 	"company_id"
 ); """
 
-    obce = """ CREATE INDEX "index obce" ON "obce" (
-	"id",
-	"obec_jmeno"
+    konkurz2 = """CREATE INDEX "index konkurz2" ON "konkurz_events" (
+	"id"
 ); """
 
-    obec_jmeno = """ CREATE INDEX "index obec_jmeno" ON "obce" (
-	"obec_jmeno"
+    nazvy1 = """ CREATE INDEX "index nazvy1" ON "nazvy" (
+	"nazev_text"
 ); """
 
-    osoby = """ CREATE INDEX "index osoby" ON "osoby" (
-	"id",
-	"osoba_jmeno"
+    nazvy2 = """ CREATE INDEX "index nazvy2" ON "nazvy" (
+	"company_id"
 ); """
 
-    ostatni_skutecnosti2 = """ CREATE INDEX "index ostatni skutecnosti v2" ON "ostatni_skutecnosti" (
-	"company_id",
-	"id",
-	"zapis_datum",
-	"vymaz_datum",
-	"ostatni_skutecnost"
+    nazvy3 = """ CREATE INDEX "index nazvy3" ON "nazvy" (
+	"id"
 ); """
 
-    pocty_clenu_organ = """ CREATE INDEX "index pocty clenu org_v2" ON "pocty_clenu_organu" (
-	"organ_id",
-	"id",
-	"pocet_clenu_value",
-	"zapis_datum",
-	"vymaz_datum"
+    ostatni_skutecnosti = """ CREATE INDEX "index ostatni skutecnosti1" ON "ostatni_skutecnosti" (
+	"company_id"
 ); """
 
-    podily = """ CREATE INDEX "index podily" ON "podily" (
-	"id",
-	"spolecnik_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"druh_podilu_id",
-	"vklad_typ",
-	"vklad_text",
-	"souhrn_typ",
-	"souhrn_text",
-	"splaceni_typ",
-	"splaceni_text"
+    ostatni_skutecnosti2 = """ CREATE INDEX "index ostatni skutecnosti2" ON "ostatni_skutecnosti" (
+	"id"
 ); """
 
-    podily_spolecnik = """ CREATE INDEX "index podily spolecnik_id" ON "podily" (
-	"spolecnik_id",
-	"id",
-	"zapis_datum",
-	"vymaz_datum",
-	"druh_podilu_id",
-	"vklad_typ",
-	"vklad_text",
-	"souhrn_typ",
-	"souhrn_text",
-	"splaceni_typ",
-	"splaceni_text"
+    pocty_clenu_organ1 = """ CREATE INDEX "index pocty clenu org1" ON "pocty_clenu_organu" (
+	"organ_id"
+); """
+
+    pocty_clenu_organ2 = """ CREATE INDEX "index pocty clenu org2" ON "pocty_clenu_organu" (
+	"id"
+); """
+
+    podily1 = """ CREATE INDEX "index podily1" ON "podily" (
+	"id"
+); """
+
+    podily2 = """ CREATE INDEX "index podily2" ON "podily" (
+	"spolecnik_id"
 ); """
 
     pravni_formy = """ CREATE INDEX "index pravni_formy" ON "pravni_formy" (
 	"pravni_forma"
 ); """
 
-	pravni_formy_relation_2 = """ CREATE INDEX "index pravni_formy_relation_2" ON "pravni_formy_relation" (
+    pravni_formy_relation1 = """ CREATE INDEX "index pravni_formy_relation1" ON "pravni_formy_relation" (
 	"company_id"
 ); """
 
-    predmety_cinnosti_relation_v2 = """ CREATE INDEX "index predmety cinnosti relation v2" ON "predmety_cinnosti_relation" (
-	"company_id",
-	"id",
-	"predmet_cinnosti_id",
-	"zapis_datum",
-	"vymaz_datum"
-); """
-
-    predmety_podnikani_relation = """ CREATE INDEX "index predmety podnikani relation v2" ON "predmety_podnikani_relation" (
-	"company_id",
-	"id",
-	"predmet_podnikani_id",
-	"zapis_datum",
-	"vymaz_datum"
-); """
-
-    predmety_cinnosti = """ CREATE INDEX "index predmety_cinnosti" ON "predmety_cinnosti" (
-	"predmet_cinnosti"
-); """
-
-    predmety_podnikani = """ CREATE INDEX "index predmety_podnikani" ON "predmety_podnikani" (
-	"predmet_podnikani"
-); """
-
-    prokuriste = """ CREATE INDEX "index prokuriste" ON "prokuriste" (
-	"id",
-	"company_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"prokurista_fo_id",
-	"adresa_id",
-	"text_prokurista"
-); """
-
-    sidlo = """ CREATE INDEX "index sidlo" ON "sidla" (
-	"company_id",
-	"vymaz_datum",
-	"sidlo_adresa",
-	"id",
-	"zapis_datum"
-); """
-
-    sidlo_relation = """ CREATE INDEX "index sidlo relation" ON "sidlo_relation" (
-	"id",
-	"company_id",
-	"sidlo_id",
-	"zapis_datum",
-	"vymaz_datum"
-); """
-
-	sidlo_relation_2 = """ CREATE INDEX "index sidlo relation 2" ON "sidlo_relation" (
-	"company_id"
-); """
-
-    sidlo2 = """ CREATE INDEX "index sidlo2" ON "sidla" (
-	"company_id"
-); """
-
-    soudni_zapis = """ CREATE INDEX "index soudni_zapis" ON "zapis_soudy" (
-	"company_id",
-	"vymaz_datum",
-	"oddil",
-	"vlozka",
-	"soud",
-	"zapis_datum",
+    pravni_formy_relation2 = """ CREATE INDEX "index pravni_formy_relation2" ON "pravni_formy_relation" (
 	"id"
 ); """
 
-    spolecnici = """ CREATE INDEX "index spolecnici" ON "spolecnici" (
-	"id",
-	"company_id",
-	"spolecnik_fo_id",
-	"spolecnik_po_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"adresa_id",
-	"text_spolecnik"
+    predmety_cinnosti_relation1 = """ CREATE INDEX "index predmety cinnosti relation1" ON "predmety_cinnosti_relation" (
+	"company_id"
 ); """
 
-    spolecnici2 = """ CREATE INDEX "index spolecnici 2" ON "spolecnici" (
-	"company_id",
-	"id",
-	"spolecnik_fo_id",
-	"spolecnik_po_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"adresa_id",
-	"text_spolecnik"
+    predmety_cinnosti_relation2 = """ CREATE INDEX "index predmety cinnosti relation2" ON "predmety_cinnosti_relation" (
+	"id"
+); """
+
+    predmety_cinnosti_relation3 = """ CREATE INDEX "index predmety cinnosti relation3" ON "predmety_cinnosti_relation" (
+	"predmet_cinnosti_id"
+); """
+
+    predmety_podnikani_relation1 = """ CREATE INDEX "index predmety podnikani relation1" ON "predmety_podnikani_relation" (
+	"company_id"
+); """
+
+    predmety_podnikani_relation2 = """ CREATE INDEX "index predmety podnikani relation2" ON "predmety_podnikani_relation" (
+	"id"
+); """
+
+    predmety_podnikani_relation3 = """ CREATE INDEX "index predmety podnikani relation3" ON "predmety_podnikani_relation" (
+	"prdemet_podnikani_id"
+); """
+
+    predmety_cinnosti1 = """ CREATE INDEX "index predmety_cinnosti1" ON "predmety_cinnosti" (
+	"predmet_cinnosti"
+); """
+
+    predmety_cinnosti2 = """ CREATE INDEX "index predmety_cinnosti2" ON "predmety_cinnosti" (
+	"id"
+); """
+
+    predmety_podnikani1 = """ CREATE INDEX "index predmety_podnikani1" ON "predmety_podnikani" (
+	"predmet_podnikani"
+); """
+
+    predmety_podnikani2 = """ CREATE INDEX "index predmety_podnikani2" ON "predmety_podnikani" (
+	"id"
+); """
+
+    prokuriste1 = """ CREATE INDEX "index prokuriste1" ON "prokuriste" (
+	"id"
+); """
+
+    prokuriste2 = """ CREATE INDEX "index prokuriste2" ON "prokuriste" (
+	"company_id"
+); """
+
+    prokuriste3 = """ CREATE INDEX "index prokuriste3" ON "prokuriste" (
+	"prokurista_fo_id"
+); """
+
+    prokuriste4 = """ CREATE INDEX "index prokuriste4" ON "prokuriste" (
+	"adresa_id"
+); """
+
+    sidlo_relation1 = """ CREATE INDEX "index sidlo relation1" ON "sidlo_relation" (
+	"id"
+); """
+
+    sidlo_relation_2 = """ CREATE INDEX "index sidlo relation2" ON "sidlo_relation" (
+	"company_id"
+); """
+
+    sidlo_relation_3 = """ CREATE INDEX "index sidlo relation3" ON "sidlo_relation" (
+	"sidlo_id"
+); """
+
+    soudni_zapis1 = """ CREATE INDEX "index soudni_zapis1" ON "zapis_soudy" (
+	"company_id"
+); """
+
+    soudni_zapis2 = """ CREATE INDEX "index soudni_zapis2" ON "zapis_soudy" (
+	"id"
+); """
+
+    spolecnici1 = """ CREATE INDEX "index spolecnici1" ON "spolecnici" (
+	"id"
+); """
+
+    spolecnici2 = """ CREATE INDEX "index spolecnici2" ON "spolecnici" (
+	"company_id"
+); """
+
+    spolecnici3 = """ CREATE INDEX "index spolecnici3" ON "spolecnici" (
+	"spolecnik_fo_id"
+); """
+
+    spolecnici4 = """ CREATE INDEX "index spolecnici4" ON "spolecnici" (
+	"spolecnik_po_id"
+); """
+
+    spolecnici5 = """ CREATE INDEX "index spolecnici5" ON "spolecnici" (
+	"adresa_id"
 ); """
 
     statutarni_organy = """ CREATE INDEX "index statutarn_organy" ON "statutarni_organy" (
@@ -731,89 +638,78 @@ def create_indices(conn):
 	"statutarni_organ_text"
 ); """
 
-    statutarni_organy_relation = """ CREATE INDEX "index statutarni organ relation" ON "statutarni_organ_relation" (
-	"id",
-	"company_id",
-	"statutarni_organ_id",
-	"zapis_datum",
-	"vymaz_datum"
-); """
-
-    statutarni_organy_relation_v2 = """ CREATE INDEX "index statutarni organ relation v2" ON "statutarni_organ_clen_relation" (
-	"statutarni_organ_id",
-	"id",
-	"osoba_id",
-	"adresa_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"funkce_od",
-	"funkce_do",
-	"clenstvi_od",
-	"clenstvi_do",
-	"funkce"
-); """
-
-	statutarni_organy_relation_3 = """ CREATE INDEX "index statutarni organ relation 3" ON "statutarni_organ_relation" (
-	"company_id"
-); """
-
-    v2 = """ CREATE INDEX "index v2" ON "statutarni_organ_relation" (
-	"statutarni_organ_id",
-	"company_id",
+    statutarni_organy_relation1 = """ CREATE INDEX "index statutarni organ relation1" ON "statutarni_organ_relation" (
 	"id"
 ); """
 
-    zakladni_kapital = """ CREATE INDEX "index zakladni kapital" ON "zakladni_kapital" (
-	"company_id"
-); """
-	
-	zapis2 = """ CREATE INDEX "index zapis2" ON "zapis_soudy" (
-	"company_id"
-); """
-
-    zapis_soudy = """ CREATE INDEX "index zapis_soudy" ON "zapis_soudy" (
-	"id",
-	"company_id",
-	"zapis_datum",
-	"vymaz_datum",
-	"oddil",
-	"vlozka",
-	"soud"
-); """
-
-    zpusob_jednani = """ CREATE INDEX "index zpusob_jednani" ON "zpusoby_jednani" (
-	"id",
-	"zpusob_jednani_text"
-); """
-
-    zpusob_jednani_relation = """ CREATE INDEX "index zpusob_jednani_relation" ON "zpusoby_jednani_relation" (
-	"id",
-	"statutarni_organ_id",
-	"zpusob_jednani_id",
-	"zapis_datum",
-	"vymaz_datum"
-); """
-
-	zpusob_jednani_relation_2 = """ CREATE INDEX "index zpusob jednani relation 2" ON "zpusoby_jednani_relation" (
+    statutarni_organy_relation2 = """ CREATE INDEX "index statutarni organ relation2" ON "statutarni_organ_clen_relation" (
 	"statutarni_organ_id"
 ); """
 
-    zpusoby_jednani = """ CREATE INDEX "index zpusoby_jednani" ON "zpusoby_jednani" (
-	"zpusob_jednani_text"
+    statutarni_organy_relation_3 = """ CREATE INDEX "index statutarni organ relation 3" ON "statutarni_organ_relation" (
+	"company_id"
 ); """
 
-    pravnicke_osoby_index = """ CREATE INDEX "pravnicke_osoby_index" ON "pravnicke_osoby" (
-	"ico",
-	"reg_cislo",
+    zakladni_kapital1 = """ CREATE INDEX "index zakladni kapital1" ON "zakladni_kapital" (
+	"company_id"
+); """
+
+    zakladni_kapital2 = """ CREATE INDEX "index zakladni kapital2" ON "zakladni_kapital" (
+	"id"
+); """
+	
+    zpusob_jednani = """ CREATE INDEX "index zpusob_jednani" ON "zpusoby_jednani" (
+	"id"
+); """
+
+    zpusob_jednani_relation1 = """ CREATE INDEX "index zpusob_jednani_relation" ON "zpusoby_jednani_relation" (
+	"id"
+); """
+
+    zpusob_jednani_relation2 = """ CREATE INDEX "index zpusob jednani relation2" ON "zpusoby_jednani_relation" (
+	"statutarni_organ_id"
+); """
+
+    zpusob_jednani_relation3 = """ CREATE INDEX "index zpusob jednani relation3" ON "zpusoby_jednani_relation" (
+	"zpusob_jednani_id"
+); """
+
+    pravnicke_osoby1 = """ CREATE INDEX "pravnicke_osoby1" ON "pravnicke_osoby" (
+	"ico"
+); """
+
+    pravnicke_osoby2 = """ CREATE INDEX "pravnicke_osoby2" ON "pravnicke_osoby" (
+	"id"
+); """
+
+    pravnicke_osoby3 = """ CREATE INDEX "pravnicke_osoby3" ON "pravnicke_osoby" (
+	"reg_cislo"
+); """
+
+    pravnicke_osoby4 = """ CREATE INDEX "pravnicke_osoby4" ON "pravnicke_osoby" (
 	"nazev"
 ); """
 
-    list_of_indices = [companies, adresy, adresa_text, akcie, akcie2, akcionari, companies_ico, companies_nazvy, companies_vznik, dr_clen_relation, dr_relation, dr_relation2, insolvency_events, insolvency2, jmena_firem, nazvy_nazev_text, nazvy2, obce, obec_jmeno, osoby, ostatni_skutecnosti2, 
-    pocty_clenu_organ, podily, podily_spolecnik, pravni_formy, pravni_formy_relation_2, predmety_cinnosti_relation_v2, predmety_podnikani_relation, predmety_cinnosti, predmety_podnikani, prokuriste, sidlo, sidlo_relation, sidlo_relation_2, sidlo2, soudni_zapis, spolecnici, spolecnici2, statutarni_organy, statutarni_organy_relation, 
-    statutarni_organy_relation_v2, statutarni_organy_relation_3, v2, zakladni_kapital, zapis2, zapis_soudy, zpusob_jednani, zpusob_jednani_relation, zpusob_jednani_relation_2, zpusoby_jednani, pravnicke_osoby_index]
+    fyzicke_osoby1 = """ CREATE INDEX "fyzicke_osoby1" ON "fyzicke_osoby" (
+	"id"
+); """
+
+    list_of_indices = [companies1, companies2, companies3, companies4, companies5, adresy1, adresy2, adresy3,
+	akcie, akcie2, akcionari1, akcionari2, dr_clen_relation1, dr_clen_relation2, dr_relation, dr_relation2, 
+	insolvency1, insolvency2, konkurz1, konkurz2, nazvy1, nazvy2, nazvy3, ostatni_skutecnosti, ostatni_skutecnosti2, 
+	pocty_clenu_organ1, pocty_clenu_organ2, podily1, podily2, pravni_formy, pravni_formy_relation1, pravni_formy_relation2, 
+	predmety_cinnosti_relation1, predmety_cinnosti_relation2, predmety_cinnosti_relation3, predmety_podnikani_relation1, predmety_podnikani_relation2, 
+	predmety_podnikani_relation3, predmety_cinnosti1, predmety_cinnosti2, predmety_podnikani1, predmety_podnikani2, prokuriste1, 
+	prokuriste2, prokuriste3, prokuriste4, sidlo_relation1, sidlo_relation_2, sidlo_relation_3, soudni_zapis1, soudni_zapis2, spolecnici1, 
+	spolecnici2, spolecnici3, spolecnici4, spolecnici5, statutarni_organy, statutarni_organy_relation1, statutarni_organy_relation2, 
+	statutarni_organy_relation_3, zakladni_kapital1, zakladni_kapital2, zpusob_jednani, zpusob_jednani_relation1, zpusob_jednani_relation2, 
+	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, fyzicke_osoby1]
+    i = 0
     for elem in list_of_indices:
+        i += 1
         try:
             c = conn.cursor()
             c.execute(elem)
         except Exception as e:
+            print(i)
             print(e)

@@ -423,7 +423,7 @@
         <td>{{ underlne_style_open|safe }} {% if row.jediny_akcionar[i].akcionar_po_id == None %} 
             {% if row.jediny_akcionar[i].jmeno.jmeno != "0" %}{{ row.jediny_akcionar[i].jmeno.jmeno }} {% endif %}
             {{ row.jediny_akcionar[i].jmeno.prijmeni }}{% if row.jediny_akcionar[i].jmeno.datum_naroz != "" %}, nar. {{ row.jediny_akcionar[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
-            {% if row.jediny_akcionar[i].akcionar_fo_id == None %} {{ row.jediny_akcionar[i].oznaceni_po.nazev }}{% if row.jediny_akcionar[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.jediny_akcionar[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.jediny_akcionar[i].oznaceni_po.ico != 0 %}, IČ {{ row.jediny_akcionar[i].oznaceni_po.ico }}{% endif %} {% endif %} 
+            {% if row.jediny_akcionar[i].akcionar_fo_id == None %} {{ row.jediny_akcionar[i].oznaceni_po.nazev }}{% if row.jediny_akcionar[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.jediny_akcionar[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.jediny_akcionar[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ row.jediny_akcionar[i].oznaceni_po.ico }}">{{ row.jediny_akcionar[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
             <br>{{row.jediny_akcionar[i].adresa}} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.jediny_akcionar[i].zapis_datum }} {% if row.jediny_akcionar[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.jediny_akcionar[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>
@@ -451,7 +451,7 @@
         <td>{{ underlne_style_open|safe }} {% if row.spolecnici[i].spolecnik_po_id == None %} 
             {% if row.spolecnici[i].jmeno.jmeno != "0" %}{{ row.spolecnici[i].jmeno.jmeno }} {% endif %}
             {{ row.spolecnici[i].jmeno.prijmeni }}{% if row.spolecnici[i].jmeno.datum_naroz != "" %}, nar. {{ row.spolecnici[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
-            {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }}{% if row.spolecnici[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico != 0 %}, IČ {{ row.spolecnici[i].oznaceni_po.ico }}{% endif %} {% endif %} 
+            {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }}{% if row.spolecnici[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ row.spolecnici[i].oznaceni_po.ico }}">{{ row.spolecnici[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
             <br>{{row.spolecnici[i].adresa}} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici[i].zapis_datum }} {% if row.spolecnici[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
         <!-- Insert individual ownership interests -->
@@ -628,5 +628,9 @@
 </table>
     
 {% endfor %}
+
+{% if results|length == 0 %}
+<p>Nothing found here. <a href = "/">Back to search.</a></p>
+{% endif %}
 
 {% include 'footer.html' %}
