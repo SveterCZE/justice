@@ -116,33 +116,25 @@ def search_results(search):
         if obec_actual_or_full == "actual_results":
             qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
-        qry = qry.filter(Adresy_v2.obec == obec)
+        if obec_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.obec.contains(obec))
+        elif obec_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.obec.like(f'{obec}%'))
+        elif obec_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.obec == obec)
 
     if ulice:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
         if ulice_actual_or_full == "actual_results":
             qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
-        qry = qry.filter(Adresy_v2.ulice == ulice)
-
-    # if obec:
-    #     qry = qry.join(Obce, Company.obec)
-    #     if obec_search_method == "text_anywhere":
-    #         qry = qry.filter(Obce.obec_jmeno.contains(obec))
-    #     elif obec_search_method == "text_beginning":
-    #         qry = qry.filter(Obce.obec_jmeno.like(f'{obec}%'))
-    #     elif obec_search_method == "text_exact":
-    #         qry = qry.filter(Obce.obec_jmeno == obec)
-        
-    # if ulice:
-    #     qry = qry.join(Ulice, Company.ulice)
-    #     if ulice_search_method == "text_anywhere":
-    #         qry = qry.filter(Ulice.ulice_jmeno.contains(ulice))
-    #     elif ulice_search_method == "text_beginning":
-    #         qry = qry.filter(Ulice.ulice_jmeno.like(f'{ulice}%'))
-    #     elif ulice_search_method == "text_exact":
-    #         qry = qry.filter(Ulice.ulice_jmeno == ulice)
-    
+        if ulice_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.ulice.contains(ulice))
+        elif ulice_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
+        elif ulice_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.ulice == ulice)       
+   
     if pravni_forma:
         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
         if pravni_forma_actual_or_full == "actual_results":
