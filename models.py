@@ -89,17 +89,6 @@ class MySoud(types.TypeDecorator):
     def copy(self, **kw):
         return MySoud(self.impl.length)
 
-
-# association_table = db.Table("obce_relation",
-#                                 db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
-#                                 db.Column("obec_id", db.Integer, db.ForeignKey("obce.id"), nullable=False),
-#                                 )
-
-# ulice_association = db.Table("ulice_relation",
-#                                 db.Column("company_id", db.Integer, db.ForeignKey("companies.id"), primary_key=True, nullable=False),
-#                                 db.Column("ulice_id", db.Integer, db.ForeignKey("ulice.id"), nullable=False),
-#                                 )
-
 class Predmety_Podnikani_Association(db.Model):
     __tablename__ = 'predmety_podnikani_relation'
     id = db.Column(db.Integer)
@@ -340,18 +329,6 @@ class Adresy_v2(db.Model):
         if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno"):
             joined_address += ", " + self.stat
         return joined_address
-
-# class Obce(db.Model):
-#     __tablename__ = "obce"
-#     id = db.Column(db.Integer, primary_key=True)
-#     obec_jmeno = db.Column(db.String)
-#     company_obec = db.relationship("Company", secondary=association_table, backref="obce")
-
-# class Ulice(db.Model):
-#     __tablename__ = "ulice"
-#     id = db.Column(db.Integer, primary_key=True)
-#     ulice_jmeno = db.Column(db.String)
-#     company_ulice = db.relationship("Company", secondary=ulice_association)
 
 class Insolvency_Events(db.Model):
     __tablename__ = "insolvency_events"
