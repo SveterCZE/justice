@@ -109,6 +109,17 @@ class Predmety_Cinnosti_Association(db.Model):
     predmet_cinnosti = db.relationship("Predmet_Cinnosti")
     company = db.relationship("Company")
 
+class Ucel_Association(db.Model):
+    __tablename__ = 'ucel_relation'
+    id = db.Column(db.Integer)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    ucel_id = db.Column(db.Integer, db.ForeignKey('ucel.id'), primary_key=True)
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    ucel = db.relationship("Ucel")
+    company = db.relationship("Company")
+
+
 class Sidlo_Association(db.Model):
     __tablename__ = 'sidlo_relation'
     id = db.Column(db.Integer, primary_key=True)
@@ -270,6 +281,7 @@ class Company(db.Model):
     konkurz = db.relationship("Konkurz_Events")
     predmet_podnikani = db.relationship("Predmety_Podnikani_Association")
     predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association")
+    ucel = db.relationship("Ucel_Association")
     zakladni_kapital =  db.relationship("Zakladni_Kapital")
     ostatni_skutecnosti = db.relationship("Ostatni_Skutecnosti")
     akcie = db.relationship("Akcie")
@@ -368,6 +380,12 @@ class Predmet_Cinnosti(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     predmet_cinnosti = db.Column(db.String)
     company_predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association")
+
+class Ucel(db.Model):
+    __tablename__ = "ucel"
+    id = db.Column(db.Integer, primary_key=True)
+    ucel = db.Column(db.String)
+    company_ucel = db.relationship("Ucel_Association")
 
 class Sidlo(db.Model):
     __tablename__ = "adresy"

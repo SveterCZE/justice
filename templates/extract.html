@@ -208,6 +208,25 @@
     {% endif %}
     <!-- END Display areas of activities -->
 
+    <!-- Display purpose -->
+    {% if row.ucel|length > 0 %}
+    {% for i in range (row.ucel|length) %}
+    <tr>
+        <td>{% if i == 0%}Účel:{% endif %}</td>
+        {% if row.ucel[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{ row.ucel[i].ucel.ucel }} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ucel[i].zapis_datum }} {% if row.ucel[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.ucel[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+    <!-- END Display purpose -->
+
     <!-- Display statutory bodies -->
     {% if row.statutarni_organ_text|length > 0 %}
     {% for i in range (row.statutarni_organ_text|length) %}

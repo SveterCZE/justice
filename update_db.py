@@ -102,6 +102,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_predmet_podnikani(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
                     find_predmet_cinnosti(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "UCEL_SUBJEKTU_SEKCE":
+                    find_ucel(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "ZAKLADNI_KAPITAL":
                     find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
@@ -260,6 +262,24 @@ def find_predmet_cinnosti(c, ICO, predmet_cinnosti_elem, conn, primary_sql_key, 
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except:
         pass
+
+def find_ucel(c, ICO, ucel_elem, conn, primary_sql_key, element):
+    try:
+        my_iter = ucel_elem.findall("podudaje")
+        for elem in my_iter:
+            my_iter2 = elem.iter("Udaj")
+            for elem2 in my_iter2:
+                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                insert_instructions = [(".//hodnotaText", "ucel", "ucel", "ucel_relation")]
+                for elem in insert_instructions:
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    insert_into_ancillary_table(c, elem, inserted_figure)
+                    ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+    except Exception as f:
+        print(f)
+
 
 def find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element):
     try:

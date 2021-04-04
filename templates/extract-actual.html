@@ -21,6 +21,13 @@
     {% endif %}
 {% endfor %}
 
+{% set ucel_notes = [] %}
+{% for i in range (row.ucel|length) %}
+    {% if row.ucel[i].vymaz_datum == 0 %}
+        {% set ucel_notes = ucel_notes.append(row.ucel[i].ucel.ucel) %}
+    {% endif %}
+{% endfor %}
+
 {% set zakladni_kapital_notes = [] %}
 {% for i in range (row.zakladni_kapital|length) %}
     {% if row.zakladni_kapital[i].vymaz_datum == 0 %}
@@ -254,6 +261,17 @@
     {% endfor %}
     {% endif %}
     <!-- END Display areas of activities -->
+
+    <!-- Display purpose -->
+    {% if ucel_notes|length > 0 %}
+    {% for i in range (ucel_notes|length) %}
+    <tr>
+        <td>{% if i == 0%}Účel:{% endif %}</td>
+        <td>{{ ucel_notes[i] }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+    <!-- END Display purpose -->    
 
     <!-- Display statutory bodies -->
     {% if statutarni_organ_notes|length > 0 %}
