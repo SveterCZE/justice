@@ -6,59 +6,17 @@
     {% for row in results %}
     
         {% set insolvency_notes = [] %}
-        {% for elem in row.insolvence %}
-            {% set insolvency_notes = insolvency_notes.append(elem.insolvency_event) %}
+        {% for i in range (row.insolvence|length) %}
+            {% if row.insolvence[i].vymaz_datum == 0 %}
+                {% set insolvency_notes = insolvency_notes.append(row.insolvence[i].insolvency_event) %}
+            {% endif %}    
         {% endfor %}
-    
-        {% set zapis_split = row.zapis.split("-") %}
-        {% if zapis_split[1] == "01" %}
-            {% set mesic = "ledna" %}
-        {% elif zapis_split[1] == "02" %}
-            {% set mesic = "února" %}
-        {% elif zapis_split[1] == "03" %}
-            {% set mesic = "března" %}
-        {% elif zapis_split[1] == "04" %}
-            {% set mesic = "dubna" %}
-        {% elif zapis_split[1] == "05" %}
-            {% set mesic = "května" %}
-        {% elif zapis_split[1] == "06" %}
-            {% set mesic = "června" %}
-        {% elif zapis_split[1] == "07" %}
-            {% set mesic = "července" %}
-        {% elif zapis_split[1] == "08" %}
-            {% set mesic = "srpna" %}
-        {% elif zapis_split[1] == "09" %}
-            {% set mesic = "září" %}
-        {% elif zapis_split[1] == "10" %}
-            {% set mesic = "října" %}
-        {% elif zapis_split[1] == "11" %}
-            {% set mesic = "listopadu" %}
-        {% elif zapis_split[1] == "12" %}
-            {% set mesic = "prosince" %}
-        {% endif %}
-        
-        {% if zapis_split[2][0] == "0" %}
-            {% set den = zapis_split[2][1]  %}
-        {% else %}
-            {% set den = zapis_split[2]  %}
-        {% endif %}
-        
-        {% if row.soud == "MSPH" %}
-            {% set soud = "Městského soudu v Praze" %}
-        {% elif row.soud == "KSCB" %}
-            {% set soud = "Krajského soudu v Českých Budějovicích" %}
-        {% elif row.soud == "KSOS" %}
-            {% set soud = "Krajského soudu v Ostravě" %}
-        {% elif row.soud == "KSPL" %}
-            {% set soud = "Krajského soudu v Plzni" %}
-        {% elif row.soud == "KSBR" %}
-            {% set soud = "Krajského soudu v Brně" %}
-        {% elif row.soud == "KSHK" %}
-            {% set soud = "Krajského soudu v Hradci Králové" %}
-        {% elif row.soud == "KSUL" %}
-            {% set soud = "Krajského soudu v Ústí nad Labem" %}
-        {% endif %}
-        
+        {% for i in range (row.konkurz|length) %}
+            {% if row.konkurz[i].vymaz_datum == 0 %}
+                {% set insolvency_notes = insolvency_notes.append(row.konkurz[i].konkurz_event) %}
+            {% endif %}    
+        {% endfor %}
+
         {% if insolvency_notes|length > 0 %}
             {% set table_style = "table table-danger" %}
         {% elif loop.index % 2 == 0 %}
@@ -76,10 +34,16 @@
         {% else %}
             {% set ico_buffer = "" %}
         {% endif %}
-    
+        
+        {% set current_seat = [] %}
+        {% for i in range (row.sidlo_text|length) %}
+            {% if row.sidlo_text[i].vymaz_datum == 0 %}
+                {% set current_seat = current_seat.append(row.sidlo_text[i]) %}
+            {% endif %}    
+        {% endfor %}        
 
-        
-        
+
+
     <table class= "{{table_style}}" style="width: 100%">
     <p></p>
     <tr>
@@ -90,16 +54,18 @@
     </tr>
     <tr>
         <td>Spisová značka:</td>
-        <td>{{ row.oddil }} {{ row.vlozka }} vedená u {{ soud }}</td>
+        <!-- <td>{{ oddil|join("") }} {{ vlozka|join("") }} vedená u {{ soud|join("") }}</td> -->
+        <td>{{row.oddil}} {{row.vlozka}} vedená u {{row.soud}}</td>
         <td>Den zápisu:</td>
-        <td>{{den}}. {{mesic}} {{zapis_split[0]}}</td>
+        <td>{{row.zapis}}</td>
     </tr>
     <tr>
         <td>Sídlo:</td>
-        <td>{{ row.sidlo }}</td>
-        <td></td>
-        <td></td>
+        <td>{{ current_seat[0].sidlo_text }} </td>
+        <td><a href="/{{ row.ico }}">Úplný výpis</a></td>
+        <td><a href="/{{ row.ico }}-actual">Aktuální výpis</a></td>
     </tr>
+    
     {% if insolvency_notes|length > 0 %}
         {% for i in range (insolvency_notes|length) %}
         <tr>

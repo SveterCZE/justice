@@ -23,7 +23,7 @@
         {{ form.nazev_subjektu.label }}
       </div>
       <div class="col-sm">
-        {{ form.nazev_subjektu()|safe }} {{ form.nazev_subjektu_selection }}
+        {{ form.nazev_subjektu()|safe }} {{ form.nazev_subjektu_selection }} {{ form.nazev_search_actual }}
       </div>
     </div>
     
@@ -41,7 +41,7 @@
         {{ form.obec_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.obec_search()|safe }} {{ form.obec_search_selection }}
+        {{ form.obec_search()|safe }} {{ form.obec_search_selection }} {{ form.obec_search_actual }}
       </div>
     </div>
     
@@ -50,7 +50,7 @@
         {{ form.ulice_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.ulice_search()|safe }} {{ form.ulice_search_selection }}
+        {{ form.ulice_search()|safe }} {{ form.ulice_search_selection }} {{ form.ulice_search_actual }}
       </div>
     </div>
     
@@ -59,7 +59,7 @@
         {{ form.oddil_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.oddil_search()|safe }} {{ form.oddil_search_selection }}
+        {{ form.oddil_search()|safe }} {{ form.oddil_search_selection }} {{ form.oddil_search_actual }}
       </div>
     </div>
     
@@ -68,15 +68,28 @@
         {{ form.vlozka_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.vlozka_search()|safe }} {{ form.vlozka_search_selection }}
+        {{ form.vlozka_search()|safe }} {{ form.vlozka_search_selection }} {{ form.vlozka_search_actual }}
       </div>
     </div>
+   
     <div class="row g-2">
-        {{ render_field(form.pravni_forma_search) }}
+      <div class="col-sm-3">
+        {{ form.pravni_forma_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.pravni_forma_search()|safe }} {{ form.pravni_forma_actual }}
+      </div>
     </div>
+
     <div class="row g-2">
-        {{ render_field(form.soud_search) }}
+      <div class="col-sm-3">
+        {{ form.soud_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.soud_search()|safe }} {{ form.soud_search_actual }}
+      </div>
     </div>
+
     <div class="row g-2">
         {{ render_field(form.insolvent_only_search) }}
     </div>

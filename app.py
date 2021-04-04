@@ -8,9 +8,13 @@ Created on Sun Jan 17 09:38:19 2021
 
 # app.py
 from flask import Flask
+from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///justice.db'
+app.config["SQLALCHEMY_ECHO"] = True
 app.secret_key = "123456"
+app.debug = True
+toolbar = DebugToolbarExtension(app)
 db = SQLAlchemy(app)
