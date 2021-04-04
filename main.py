@@ -8,8 +8,11 @@ from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_
 from models import Prokurista_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy, Ucel, Ucel_Association
 from models import Adresy_v2
 from tables import Results
+from sqlalchemy.sql import select
+from sqlalchemy.sql import text
+from sqlalchemy import create_engine
 
-init_db()
+# init_db()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -175,6 +178,76 @@ def extract_actual(ico):
     qry = qry.filter(Company.ico == ico)
     results = qry.all()
     return render_template("extract-actual.html", ico = ico, results = results)
+
+@app.route("/trivia", methods=['GET', 'POST'])
+def trivia():
+    number_entities = count_number_entries()
+    return render_template("trivia.html", number_entities = number_entities)
+
+@app.route("/most_common_addresses", methods=['GET', 'POST'])
+def find_most_common_addresses():
+    most_common_addresses = count_common_addresses()
+    return render_template("most_common_addresses.html", most_common_addresses = most_common_addresses)    
+
+@app.route("/oldest_companies", methods=['GET', 'POST'])
+def find_oldest_companies():
+    oldest_companies = count_oldest_companies()
+    return render_template("oldest_companies.html", oldest_companies = oldest_companies)
+
+@app.route("/most_common_purpose", methods=['GET', 'POST'])
+def find_most_common_purpose():
+    most_common_purpose = count_common_purpose()
+    return render_template("most_common_purpose.html", most_common_purpose = most_common_purpose)    
+
+def count_number_entries():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT COUNT(id) FROM companies;")
+    entries_number = conn.execute(text_instruction).fetchall()
+    conn.close()
+    return entries_number[0][0]
+
+def count_common_addresses():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT sidlo_id, COUNT(`sidlo_id`) AS `value_occurrence` FROM sidlo_relation INNER JOIN adresy_v2 ON sidlo_relation.sidlo_id=adresy_v2.id WHERE vymaz_datum = 0 GROUP BY `sidlo_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    addresses_frequency = []
+    for elem in result:
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[0])
+        selected_address = qry.all()
+        addresses_frequency.append((selected_address[0], elem[1]))
+    conn.close()
+    return addresses_frequency
+
+def count_common_purpose():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT ucel_id, COUNT(`ucel_id`) AS `value_occurrence` FROM ucel_relation INNER JOIN ucel ON ucel_relation.ucel_id=ucel.id WHERE vymaz_datum = 0 GROUP BY `ucel_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    addresses_frequency = []
+    for elem in result:
+        qry = Ucel.query
+        qry = qry.filter(Ucel.id == elem[0])
+        selected_purpose = qry.all()
+        addresses_frequency.append((selected_purpose[0].ucel, elem[1]))
+    conn.close()
+    return addresses_frequency    
+
+def count_oldest_companies():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT id from companies ORDER BY zapis ASC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    oldest_companies = []
+    for elem in result:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[0])
+        selected_company = qry.all()
+        oldest_companies.append((selected_company[0].nazev, selected_company[0].zapis, selected_company[0].ico)) 
+    return oldest_companies
+    
 
 if __name__ == '__main__':
     app.run()

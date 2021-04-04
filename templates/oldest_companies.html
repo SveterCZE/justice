@@ -1,0 +1,23 @@
+{% include 'header.html' %}
+
+<h1>Nejstarší společnosti:</h1>
+<table class="table table-hover">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Jméno</th>
+        <th scope="col">Datum založení</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range (oldest_companies|length) %}
+    <tr>
+        <th scope = "row">{{ i + 1 }}</th>
+        <td><a href="{{ oldest_companies[i][2] }}">{{ oldest_companies[i][0] }}</a></td>
+        <td>{{ oldest_companies[i][1] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% include 'footer.html' %}
