@@ -306,7 +306,7 @@ class Adresy_v2(db.Model):
             return self.komplet_adresa
         if self.ulice != "0":
             joined_address += self.ulice + " "
-        if self.cisloText != "0":
+        if self.cisloText != "0" and self.cisloText != None:
             joined_address += self.cisloText + ", "   
         if self.cisloPo != 0:
             if self.ulice == "0":

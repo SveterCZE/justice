@@ -61,7 +61,7 @@
     </tr>
     <tr>
         <td>Sídlo:</td>
-        <td>{{ current_seat[0].sidlo_text }} </td>
+        <td>{% if current_seat|length != 0 %}{{ current_seat[0].sidlo_text }}{% else %}znepřístupněno podle § 25 odst. 2 zákona č. 304/2013 Sb.{% endif %}</td>
         <td><a href="/{{ row.ico }}">Úplný výpis</a></td>
         <td><a href="/{{ row.ico }}-actual">Aktuální výpis</a></td>
     </tr>

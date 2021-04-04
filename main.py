@@ -1,9 +1,7 @@
-# test.py
 from app import app
 from db_setup import init_db, db_session
 from forms import JusticeSearchForm, CompanyForm
 from flask import flash, render_template, request, redirect
-# from models import Company, Soud
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
 from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_Clen_Association, Fyzicka_Osoba, Spolecnici_Association, Podily_Association, Druhy_Podilu, Pravnicka_Osoba
@@ -147,8 +145,6 @@ def search_results(search):
         if soud_actual_or_full == "actual_results":
             qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
         qry = qry.filter(Soudni_Zapisy.soud == soud)  
-        
-        # qry = qry.filter(Company.soud.contains(soud))
     
     if zapsano_od:
         qry = qry.filter(Company.zapis >= zapsano_od)
@@ -156,12 +152,6 @@ def search_results(search):
         qry = qry.filter(Company.zapis <= zapsano_do)
 
     results = qry.all()
-        # else:
-        #     qry = db_session.query(Company)
-        #     results = qry.all()
-    # else:
-    #     qry = db_session.query(Company)
-    #     results = qry.all()
 
     if not results:
         flash('No results found!')
@@ -170,42 +160,7 @@ def search_results(search):
     else:
         table = Results(results)
         table.border = True
-        # return render_template('results.html', table=table)
         return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do)
-
-def search_results_BACKUP(search):
-    results = []
-    search_string = search.data['search']
-
-    if search_string:
-        # if search.data['select'] == 'soud':
-        #     qry = db_session.query(Company, Soud).filter(
-        #         Soud.id==Company.soud_id).filter(
-        #             Soud.name.contains(search_string))
-        #     results = [item[0] for item in qry.all()]
-        if search.data['select'] == 'nazev':
-            qry = db_session.query(Company).filter(
-                Company.nazev.contains(search_string))
-            results = qry.all()
-        elif search.data['select'] == 'ico':
-            qry = db_session.query(Company).filter(
-                Company.ico.contains(search_string))
-            results = qry.all()
-        else:
-            qry = db_session.query(Company)
-            results = qry.all()
-    else:
-        qry = db_session.query(Company)
-        results = qry.all()
-
-    if not results:
-        flash('No results found!')
-        return redirect('/')
-
-    else:
-        table = Results(results)
-        table.border = True
-        return render_template('results.html', table=table)
 
 @app.route("/<int:ico>", methods=['GET', 'POST'])
 def extract(ico):
@@ -220,46 +175,6 @@ def extract_actual(ico):
     qry = qry.filter(Company.ico == ico)
     results = qry.all()
     return render_template("extract-actual.html", ico = ico, results = results)
-
-@app.route('/new_company', methods=['GET', 'POST'])
-def new_company():
-    """
-    Add a new company
-    """
-    form = CompanyForm(request.form)
-
-    if request.method == 'POST' and form.validate():
-        # save the album
-        company = Company()
-        save_changes(company, form, new=True)
-        flash('Company created successfully!')
-        return redirect('/')
-    return render_template('new_company.html', form=form)
-
-def save_changes(company, form, new=False):
-    """
-    Save the changes to the database
-    """
-    # Get data from form and assign it to the correct attributes
-    # of the SQLAlchemy table object
-    # soud = Soud()
-    # soud.name = form.soud.data
-
-    # company.soud = soud
-    company.soud = form.soud.data
-    company.ico = form.ico.data
-    company.nazev = form.nazev.data
-    company.sidlo = form.sidlo.data
-    company.zapis = form.zapis.data
-    company.oddil = form.oddil.data
-    company.vlozka = form.vlozka.data
-    company.vymaz = form.vymaz.data
-    if new:
-        # Add the new album to the database
-        db_session.add(company)
-    # commit the data to the database
-    db_session.commit()
-
 
 if __name__ == '__main__':
     app.run()

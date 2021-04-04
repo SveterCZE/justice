@@ -81,10 +81,8 @@ def insert_relation_information(c, elem, primary_sql_key, ancillary_table_key):
 
 def find_other_properties(c, ICO, element, conn, primary_sql_key):
     try:
-        # my_iter = element.iter("udaje")
         my_iter = element.findall("udaje")
         for elem in my_iter:
-            # my_iter2 = elem.iter("Udaj")
             my_iter2 = elem.findall("Udaj")
             for elem2 in my_iter2:
                 udajTyp_name = str(get_prop(elem2, ".//udajTyp/kod"))
@@ -189,7 +187,6 @@ def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
             elif udajTyp_name == "STATUTARNI_ORGAN_CLEN":
                 find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element)
             else:
-                # print(str(get_prop(elem, "udajTyp/kod")))
                 pass
     except Exception as f:
         print(f)
@@ -203,13 +200,11 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
             vymaz_datum = str(get_prop(elem, "vymazDatum"))
             spolecnik_typ =  str(get_prop(elem, "hodnotaUdaje/typ"))
             # TODO Chech these conditions, they sometimes cause a person not being stored (IC 27650081)
-            # if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_oznaceni == "Společník":
             if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_typ == "OSOBA":
                 # TODO alternativy pro None, Spolecny podil a Uvolneny podil
                 text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
                 nazev = str(get_prop(elem, "osoba/nazev"))
                 # TODO Fix - make reference to type of person - some foreign persons have no ico or regCo, so they are assigned a number for a natural person
-                # if spol_ico == "0" and regCislo == "0":
                 if nazev == "0":
                     # I probably do not need the primary sql key
                     spolecnik_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
@@ -323,7 +318,6 @@ def find_dozorci_rada(c, ICO, elem2, conn, primary_sql_key, element):
                 find_pocet_clenu_dr(c, ICO, elem, conn, relationship_table_key, element)        
             elif udajTyp_name == "DOZORCI_RADA_CLEN":
                 find_clen_dr(c, ICO, elem, conn, relationship_table_key, element)
-            # find_clen_dr(c, ICO, elem, conn, relationship_table_key, element)    
     except Exception as f:
         print(f)      
 
@@ -337,7 +331,6 @@ def find_prokura(c, ICO, elem2, conn, primary_sql_key, element):
                 vymaz_datum = str(get_prop(elem, "vymazDatum"))
                 text_prokurista = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
                 prokurista_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
-                # adresa_id = find_and_store_address(c, elem)
                 adresa_id = sidlo3(c, elem, primary_sql_key)
                 c.execute("INSERT INTO prokuriste (company_id, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista,))
             else:
@@ -360,12 +353,10 @@ def find_sole_shareholder(c, ICO, elem2, conn, primary_sql_key, element):
                 spol_ico = str(get_prop(elem, "osoba/ico"))
                 regCislo = str(get_prop(elem, "osoba/regCislo"))
                 akcionar_po_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo)
-                # adresa_id = find_and_store_address(c, elem)
                 adresa_id = sidlo3(c, elem, primary_sql_key)
                 c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id,))
             elif typ_akcionar == "F":
                 akcionar_fo_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element)
-                # adresa_id = find_and_store_address(c, elem)
                 adresa_id = sidlo3(c, elem, primary_sql_key)
                 c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id,))    
     except Exception as f:
@@ -426,7 +417,6 @@ def sidlo3(c, elem, primary_sql_key):
         else:
             address_key = sidlo_id[0]
         return address_key
-        # print(address_key)
     except Exception as e:
         print(e)
 
@@ -489,7 +479,6 @@ def find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element):
         clenstviDo = str(get_prop(elem, "clenstviDo"))
         if typ_osoby == "AngazmaFyzicke":
             osoba_id = find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element)
-            # adresa_id = find_and_store_address(c, elem)
             adresa_id = sidlo3(c, elem, relationship_table_key)
             c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
