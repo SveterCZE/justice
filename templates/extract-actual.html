@@ -287,8 +287,7 @@
             {% if statutarni_organ_notes[i].clenove[j].vymaz_datum == 0 %}
             <tr>
                 <td style = padding-left:2em>{% if statutarni_organ_notes[i].clenove[j].funkce != "0" %} {{ statutarni_organ_notes[i].clenove[j].funkce }} {% endif %}</td>        
-                <td>{% if statutarni_organ_notes[i].clenove[j].jmeno.jmeno != "0" %}{{ statutarni_organ_notes[i].clenove[j].jmeno.jmeno }} {% endif %}
-                    {{ statutarni_organ_notes[i].clenove[j].jmeno.prijmeni }}{% if statutarni_organ_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ statutarni_organ_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+                <td>{{ statutarni_organ_notes[i].clenove[j].jmeno }}<br> 
                     {{ statutarni_organ_notes[i].clenove[j].adresa }} 
                     {% if statutarni_organ_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ statutarni_organ_notes[i].clenove[j].funkce_od}}{% endif %}
                     {% if statutarni_organ_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ statutarni_organ_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
@@ -341,8 +340,7 @@
             {% if dozorci_rada_notes[i].clenove[j].vymaz_datum == 0 %}
             <tr>
                 <td style = padding-left:2em>{% if dozorci_rada_notes[i].clenove[j].funkce != "0" %} {{dozorci_rada_notes[i].clenove[j].funkce }} {% endif %}</td>     
-                <td>{% if dozorci_rada_notes[i].clenove[j].jmeno.jmeno != 0 %}{{ dozorci_rada_notes[i].clenove[j].jmeno.jmeno }} {% endif %}
-                    {{ dozorci_rada_notes[i].clenove[j].jmeno.prijmeni }}{% if dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+                <td>{{ dozorci_rada_notes[i].clenove[j].jmeno }}<br> 
                     {{ dozorci_rada_notes[i].clenove[j].adresa }} 
                     {% if dozorci_rada_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ dozorci_rada_notes[i].clenove[j].funkce_od}}{% endif %}
                     {% if dozorci_rada_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ dozorci_rada_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
@@ -372,8 +370,7 @@
     {% for i in range (prokurist_notes|length) %}
     <tr>
         <td>{% if i == 0%}Prokura:{% endif %}</td>
-        <td>{% if prokurist_notes[i].jmeno.jmeno != "0" %}{{ prokurist_notes[i].jmeno.jmeno }} {% endif %}
-            {{ prokurist_notes[i].jmeno.prijmeni }}{% if prokurist_notes[i].jmeno.datum_naroz != "" %}, nar. {{ prokurist_notes[i].jmeno.datum_naroz }}{% endif %}<br> 
+        <td>{{ prokurist_notes[i].jmeno}}<br> 
             {{ prokurist_notes[i].adresa }}{% if prokurist_notes[i].text_prokurista != "0" %}<br>{{ prokurist_notes[i].text_prokurista }}{% endif %}</td>
     </tr>    
     {% endfor %}
@@ -393,9 +390,7 @@
         {% for i in range (sole_shareholder_notes|length) %}
         <tr>
             <td>{% if i == 0%}Jediný akcionář:{% endif %}</td>
-            <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %} 
-                {% if sole_shareholder_notes[i].jmeno.jmeno != "0" %}{{ sole_shareholder_notes[i].jmeno.jmeno }} {% endif %}
-                {{ sole_shareholder_notes[i].jmeno.prijmeni }}{% if sole_shareholder_notes[i].jmeno.datum_naroz != "" %}, nar. {{ sole_shareholder_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+            <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %}{{ sole_shareholder_notes[i].jmeno }}{% endif %}   
                 {% if sole_shareholder_notes[i].akcionar_fo_id == None %} {{ sole_shareholder_notes[i].oznaceni_po.nazev }}{% if sole_shareholder_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ sole_shareholder_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if sole_shareholder_notes[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ sole_shareholder_notes[i].oznaceni_po.ico }}-actual">{{ sole_shareholder_notes[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
                 <br>{{sole_shareholder_notes[i].adresa}}</td>
         </tr>   
@@ -412,9 +407,7 @@
         {% for i in range (spolecnici_notes|length) %}
         <tr>
             <td style = padding-left:2em>Společník:</td>
-            <td>{% if spolecnici_notes[i].spolecnik_po_id == None %} 
-                {% if spolecnici_notes[i].jmeno.jmeno != "0" %}{{ spolecnici_notes[i].jmeno.jmeno }} {% endif %}
-                {{ spolecnici_notes[i].jmeno.prijmeni }}{% if spolecnici_notes[i].jmeno.datum_naroz != "" %}, nar. {{ spolecnici_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+            <td>{% if spolecnici_notes[i].spolecnik_po_id == None %}{{ spolecnici_notes[i].jmeno }}{% endif %}   
                 {% if spolecnici_notes[i].spolecnik_fo_id == None %} {{ spolecnici_notes[i].oznaceni_po.nazev }}{% if spolecnici_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ spolecnici_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if spolecnici_notes[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ spolecnici_notes[i].oznaceni_po.ico }}-actual">{{ spolecnici_notes[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
                 <br>{{spolecnici_notes[i].adresa}}</td>
         </tr>

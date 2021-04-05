@@ -119,7 +119,6 @@ class Ucel_Association(db.Model):
     ucel = db.relationship("Ucel")
     company = db.relationship("Company")
 
-
 class Sidlo_Association(db.Model):
     __tablename__ = 'sidlo_relation'
     id = db.Column(db.Integer, primary_key=True)
@@ -478,6 +477,20 @@ class Fyzicka_Osoba(db.Model):
     prijmeni = db.Column(db.String)
     titul_za = db.Column(db.String)
     datum_naroz = db.Column(MyType)
+    def __repr__(self):
+        joined_name = ""
+        if self.titul_pred != "0" and self.titul_pred != None:
+            joined_name += self.titul_pred + " "
+        if self.jmeno != "0" and self.jmeno != None:
+            joined_name += self.jmeno + " "
+        if self.prijmeni != "0" and self.prijmeni != None:
+            joined_name += self.prijmeni
+        if self.titul_za != "0" and self.titul_za != None:
+            joined_name += ", " +  self.titul_za
+        if self.datum_naroz != 0 and self.datum_naroz != None and self.datum_naroz != "":
+            joined_name += ", nar. " + self.datum_naroz
+        return joined_name
+        
 
 class Pravnicka_Osoba(db.Model):
     __tablename__ = "pravnicke_osoby"

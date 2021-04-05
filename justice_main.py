@@ -9,6 +9,6 @@ def main():
     
     DB_name = "justice.db"
     create_DB(DB_name)
-    # download_data(typy_po, soudy)
+    download_data(typy_po, soudy)
     update_DB(typy_po, soudy, DB_name)
 main()

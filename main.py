@@ -163,7 +163,28 @@ def search_results(search):
     else:
         table = Results(results)
         table.border = True
-        return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do)
+        return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do, show_form = True)
+
+@app.route('/results-sidlo-<int:adresa_id>', methods=['GET', 'POST'])
+def search_results_sidlo(adresa_id):
+    search = JusticeSearchForm(request.form)
+
+    results = []
+    qry = Company.query
+    qry = qry.join(Sidlo_Association, Company.sidlo_text)
+    qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+    qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+    qry = qry.filter(Adresy_v2.id == adresa_id)
+    results = qry.all()
+
+    if not results:
+        flash('No results found!')
+        return redirect('/')
+
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results2.html", results=results, form=search, show_form = False)
 
 @app.route("/<int:ico>", methods=['GET', 'POST'])
 def extract(ico):
@@ -199,6 +220,16 @@ def find_most_common_purpose():
     most_common_purpose = count_common_purpose()
     return render_template("most_common_purpose.html", most_common_purpose = most_common_purpose)    
 
+@app.route("/most_common_business", methods=['GET', 'POST'])
+def find_most_common_business():
+    most_common_business = count_common_business()
+    return render_template("most_common_business.html", most_common_business = most_common_business)    
+
+@app.route("/most_common_activity", methods=['GET', 'POST'])
+def find_most_common_activity():
+    most_common_activity = count_common_activity()
+    return render_template("most_common_activity.html", most_common_activity = most_common_activity)        
+
 def count_number_entries():
     engine = create_engine('sqlite:///justice.db', echo=True)
     conn = engine.connect()
@@ -217,9 +248,37 @@ def count_common_addresses():
         qry = Adresy_v2.query
         qry = qry.filter(Adresy_v2.id == elem[0])
         selected_address = qry.all()
-        addresses_frequency.append((selected_address[0], elem[1]))
+        addresses_frequency.append((selected_address[0], elem[1], elem[0]))
     conn.close()
     return addresses_frequency
+
+def count_common_business():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT predmet_podnikani_id, COUNT(`predmet_podnikani_id`) AS `value_occurrence` FROM predmety_podnikani_relation INNER JOIN predmety_podnikani ON predmety_podnikani_relation.predmet_podnikani_id=predmety_podnikani.id WHERE vymaz_datum = 0 GROUP BY `predmet_podnikani_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    business_frequency = []
+    for elem in result:
+        qry = Predmet_Podnikani.query
+        qry = qry.filter(Predmet_Podnikani.id == elem[0])
+        selected_business = qry.all()
+        business_frequency.append((selected_business[0].predmet_podnikani, elem[1]))
+    conn.close()
+    return business_frequency  
+
+def count_common_activity():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT predmet_cinnosti_id, COUNT(`predmet_cinnosti_id`) AS `value_occurrence` FROM predmety_cinnosti_relation INNER JOIN predmety_cinnosti ON predmety_cinnosti_relation.predmet_cinnosti_id=predmety_cinnosti.id WHERE vymaz_datum = 0 GROUP BY `predmet_cinnosti_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    activity_frequency = []
+    for elem in result:
+        qry = Predmet_Cinnosti.query
+        qry = qry.filter(Predmet_Cinnosti.id == elem[0])
+        selected_activity = qry.all()
+        activity_frequency.append((selected_activity[0].predmet_cinnosti, elem[1]))
+    conn.close()
+    return activity_frequency    
 
 def count_common_purpose():
     engine = create_engine('sqlite:///justice.db', echo=True)

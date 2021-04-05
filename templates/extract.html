@@ -256,8 +256,7 @@
             {% set underlne_style_close = "" %}
         {% endif %}          
         <td>{{ underlne_style_open|safe }} 
-            {% if row.statutarni_organ_text[i].clenove[j].jmeno.jmeno != "0" %}{{ row.statutarni_organ_text[i].clenove[j].jmeno.jmeno }} {% endif %}
-            {{ row.statutarni_organ_text[i].clenove[j].jmeno.prijmeni }}{% if row.statutarni_organ_text[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ row.statutarni_organ_text[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+            {{ row.statutarni_organ_text[i].clenove[j].jmeno }}<br> 
             {{ row.statutarni_organ_text[i].clenove[j].adresa }} 
             {% if row.statutarni_organ_text[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.statutarni_organ_text[i].clenove[j].funkce_od}}{% endif %}
             {% if row.statutarni_organ_text[i].clenove[j].funkce_do != 0 %}<br>Den zániku funkce: {{ row.statutarni_organ_text[i].clenove[j].funkce_do}}{% endif %}
@@ -341,8 +340,7 @@
             {% set underlne_style_close = "" %}
         {% endif %}          
         <td>{{ underlne_style_open|safe }}
-            {% if row.dozorci_rada_text[i].clenove[j].jmeno.jmeno != "0" %}{{ row.dozorci_rada_text[i].clenove[j].jmeno.jmeno }} {% endif %}
-            {{ row.dozorci_rada_text[i].clenove[j].jmeno.prijmeni }}{% if row.dozorci_rada_text[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ row.dozorci_rada_text[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+            {{ row.dozorci_rada_text[i].clenove[j].jmeno }}<br> 
             {{ row.dozorci_rada_text[i].clenove[j].adresa }} 
             {% if row.dozorci_rada_text[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.dozorci_rada_text[i].clenove[j].funkce_od}}{% endif %}
             {% if row.dozorci_rada_text[i].clenove[j].funkce_do != 0 %}<br>Den zániku funkce: {{ row.dozorci_rada_text[i].clenove[j].funkce_do}}{% endif %}
@@ -397,8 +395,7 @@
             {% set underlne_style_close = "" %}
         {% endif %}
         <td>{{ underlne_style_open|safe }}
-            {% if row.prokurista[i].jmeno.jmeno != "0" %}{{ row.prokurista[i].jmeno.jmeno }} {% endif %}
-            {{ row.prokurista[i].jmeno.prijmeni }}{% if row.prokurista[i].jmeno.datum_naroz != "" %}, nar. {{ row.prokurista[i].jmeno.datum_naroz }}{% endif %}<br> 
+            {{ row.prokurista[i].jmeno }}<br> 
             {{ row.prokurista[i].adresa }}{% if row.prokurista[i].text_prokurista != "0" %}<br>{{ row.prokurista[i].text_prokurista }}{% endif %}{{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.prokurista[i].zapis_datum }} {% if row.prokurista[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.prokurista[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>
@@ -439,9 +436,7 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-        <td>{{ underlne_style_open|safe }} {% if row.jediny_akcionar[i].akcionar_po_id == None %} 
-            {% if row.jediny_akcionar[i].jmeno.jmeno != "0" %}{{ row.jediny_akcionar[i].jmeno.jmeno }} {% endif %}
-            {{ row.jediny_akcionar[i].jmeno.prijmeni }}{% if row.jediny_akcionar[i].jmeno.datum_naroz != "" %}, nar. {{ row.jediny_akcionar[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+        <td>{{ underlne_style_open|safe }} {% if row.jediny_akcionar[i].akcionar_po_id == None %}{{ row.jediny_akcionar[i].jmeno }}{% endif %}   
             {% if row.jediny_akcionar[i].akcionar_fo_id == None %} {{ row.jediny_akcionar[i].oznaceni_po.nazev }}{% if row.jediny_akcionar[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.jediny_akcionar[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.jediny_akcionar[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ row.jediny_akcionar[i].oznaceni_po.ico }}">{{ row.jediny_akcionar[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
             <br>{{row.jediny_akcionar[i].adresa}} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.jediny_akcionar[i].zapis_datum }} {% if row.jediny_akcionar[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.jediny_akcionar[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
@@ -467,9 +462,7 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-        <td>{{ underlne_style_open|safe }} {% if row.spolecnici[i].spolecnik_po_id == None %} 
-            {% if row.spolecnici[i].jmeno.jmeno != "0" %}{{ row.spolecnici[i].jmeno.jmeno }} {% endif %}
-            {{ row.spolecnici[i].jmeno.prijmeni }}{% if row.spolecnici[i].jmeno.datum_naroz != "" %}, nar. {{ row.spolecnici[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+        <td>{{ underlne_style_open|safe }} {% if row.spolecnici[i].spolecnik_po_id == None %}{{ row.spolecnici[i].jmeno }}{% endif %}   
             {% if row.spolecnici[i].spolecnik_fo_id == None %} {{ row.spolecnici[i].oznaceni_po.nazev }}{% if row.spolecnici[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.spolecnici[i].oznaceni_po.reg_cislo }}{% endif %}{% if row.spolecnici[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ row.spolecnici[i].oznaceni_po.ico }}">{{ row.spolecnici[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
             <br>{{row.spolecnici[i].adresa}} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici[i].zapis_datum }} {% if row.spolecnici[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
