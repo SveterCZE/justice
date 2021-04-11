@@ -105,22 +105,6 @@
     {% endif %}
 {% endfor %}
 
-{% if row.soud == "MSPH" %}
-    {% set soud = "Městského soudu v Praze" %}
-{% elif row.soud == "KSCB" %}
-    {% set soud = "Krajského soudu v Českých Budějovicích" %}
-{% elif row.soud == "KSOS" %}
-    {% set soud = "Krajského soudu v Ostravě" %}
-{% elif row.soud == "KSPL" %}
-    {% set soud = "Krajského soudu v Plzni" %}
-{% elif row.soud == "KSBR" %}
-    {% set soud = "Krajského soudu v Brně" %}
-{% elif row.soud == "KSHK" %}
-    {% set soud = "Krajského soudu v Hradci Králové" %}
-{% elif row.soud == "KSUL" %}
-    {% set soud = "Krajského soudu v Ústí nad Labem" %}
-{% endif %}
-
 {% if insolvency_notes|length > 0 %}
     {% set table_style = "table table-danger" %}
 {% elif loop.index % 2 == 0 %}
@@ -287,7 +271,8 @@
             {% if statutarni_organ_notes[i].clenove[j].vymaz_datum == 0 %}
             <tr>
                 <td style = padding-left:2em>{% if statutarni_organ_notes[i].clenove[j].funkce != "0" %} {{ statutarni_organ_notes[i].clenove[j].funkce }} {% endif %}</td>        
-                <td>{{ statutarni_organ_notes[i].clenove[j].jmeno }}<br> 
+                <td>{% if statutarni_organ_notes[i].clenove[j].jmeno != None %}{{ statutarni_organ_notes[i].clenove[j].jmeno }}
+                    {% else %}{{ statutarni_organ_notes[i].clenove[j].jmeno_po.nazev}}{% if statutarni_organ_notes[i].clenove[j].jmeno_po.reg_cislo != 0 %}, reg č. {{ statutarni_organ_notes[i].clenove[j].jmeno_po.reg_cislo }}{% endif %}{% if statutarni_organ_notes[i].clenove[j].jmeno_po.ico != 0 %}, IČ <a href="/{{ statutarni_organ_notes[i].clenove[j].jmeno_po.ico }}">{{ statutarni_organ_notes[i].clenove[j].jmeno_po.ico }}</a>{% endif %} {% endif %}<br> 
                     {{ statutarni_organ_notes[i].clenove[j].adresa }} 
                     {% if statutarni_organ_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ statutarni_organ_notes[i].clenove[j].funkce_od}}{% endif %}
                     {% if statutarni_organ_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ statutarni_organ_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
@@ -463,44 +448,7 @@
         {% for i in range (shares_notes|length) %}
         <tr>
             <td>{% if i == 0%}Akcie:{% endif %}</td>
-            {% if shares_notes[i].akcie_podoba == "LISTINNA" %}
-                {% set akcie_podoba_description = "v listinné podobě" %}
-            {% elif shares_notes[i].akcie_podoba == "ZAKNIHOVANA" %}
-                {% set akcie_podoba_description = "v zaknihované podobě" %}
-            {% elif shares_notes[i].akcie_podoba == "IMOBILIZOVANA" %}
-                {% set akcie_podoba_description = "v imobilizované podobě" %}            
-            {% else %}
-                {% set akcie_podoba_description = "" %}    
-            {% endif %}
-            
-            {% if shares_notes[i].akcie_typ == "KMENOVE_NA_JMENO" %}
-                {% set akcie_typ_description = "kmenové akcie na jméno" %}
-            {% elif shares_notes[i].akcie_typ == "KMENOVE_NA_MAJITELE" %}
-                {% set akcie_typ_description = "kmenové akcie na majitele" %}
-            {% elif shares_notes[i].akcie_typ == "KUSOVE_NA_JMENO" %}
-                {% set akcie_typ_description = "kusové akcie" %}
-            {% elif shares_notes[i].akcie_typ == "NA_JMENO" %}
-                {% set akcie_typ_description = "akcie na jméno" %}
-            {% elif shares_notes[i].akcie_typ == "NA_MAJITELE" %}
-                {% set akcie_typ_description = "akcie na majitele" %}
-            {% elif shares_notes[i].akcie_typ == "PRIORITNI_NA_JMENO" %}
-                {% set akcie_typ_description = "prioritní akcie na jméno" %}                   
-            {% elif shares_notes[i].akcie_typ == "ZAMESTNANECKE_NA_JMENO" %}
-                {% set akcie_typ_description = "zaměstnanecké akcie na jméno" %}
-            {% elif shares_notes[i].akcie_typ == "ZVLASTNI_PRAVA" %}
-                {% set akcie_typ_description = "akcie se zvláštními právy" %}
-            {% else %}
-                {% set akcie_typ_description = "" %}    
-            {% endif %}  
-
-            {% if shares_notes[i].akcie_hodnota_typ == "KORUNY" %}
-                {% set akcie_hodnota_typ_symbol = "Kč" %}
-            {% elif shares_notes[i].akcie_hodnota_typ == "EURA" %}
-                {% set akcie_hodnota_typ_symbol = "euro" %}  
-            {% else %}
-                {% set akcie_hodnota_typ_symbol = "" %}
-            {% endif %}
-            <td>{{ shares_notes[i].akcie_pocet }} ks {{ akcie_typ_description }} {{ akcie_podoba_description }}  ve jmenovité hodnotě {{ shares_notes[i].akcie_hodnota_value }} {{ akcie_hodnota_typ_symbol }} {% if shares_notes[i].akcie_text != "0"  %} <br> {{ shares_notes[i].akcie_text }} {% endif %}</td>
+            <td>{{ shares_notes[i] }} {% if shares_notes[i].akcie_text != "0"  %} <br> {{ shares_notes[i].akcie_text }} {% endif %}</td>
         </tr>   
         {% endfor %}
     {% endif %}

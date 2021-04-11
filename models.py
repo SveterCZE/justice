@@ -166,6 +166,7 @@ class Statutarni_Organ_Clen_Association(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organ_relation.id'))
     osoba_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
+    prav_osoba_id = db.Column(db.Integer, db.ForeignKey('pravnicke_osoby.id'))
     adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
@@ -176,6 +177,7 @@ class Statutarni_Organ_Clen_Association(db.Model):
     funkce = db.Column(db.String)
     adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
+    jmeno_po = db.relationship("Pravnicka_Osoba")
 
 class Dozorci_Rada_Clen_Association(db.Model):
     __tablename__ = 'dr_organ_clen_relation'
@@ -423,6 +425,43 @@ class Akcie(db.Model):
     akcie_hodnota_typ = db.Column(db.String)
     akcie_hodnota_value = db.Column(db.String)
     akcie_text = db.Column(db.String)
+    def __repr__(self):
+        joined_share_descr = "" + self.akcie_pocet + " ks "
+        
+        if self.akcie_typ == "KMENOVE_NA_JMENO":
+            joined_share_descr += "kmenové akcie na jméno "
+        elif self.akcie_typ == "KMENOVE_NA_MAJITELE":
+            joined_share_descr += "kmenové akcie na majitele "
+        elif self.akcie_typ == "KUSOVE_NA_JMENO":
+            joined_share_descr += "kusové akcie "
+        elif self.akcie_typ == "NA_JMENO":
+            joined_share_descr += "akcie na jméno "
+        elif self.akcie_typ == "NA_MAJITELE":
+            joined_share_descr += "akcie na majitele "
+        elif self.akcie_typ == "PRIORITNI_NA_JMENO":
+            joined_share_descr += "prioritní akcie na jméno "
+        elif self.akcie_typ == "ZAMESTNANECKE_NA_JMENO":
+            joined_share_descr += "zaměstnanecké akcie na jméno "
+        elif self.akcie_typ == "ZVLASTNI_PRAVA":
+            joined_share_descr += "akcie se zvláštními právy "
+
+        if self.akcie_podoba == "LISTINNA":
+            joined_share_descr += "v listinné podobě "
+        elif self.akcie_podoba == "ZAKNIHOVANA":
+            joined_share_descr += "v zaknihované podobě "
+        elif self.akcie_podoba == "IMOBILIZOVANA":
+            joined_share_descr += "v imobilizované podobě "
+
+        joined_share_descr += "ve jmenovité hodnotě " + self.akcie_hodnota_value        
+
+        if self.akcie_hodnota_typ == "KORUNY":
+            joined_share_descr += "Kč"
+        elif self.akcie_hodnota_typ == "EURA":
+            joined_share_descr += "euro"
+        
+        return joined_share_descr
+        
+
 
 class Nazvy(db.Model):
     __tablename__ = "nazvy"

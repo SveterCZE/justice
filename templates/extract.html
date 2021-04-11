@@ -256,7 +256,8 @@
             {% set underlne_style_close = "" %}
         {% endif %}          
         <td>{{ underlne_style_open|safe }} 
-            {{ row.statutarni_organ_text[i].clenove[j].jmeno }}<br> 
+            {% if row.statutarni_organ_text[i].clenove[j].jmeno != None %}{{ row.statutarni_organ_text[i].clenove[j].jmeno }}
+            {% else %}{{ row.statutarni_organ_text[i].clenove[j].jmeno_po.nazev}}{% if row.statutarni_organ_text[i].clenove[j].jmeno_po.reg_cislo != 0 %}, reg č. {{ row.statutarni_organ_text[i].clenove[j].jmeno_po.reg_cislo }}{% endif %}{% if row.statutarni_organ_text[i].clenove[j].jmeno_po.ico != 0 %}, IČ <a href="/{{ row.statutarni_organ_text[i].clenove[j].jmeno_po.ico }}">{{ row.statutarni_organ_text[i].clenove[j].jmeno_po.ico }}</a>{% endif %} {% endif %}<br> 
             {{ row.statutarni_organ_text[i].clenove[j].adresa }} 
             {% if row.statutarni_organ_text[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.statutarni_organ_text[i].clenove[j].funkce_od}}{% endif %}
             {% if row.statutarni_organ_text[i].clenove[j].funkce_do != 0 %}<br>Den zániku funkce: {{ row.statutarni_organ_text[i].clenove[j].funkce_do}}{% endif %}
@@ -535,46 +536,7 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-
-        {% if row.akcie[i].akcie_podoba == "LISTINNA" %}
-            {% set akcie_podoba_description = "v listinné podobě" %}
-        {% elif row.akcie[i].akcie_podoba == "ZAKNIHOVANA" %}
-            {% set akcie_podoba_description = "v zaknihované podobě" %}
-        {% elif row.akcie[i].akcie_podoba == "IMOBILIZOVANA" %}
-            {% set akcie_podoba_description = "v imobilizované podobě" %}            
-        {% else %}
-            {% set akcie_podoba_description = "" %}    
-        {% endif %}
-        
-        {% if row.akcie[i].akcie_typ == "KMENOVE_NA_JMENO" %}
-            {% set akcie_typ_description = "kmenové akcie na jméno" %}
-        {% elif row.akcie[i].akcie_typ == "KMENOVE_NA_MAJITELE" %}
-            {% set akcie_typ_description = "kmenové akcie na majitele" %}
-        {% elif row.akcie[i].akcie_typ == "KUSOVE_NA_JMENO" %}
-            {% set akcie_typ_description = "kusové akcie" %}
-        {% elif row.akcie[i].akcie_typ == "NA_JMENO" %}
-            {% set akcie_typ_description = "akcie na jméno" %}
-        {% elif row.akcie[i].akcie_typ == "NA_MAJITELE" %}
-            {% set akcie_typ_description = "akcie na majitele" %}
-        {% elif row.akcie[i].akcie_typ == "PRIORITNI_NA_JMENO" %}
-            {% set akcie_typ_description = "prioritní akcie na jméno" %}                   
-        {% elif row.akcie[i].akcie_typ == "ZAMESTNANECKE_NA_JMENO" %}
-            {% set akcie_typ_description = "zaměstnanecké akcie na jméno" %}
-        {% elif row.akcie[i].akcie_typ == "ZVLASTNI_PRAVA" %}
-            {% set akcie_typ_description = "akcie se zvláštními právy" %}
-        {% else %}
-            {% set akcie_typ_description = "" %}    
-        {% endif %}  
-
-        {% if row.akcie[i].akcie_hodnota_typ == "KORUNY" %}
-            {% set akcie_hodnota_typ_symbol = "Kč" %}
-        {% elif row.akcie[i].akcie_hodnota_typ == "EURA" %}
-            {% set akcie_hodnota_typ_symbol = "euro" %}  
-        {% else %}
-            {% set akcie_hodnota_typ_symbol = "" %}
-        {% endif %}  
-
-        <td>{{ underlne_style_open|safe }} {{ row.akcie[i].akcie_pocet }} ks {{ akcie_typ_description }} {{ akcie_podoba_description }}  ve jmenovité hodnotě {{ row.akcie[i].akcie_hodnota_value }} {{ akcie_hodnota_typ_symbol }} {% if row.akcie[i].akcie_text != "0"  %} <br> {{ row.akcie[i].akcie_text }} {% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} {{ row.akcie[i] }} {% if row.akcie[i].akcie_text != "0"  %} <br> {{ row.akcie[i].akcie_text }} {% endif %} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.akcie[i].zapis_datum }} {% if row.akcie[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.akcie[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
     {% endfor %}

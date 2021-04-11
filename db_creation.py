@@ -323,6 +323,7 @@ def create_tables(conn):
 	"id"	INTEGER NOT NULL UNIQUE,
 	"statutarni_organ_id"	INTEGER NOT NULL,
 	"osoba_id"	INTEGER,
+	"prav_osoba_id"	INTEGER,
 	"adresa_id"	INTEGER,
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
