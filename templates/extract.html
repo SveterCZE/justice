@@ -163,7 +163,7 @@
             {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
         {% endif %}  
 
-        <td>{{ underlne_style_open|safe }} {{ vklad_typ_description }} {{ vklad_typ_symbol }} {% if splaceni_typ_description != "0" %} <br> Splaceno: {{ splaceni_typ_description }} {{ splaceni_typ_symbol }} {% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} {% for elem in row.zakladni_kapital[i].my_rep() %} {{elem}}<br>{% endfor %} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.zakladni_kapital[i].zapis_datum }} {% if row.zakladni_kapital[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.zakladni_kapital[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
     {% endfor %}
@@ -471,34 +471,6 @@
         {% if row.spolecnici[i].podily|length > 0 %}
             
             {% for j in range (row.spolecnici[i].podily|length) %}
-                <!-- Set type of deposit -->
-                {% if row.spolecnici[i].podily[j].vklad_typ == "KORUNY" %}
-                    {% set vklad_typ_string = "Kč" %}
-                {% elif row.spolecnici[i].podily[j].vklad_typ == "EURA" %}
-                    {% set vklad_typ_string = "Euro" %}
-                {% else %}
-                    {% set vklad_typ_string = "" %}
-                {% endif %}
-
-                <!-- Set type of repaid contribution -->
-                {% if row.spolecnici[i].podily[j].splaceni_typ == "KORUNY" %}
-                    {% set splaceni_typ_string = "Kč" %}
-                {% elif row.spolecnici[i].podily[j].splaceni_typ == "PROCENTA" %}
-                    {% set splaceni_typ_string = "%" %}                      
-                {% elif row.spolecnici[i].podily[j].splaceni_typ == "EURA" %}
-                    {% set splaceni_typ_string = "Euro" %}
-                {% else %}
-                    {% set splaceni_typ_string = "" %}
-                {% endif %}
-                
-                <!-- Set type of share -->
-                {% if row.spolecnici[i].podily[j].souhrn_typ == "PROCENTA" %}
-                    {% set souhrn_typ_string = "%" %}
-                {% else %}
-                    {% set souhrn_typ_string = "" %}
-                {% endif %}
-
-
             <tr>
                 <td style = padding-left:4em>Podíl:</td>
                 {% if row.spolecnici[i].podily[j].vymaz_datum != 0 %}
@@ -508,10 +480,11 @@
                     {% set underlne_style_open = "" %}
                     {% set underlne_style_close = "" %}
                 {% endif %}
-                <td>{{ underlne_style_open|safe }}Vklad: {{ row.spolecnici[i].podily[j].vklad_text }} {{ vklad_typ_string }}<br>
-                    Splaceno: {{ row.spolecnici[i].podily[j].splaceni_text }} {{ splaceni_typ_string }}<br>
-                    {% if row.spolecnici[i].podily[j].souhrn_text != "0"%}Podíl: {{ row.spolecnici[i].podily[j].souhrn_text }} {{ souhrn_typ_string }}{% endif %}
-                    {% if row.spolecnici[i].podily[j].druh_podilu.druh_podilu != "0" %}<br>Druh podílu: {{ row.spolecnici[i].podily[j].druh_podilu.druh_podilu }}{% endif %}{{ underlne_style_close|safe }}
+                <td>{{ underlne_style_open|safe }} 
+                        {% for elem in row.spolecnici[i].podily[j].my_rep() %}
+                            {{ elem }}<br>
+                        {% endfor %}
+                    {{ underlne_style_close|safe }}
                 </td>
                 <td>{{ underlne_style_open|safe }}Zapsáno: {{ row.spolecnici[i].podily[j].zapis_datum }} {% if row.spolecnici[i].podily[j].vymaz_datum != 0 %}<br>Vymazáno: {{ row.spolecnici[i].podily[j].vymaz_datum }}{% endif %}{{ underlne_style_close|safe }}</td>
             </tr>

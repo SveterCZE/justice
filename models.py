@@ -5,7 +5,6 @@ from app import db
 from sqlalchemy.orm import relationship, backref
 import sqlalchemy.types as types
 
-
 def convert_date_to_string(converted_date):
     try:
         if converted_date == 0:
@@ -69,6 +68,24 @@ def convert_soud_to_string(my_soud):
     else:
         return "podivného soudu"
 
+def convert_currency(my_currency):
+    if my_currency == "KORUNY":
+        return "Kč"
+    elif my_currency == "EURA":
+        return "Euro"
+    else:
+        return ""
+
+def convert_contribution(my_contribution):
+    if my_contribution == "KORUNY":
+        return "Kč"
+    elif my_contribution == "PROCENTA":
+        return "%"
+    elif my_contribution == "EURA":
+        return "Euro"
+    else:
+        return ""
+
 class MyType(types.TypeDecorator):
 
     impl = types.Unicode
@@ -88,6 +105,26 @@ class MySoud(types.TypeDecorator):
 
     def copy(self, **kw):
         return MySoud(self.impl.length)
+
+class MyCurrency(types.TypeDecorator):
+
+    impl = types.Unicode
+
+    def process_result_value(self, value, dialect):
+        return convert_currency(value)
+
+    def copy(self, **kw):
+        return MyCurrency(self.impl.length)
+
+class MyContribution(types.TypeDecorator):
+
+    impl = types.Unicode
+
+    def process_result_value(self, value, dialect):
+        return convert_contribution(value)
+
+    def copy(self, **kw):
+        return MyContribution(self.impl.length)
 
 class Predmety_Podnikani_Association(db.Model):
     __tablename__ = 'predmety_podnikani_relation'
@@ -251,13 +288,25 @@ class Podily_Association(db.Model):
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     druh_podilu_id = db.Column(db.Integer, db.ForeignKey('druhy_podilu.id'))
-    vklad_typ = db.Column(db.String)
+    # vklad_typ = db.Column(db.String)
+    vklad_typ = db.Column(MyCurrency)
     vklad_text = db.Column(db.String)
-    souhrn_typ = db.Column(db.String)
+    souhrn_typ = db.Column(MyContribution)
     souhrn_text = db.Column(db.String)
-    splaceni_typ = db.Column(db.String)
+    splaceni_typ = db.Column(MyContribution)
     splaceni_text = db.Column(db.String)
     druh_podilu = db.relationship("Druhy_Podilu")
+    
+    def my_rep(self):
+        podil_descr = "Vklad: " + self.vklad_text + " " + self.vklad_typ + "\n"
+        podil_descr += "Splaceno: " + self.splaceni_text + " " + self.splaceni_typ
+        if self.souhrn_text != "0":
+            podil_descr += "\n" + "Podíl: " + self.souhrn_text + self.souhrn_typ
+        if self.druh_podilu.druh_podilu != "0":
+            podil_descr += "\n" + "Druh podílu: " + self.druh_podilu.druh_podilu
+        return podil_descr.split("\n")
+        
+
 
 class Zpusob_Jednani_Association(db.Model):
     __tablename__ = 'zpusoby_jednani_relation'
@@ -369,6 +418,27 @@ class Zakladni_Kapital(db.Model):
     vklad_hodnota = db.Column(db.String)
     splaceni_typ = db.Column(db.String)
     splaceni_hodnota = db.Column(db.String)
+    
+    # def __repr__(self):
+    def my_rep(self):
+        joined_zk = ""
+        joined_zk += self.vklad_hodnota + " "
+        
+        if self.vklad_typ == "KORUNY":
+            joined_zk += "Kč "
+        elif self.vklad_typ == "EURA":
+            joined_zk += "euro "
+        
+        if self.splaceni_hodnota != "0":
+            joined_zk +=  "\n"
+            joined_zk += "Splaceno: " + self.splaceni_hodnota + " "
+            if self.splaceni_typ == "KORUNY":
+                joined_zk += "Kč "
+            elif self.splaceni_typ == "PROCENTA":
+                joined_zk += "% "            
+            elif self.splaceni_typ == "EURA":
+                joined_zk += "euro "
+        return joined_zk.split("\n")
 
 class Predmet_Podnikani(db.Model):
     __tablename__ = "predmety_podnikani"
@@ -458,10 +528,7 @@ class Akcie(db.Model):
             joined_share_descr += "Kč"
         elif self.akcie_hodnota_typ == "EURA":
             joined_share_descr += "euro"
-        
         return joined_share_descr
-        
-
 
 class Nazvy(db.Model):
     __tablename__ = "nazvy"
