@@ -213,8 +213,9 @@ class Statutarni_Organ_Clen_Association(db.Model):
     clenstvi_do = db.Column(MyType)
     funkce = db.Column(db.String)
     adresa = db.relationship("Adresy_v2")
-    jmeno = db.relationship("Fyzicka_Osoba")
+    jmeno = db.relationship("Fyzicka_Osoba", back_populates="statut_org_association")
     jmeno_po = db.relationship("Pravnicka_Osoba")
+    statutarni_organ = db.relationship("Statutarni_Organ_Association")
 
 class Dozorci_Rada_Clen_Association(db.Model):
     __tablename__ = 'dr_organ_clen_relation'
@@ -243,9 +244,10 @@ class Spolecnici_Association(db.Model):
     adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
     text_spolecnik = db.Column(db.String)
     adresa = db.relationship("Adresy_v2")
-    jmeno = db.relationship("Fyzicka_Osoba")
+    jmeno = db.relationship("Fyzicka_Osoba", back_populates="spolecnik_association")
     oznaceni_po = db.relationship("Pravnicka_Osoba")
     podily = db.relationship("Podily_Association")
+    company = db.relationship("Company")
 
 class Prokurista_Association(db.Model):
     __tablename__ = "prokuriste"
@@ -583,7 +585,10 @@ class Fyzicka_Osoba(db.Model):
     prijmeni = db.Column(db.String)
     titul_za = db.Column(db.String)
     datum_naroz = db.Column(MyType)
-    def __repr__(self):
+    statut_org_association = db.relationship("Statutarni_Organ_Clen_Association", back_populates="jmeno")
+    spolecnik_association = db.relationship("Spolecnici_Association", back_populates="jmeno")
+
+    def get_name(self):
         joined_name = ""
         if self.titul_pred != "0" and self.titul_pred != None:
             joined_name += self.titul_pred + " "
@@ -593,6 +598,10 @@ class Fyzicka_Osoba(db.Model):
             joined_name += self.prijmeni
         if self.titul_za != "0" and self.titul_za != None:
             joined_name += ", " +  self.titul_za
+        return joined_name       
+    
+    def __repr__(self):
+        joined_name = self.get_name()
         if self.datum_naroz != 0 and self.datum_naroz != None and self.datum_naroz != "":
             joined_name += ", nar. " + self.datum_naroz
         return joined_name

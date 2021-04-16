@@ -1,6 +1,6 @@
 from app import app
 from db_setup import init_db, db_session
-from forms import JusticeSearchForm, CompanyForm
+from forms import JusticeSearchForm, CompanyForm, PersonSearchForm
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
@@ -21,7 +21,62 @@ def index():
     if request.method == 'POST':
         return search_results(search)
 
-    return render_template('index.html', form=search)
+    return render_template('search_form.html', form=search)
+
+@app.route('/osoby', methods=['GET', 'POST'])
+def search_person():
+    search = PersonSearchForm(request.form)
+    print(search)
+    if request.method == 'POST':
+        return search_results_person(search)
+
+    return render_template('search_form_person.html', form=search)
+
+@app.route('/results_person')
+def search_results_person(search):
+    result = []
+
+    first_name = search.fist_name_search.data
+    first_name_search_method = search.fist_name_search_selection.data
+    first_name_actual_or_full = search.fist_name_search_actual.data
+
+    surname = search.surname_search.data
+    surname_search_method = search.surname_search_selection.data
+    surname_actual_or_full = search.surname_search_actual.data    
+
+    birthday = search.birthday.data
+
+    qry = Fyzicka_Osoba.query
+
+    if first_name:
+        if first_name_search_method == "text_anywhere":
+            qry = qry.filter(Fyzicka_Osoba.jmeno.contains(first_name))
+        elif first_name_search_method == "text_beginning":
+            qry = qry.filter(Fyzicka_Osoba.jmeno.like(f'{first_name}%'))
+        elif first_name_search_method == "text_exact":
+            qry = qry.filter(Fyzicka_Osoba.jmeno == first_name)
+
+    if surname:
+        if surname_search_method == "text_anywhere":
+            qry = qry.filter(Fyzicka_Osoba.prijmeni.contains(surname))
+        elif surname_search_method == "text_beginning":
+            qry = qry.filter(Fyzicka_Osoba.prijmeni.like(f'{surname}%'))
+        elif surname_search_method == "text_exact":
+            qry = qry.filter(Fyzicka_Osoba.prijmeni == surname)
+
+    if birthday:
+        qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
+
+    results = qry.all()
+
+    if not results:
+        flash('No results found!')
+        return redirect('/osoby')
+
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results_persons.html", results=results, form=search, show_form = True)
 
 @app.route('/results')
 def search_results(search):
@@ -164,6 +219,8 @@ def search_results(search):
         table = Results(results)
         table.border = True
         return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do, show_form = True)
+
+
 
 @app.route('/results-sidlo-<int:adresa_id>', methods=['GET', 'POST'])
 def search_results_sidlo(adresa_id):

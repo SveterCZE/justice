@@ -1,0 +1,58 @@
+{% include 'header.html' %}
+
+{% if show_form == True %}
+    {% include 'search_form_person.html' %}
+{% endif %}  
+
+<p><b>Počet nalezených osob: {{ results|length }}</b></p>
+
+{% set count = namespace(value=0) %}
+{% for row in results %}
+<p>{{ row }} {{ row.statut_org_association }} 
+    {% for elem in row.spolecnik_association %}
+        {{ elem.company.nazev }} {{ elem.adresa }}
+    {% endfor %}
+    </p>
+    {% for elem in row.statut_org_association %}
+        {% if count.value % 2 == 0 %}
+            {% set table_style = "table table-light" %}
+        {% else %}
+            {% set table_style = "table table-secondary" %}
+        {% endif %}
+        <table class= "{{table_style}}" style="width: 100%">
+            <p></p>
+            <tr>
+                <td style="width:20%">Jméno:</td>
+                <td style="width:40%"><b>{{ row.get_name() }}</b></td>
+                <td style="width:15%">Datum narození:</td>
+                <td style="width:25%"><b>{{ row.datum_naroz }}</b></td>
+            </tr>
+
+            <tr>
+                <td>Adresa:</td>
+                <td>{{ elem.adresa }}</td>
+                <td>Angažmá:</td>
+                <td>{{ elem.funkce }}</td>
+            </tr>
+
+            <tr>
+                <td>Název subjektu:</td>
+                <td><b>{{ elem.statutarni_organ.company.nazev }}</b></td>
+                <td>IČO:</td>
+                <td><a href="/{{ elem.statutarni_organ.company.ico }}"><b>{{ elem.statutarni_organ.company.ico }}</b></a></td>
+            </tr>
+
+            <tr>
+                <td>Spisová značka:</td>
+                <td>{{elem.statutarni_organ.company.oddil}} {{elem.statutarni_organ.company.vlozka}} vedená u {{elem.statutarni_organ.company.soud}}</td>
+                <td>Den zápisu:</td>
+                <td>{{elem.statutarni_organ.company.zapis}}</td>
+            </tr>
+
+        </table>
+        {% set count.value = count.value + 1 %}
+    {% endfor %}
+{% endfor %}
+
+
+{% include 'footer.html' %}
