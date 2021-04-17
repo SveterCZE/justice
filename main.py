@@ -287,6 +287,12 @@ def find_most_common_activity():
     most_common_activity = count_common_activity()
     return render_template("most_common_activity.html", most_common_activity = most_common_activity)        
 
+@app.route("/most_common_degree", methods=['GET', 'POST'])
+def find_most_common_degree():
+    most_common_degree_before = count_common_degrees("before")
+    most_common_degree_after = count_common_degrees("after")
+    return render_template("most_common_degree.html", most_common_degree_before = most_common_degree_before, most_common_degree_after = most_common_degree_after)        
+
 def count_number_entries():
     engine = create_engine('sqlite:///justice.db', echo=True)
     conn = engine.connect()
@@ -350,6 +356,19 @@ def count_common_purpose():
         addresses_frequency.append((selected_purpose[0].ucel, elem[1]))
     conn.close()
     return addresses_frequency    
+
+def count_common_degrees(method):
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    if method == "before":
+        text_instruction = text("SELECT titul_pred, COUNT(`titul_pred`) AS `value_occurrence` FROM fyzicke_osoby GROUP BY `titul_pred` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    else:
+        text_instruction = text("SELECT titul_za, COUNT(`titul_za`) AS `value_occurrence` FROM fyzicke_osoby GROUP BY `titul_za` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    degree_frequency = []
+    for elem in result:
+        degree_frequency.append((elem[0], elem[1]))
+    return degree_frequency[1:]
 
 def count_oldest_companies():
     engine = create_engine('sqlite:///justice.db', echo=True)

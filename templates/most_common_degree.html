@@ -1,0 +1,28 @@
+{% include 'header.html' %}
+
+<h1>Nejčastější tituly:</h1>
+
+<table class="table table-hover" style="width: auto">
+    <thead class="thead-dark">
+    <tr class="table-info">
+        <th scope="col">#</th>
+        <th scope="col">Titul před jménem</th>
+        <th scope="col">Frekvence</th>
+        <th scope="col">Titul za jménem</th>
+        <th scope="col">Frekvence</th>        
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range (most_common_degree_before|length) %}
+    <tr>
+        <th scope = "row">{{ i + 1 }}</th>
+        <td>{{ most_common_degree_before[i][0] }}</td>
+        <td>{{ most_common_degree_before[i][1] }}</td>
+        <td>{{ most_common_degree_after[i][0] }}</td>
+        <td>{{ most_common_degree_after[i][1] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% include 'footer.html' %}

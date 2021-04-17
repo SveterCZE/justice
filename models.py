@@ -128,9 +128,9 @@ class MyContribution(types.TypeDecorator):
 
 class Predmety_Podnikani_Association(db.Model):
     __tablename__ = 'predmety_podnikani_relation'
-    id = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    predmet_podnikani_id = db.Column(db.Integer, db.ForeignKey('predmety_podnikani.id'), primary_key=True)
+    predmet_podnikani_id = db.Column(db.Integer, db.ForeignKey('predmety_podnikani.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     predmet_podnikani = db.relationship("Predmet_Podnikani", back_populates="company_predmet_podnikani")
@@ -138,9 +138,9 @@ class Predmety_Podnikani_Association(db.Model):
 
 class Predmety_Cinnosti_Association(db.Model):
     __tablename__ = 'predmety_cinnosti_relation'
-    id = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    predmet_cinnosti_id = db.Column(db.Integer, db.ForeignKey('predmety_cinnosti.id'), primary_key=True)
+    predmet_cinnosti_id = db.Column(db.Integer, db.ForeignKey('predmety_cinnosti.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     predmet_cinnosti = db.relationship("Predmet_Cinnosti")
@@ -148,9 +148,9 @@ class Predmety_Cinnosti_Association(db.Model):
 
 class Ucel_Association(db.Model):
     __tablename__ = 'ucel_relation'
-    id = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    ucel_id = db.Column(db.Integer, db.ForeignKey('ucel.id'), primary_key=True)
+    ucel_id = db.Column(db.Integer, db.ForeignKey('ucel.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     ucel = db.relationship("Ucel")
@@ -176,11 +176,21 @@ class Pravni_Forma_Association_v2(db.Model):
     pravni_forma_text = db.relationship("Pravni_Formy")
     company = db.relationship("Company")
 
+class Dozorci_Rada_Association(db.Model):
+    __tablename__ = 'dozorci_rada_relation'
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    company = db.relationship("Company")
+    pocet_clenu = db.relationship("Pocty_Clenu_DR")
+    clenove = db.relationship("Dozorci_Rada_Clen_Association")
+
 class Statutarni_Organ_Association(db.Model):
     __tablename__ = 'statutarni_organ_relation'
-    id = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organy.id'), primary_key=True)
+    statutarni_organ_id = db.Column(db.Integer, db.ForeignKey('statutarni_organy.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     statutarni_organ_text = db.relationship("Statutarni_Organy")
@@ -188,15 +198,6 @@ class Statutarni_Organ_Association(db.Model):
     pocet_clenu = db.relationship("Pocty_Clenu_Organu")
     zpusoby_jednani = db.relationship("Zpusob_Jednani_Association")
     clenove = db.relationship("Statutarni_Organ_Clen_Association")
-
-class Dozorci_Rada_Association(db.Model):
-    __tablename__ = 'dozorci_rada_relation'
-    id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    zapis_datum = db.Column(MyType)
-    vymaz_datum = db.Column(MyType)
-    pocet_clenu = db.relationship("Pocty_Clenu_DR")
-    clenove = db.relationship("Dozorci_Rada_Clen_Association")
 
 class Statutarni_Organ_Clen_Association(db.Model):
     __tablename__ = 'statutarni_organ_clen_relation'
@@ -213,9 +214,41 @@ class Statutarni_Organ_Clen_Association(db.Model):
     clenstvi_do = db.Column(MyType)
     funkce = db.Column(db.String)
     adresa = db.relationship("Adresy_v2")
-    jmeno = db.relationship("Fyzicka_Osoba", back_populates="statut_org_association")
+    jmeno = db.relationship("Fyzicka_Osoba")
     jmeno_po = db.relationship("Pravnicka_Osoba")
     statutarni_organ = db.relationship("Statutarni_Organ_Association")
+
+class Fyzicka_Osoba(db.Model):
+    __tablename__ = "fyzicke_osoby"
+    id = db.Column(db.Integer, primary_key=True)
+    titul_pred = db.Column(db.String)
+    jmeno = db.Column(db.String)
+    prijmeni = db.Column(db.String)
+    titul_za = db.Column(db.String)
+    datum_naroz = db.Column(MyType)
+    statut_org_association = db.relationship("Statutarni_Organ_Clen_Association")
+    spolecnik_association = db.relationship("Spolecnici_Association")
+    prokurista_association = db.relationship("Prokurista_Association")
+    sole_shareholder_association = db.relationship("Jediny_Akcionar_Association")
+    supervisory_board_member_association = db.relationship("Dozorci_Rada_Clen_Association")
+
+    def get_name(self):
+        joined_name = ""
+        if self.titul_pred != "0" and self.titul_pred != None:
+            joined_name += self.titul_pred + " "
+        if self.jmeno != "0" and self.jmeno != None:
+            joined_name += self.jmeno + " "
+        if self.prijmeni != "0" and self.prijmeni != None:
+            joined_name += self.prijmeni
+        if self.titul_za != "0" and self.titul_za != None:
+            joined_name += ", " +  self.titul_za
+        return joined_name       
+    
+    def __repr__(self):
+        joined_name = self.get_name()
+        if self.datum_naroz != 0 and self.datum_naroz != None and self.datum_naroz != "":
+            joined_name += ", nar. " + self.datum_naroz
+        return joined_name
 
 class Dozorci_Rada_Clen_Association(db.Model):
     __tablename__ = 'dr_organ_clen_relation'
@@ -232,6 +265,7 @@ class Dozorci_Rada_Clen_Association(db.Model):
     funkce = db.Column(db.String)
     adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
+    dozorci_rada = db.relationship("Dozorci_Rada_Association")
 
 class Spolecnici_Association(db.Model):
     __tablename__ = "spolecnici"
@@ -260,6 +294,7 @@ class Prokurista_Association(db.Model):
     adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
     text_prokurista = db.Column(db.String)
+    company = db.relationship("Company")
 
 class Prokura_Common_Text_Association(db.Model):
     __tablename__ = "prokura_common_texts"
@@ -282,6 +317,7 @@ class Jediny_Akcionar_Association(db.Model):
     adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
     oznaceni_po = db.relationship("Pravnicka_Osoba")
+    company = db.relationship("Company")
 
 class Podily_Association(db.Model):
     __tablename__ = "podily"
@@ -368,12 +404,12 @@ class Adresy_v2(db.Model):
         joined_address = ""
         if self.komplet_adresa != "0":
             return self.komplet_adresa
-        if self.ulice != "0":
+        if self.ulice != "0" and self.ulice != None:
             joined_address += self.ulice + " "
         if self.cisloText != "0" and self.cisloText != None:
             joined_address += self.cisloText + ", "   
         if self.cisloPo != 0:
-            if self.ulice == "0":
+            if self.ulice == "0" and self.ulice != None:
                 joined_address += "č.p. "
             joined_address += str(self.cisloPo)
             if self.cisloOr != 0:
@@ -384,11 +420,11 @@ class Adresy_v2(db.Model):
             joined_address += str(self.cisloOr) + ", "
         if self.cisloEv != 0:
             joined_address += str(self.cisloEv) + ", "
-        if (self.castObce != "0") and (self.castObce != self.obec):
+        if (self.castObce != "0") and (self.castObce != self.obec) and self.castObce != None:
             joined_address += self.castObce + ", "
         if self.psc != "0" and self.psc != None:
             joined_address += self.psc + " "
-        if self.obec != "0":
+        if self.obec != "0" and self.obec != None:
             joined_address += self.obec
         if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno"):
             joined_address += ", " + self.stat
@@ -577,35 +613,6 @@ class Druhy_Podilu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     druh_podilu = db.Column(db.String)
 
-class Fyzicka_Osoba(db.Model):
-    __tablename__ = "fyzicke_osoby"
-    id = db.Column(db.Integer, primary_key=True)
-    titul_pred = db.Column(db.String)
-    jmeno = db.Column(db.String)
-    prijmeni = db.Column(db.String)
-    titul_za = db.Column(db.String)
-    datum_naroz = db.Column(MyType)
-    statut_org_association = db.relationship("Statutarni_Organ_Clen_Association", back_populates="jmeno")
-    spolecnik_association = db.relationship("Spolecnici_Association", back_populates="jmeno")
-
-    def get_name(self):
-        joined_name = ""
-        if self.titul_pred != "0" and self.titul_pred != None:
-            joined_name += self.titul_pred + " "
-        if self.jmeno != "0" and self.jmeno != None:
-            joined_name += self.jmeno + " "
-        if self.prijmeni != "0" and self.prijmeni != None:
-            joined_name += self.prijmeni
-        if self.titul_za != "0" and self.titul_za != None:
-            joined_name += ", " +  self.titul_za
-        return joined_name       
-    
-    def __repr__(self):
-        joined_name = self.get_name()
-        if self.datum_naroz != 0 and self.datum_naroz != None and self.datum_naroz != "":
-            joined_name += ", nar. " + self.datum_naroz
-        return joined_name
-        
 
 class Pravnicka_Osoba(db.Model):
     __tablename__ = "pravnicke_osoby"

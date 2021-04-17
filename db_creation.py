@@ -728,19 +728,31 @@ def create_indices(conn):
 	"zpusob_jednani_id"
 ); """
 
-    fyzicke_osoby1 = """ CREATE INDEX "fyzicke_osoby1" ON "fyzicke_osoby" (
+    fyzicke_osoby1 = """ CREATE INDEX "index fyzicke_osoby1" ON "fyzicke_osoby" (
 	"id"
 ); """
 
+	statutarni_organy_relation_4 = """ CREATE INDEX "index statutarni organ relation 4" ON "statutarni_organ_clen_relation" (
+	"osoba_id"
+); """
+
+	dr_relation_3 = """ CREATE INDEX "index dr clen relation3" ON "dr_organ_clen_relation" (
+	"osoba_id"
+); """
+
+	akcionari3 = """ CREATE INDEX "index akcionari3" ON "jediny_akcionar" (
+	"akcionar_fo_id"
+); """
+
     list_of_indices = [companies1, companies2, companies3, companies4, companies5, adresy1, adresy2, adresy3,
-	akcie, akcie2, akcionari1, akcionari2, dr_clen_relation1, dr_clen_relation2, dr_relation, dr_relation2, 
+	akcie, akcie2, akcionari1, akcionari2, akcionari3, dr_clen_relation1, dr_clen_relation2, dr_relation, dr_relation2, dr_relation_3, 
 	insolvency1, insolvency2, konkurz1, konkurz2, nazvy1, nazvy2, nazvy3, ostatni_skutecnosti, ostatni_skutecnosti2, 
 	pocty_clenu_organ1, pocty_clenu_organ2, podily1, podily2, pravni_formy, pravni_formy_relation1, pravni_formy_relation2, 
 	predmety_cinnosti_relation1, predmety_cinnosti_relation2, predmety_cinnosti_relation3, predmety_podnikani_relation1, predmety_podnikani_relation2, 
 	predmety_podnikani_relation3, predmety_cinnosti1, predmety_cinnosti2, predmety_podnikani1, predmety_podnikani2, prokuriste1, 
 	prokuriste2, prokuriste3, prokuriste4, sidlo_relation1, sidlo_relation_2, sidlo_relation_3, soudni_zapis1, soudni_zapis2, spolecnici1, 
 	spolecnici2, spolecnici3, spolecnici4, spolecnici5, statutarni_organy, statutarni_organy_relation1, statutarni_organy_relation2, 
-	statutarni_organy_relation_3, zakladni_kapital1, zakladni_kapital2, zpusob_jednani, zpusob_jednani_relation1, zpusob_jednani_relation2, 
+	statutarni_organy_relation_3, statutarni_organy_relation_4, zakladni_kapital1, zakladni_kapital2, zpusob_jednani, zpusob_jednani_relation1, zpusob_jednani_relation2, 
 	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, fyzicke_osoby1, ucel1, ucel2, ucel_relation1, ucel_relation2, ucel_relation3]
     i = 0
     for elem in list_of_indices:

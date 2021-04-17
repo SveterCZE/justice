@@ -1,7 +1,7 @@
-{% include 'header.html' %}
-
 {% if show_form == True %}
     {% include 'search_form.html' %}
+{% else %}
+    {% include 'header.html' %}
 {% endif %}  
 
     <p><b>Počet nalezených subjektů: {{ results|length }}</b></p>
