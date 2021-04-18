@@ -100,6 +100,8 @@ class PersonSearchForm(Form):
     surname_search_selection = SelectField('', choices=search_options)
     surname_search_actual = SelectField('', choices=actual_options)
 
+    person_actual_selection = SelectField('', choices=actual_options)
+
     birthday = DateField(u'Datum narození:', format='%Y-%m-%d')
     
 class CompanyForm(Form):

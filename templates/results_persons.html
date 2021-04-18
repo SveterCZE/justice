@@ -4,73 +4,92 @@
     {% include 'header.html' %}
 {% endif %}  
 
-<p><b>Počet nalezených osob: {{ results|length }}</b></p>
-{% set count = namespace(value=0) %} 
+{% set count = namespace(value=0) %}
     {% for row in results %}
     {% set test_list = [] %}
     {% for elem in row.statut_org_association %}
-        {% set my_dict = {} %}
-        {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
-        {% set x = my_dict.__setitem__("funkce", elem.funkce) %}
-        {% set x = my_dict.__setitem__("nazev", elem.statutarni_organ.company.nazev) %}
-        {% set x = my_dict.__setitem__("ico", elem.statutarni_organ.company.ico) %}
-        {% set x = my_dict.__setitem__("oddil", elem.statutarni_organ.company.oddil) %}
-        {% set x = my_dict.__setitem__("vlozka", elem.statutarni_organ.company.vlozka) %}
-        {% set x = my_dict.__setitem__("soud", elem.statutarni_organ.company.soud) %}
-        {% set x = my_dict.__setitem__("zapis", elem.statutarni_organ.company.zapis) %}
-        {% set test_list = test_list.append(my_dict) %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+            {% set xxx = [] %}
+        {% else %}
+            {% set my_dict = {} %}
+            {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
+            {% set x = my_dict.__setitem__("funkce", elem.funkce) %}
+            {% set x = my_dict.__setitem__("nazev", elem.statutarni_organ.company.nazev) %}
+            {% set x = my_dict.__setitem__("ico", elem.statutarni_organ.company.ico) %}
+            {% set x = my_dict.__setitem__("oddil", elem.statutarni_organ.company.oddil) %}
+            {% set x = my_dict.__setitem__("vlozka", elem.statutarni_organ.company.vlozka) %}
+            {% set x = my_dict.__setitem__("soud", elem.statutarni_organ.company.soud) %}
+            {% set x = my_dict.__setitem__("zapis", elem.statutarni_organ.company.zapis) %}
+            {% set test_list = test_list.append(my_dict) %}
+        {% endif %}
     {% endfor %}
 
     {% for elem in row.supervisory_board_member_association %}
-        {% set my_dict = {} %}
-        {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
-        {% set x = my_dict.__setitem__("funkce", elem.funkce) %}
-        {% set x = my_dict.__setitem__("nazev", elem.dozorci_rada.company.nazev) %}
-        {% set x = my_dict.__setitem__("ico", elem.dozorci_rada.company.ico) %}
-        {% set x = my_dict.__setitem__("oddil", elem.dozorci_rada.company.oddil) %}
-        {% set x = my_dict.__setitem__("vlozka", elem.dozorci_rada.company.vlozka) %}
-        {% set x = my_dict.__setitem__("soud", elem.dozorci_rada.company.soud) %}
-        {% set x = my_dict.__setitem__("zapis", elem.dozorci_rada.company.zapis) %}
-        {% set test_list = test_list.append(my_dict) %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+            {% set xxx = [] %}
+        {% else %}    
+            {% set my_dict = {} %}
+            {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
+            {% set x = my_dict.__setitem__("funkce", elem.funkce) %}
+            {% set x = my_dict.__setitem__("nazev", elem.dozorci_rada.company.nazev) %}
+            {% set x = my_dict.__setitem__("ico", elem.dozorci_rada.company.ico) %}
+            {% set x = my_dict.__setitem__("oddil", elem.dozorci_rada.company.oddil) %}
+            {% set x = my_dict.__setitem__("vlozka", elem.dozorci_rada.company.vlozka) %}
+            {% set x = my_dict.__setitem__("soud", elem.dozorci_rada.company.soud) %}
+            {% set x = my_dict.__setitem__("zapis", elem.dozorci_rada.company.zapis) %}
+            {% set test_list = test_list.append(my_dict) %}
+        {% endif %}
     {% endfor %}    
 
     {% for elem in row.spolecnik_association %}
-        {% set my_dict = {} %}
-        {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
-        {% set x = my_dict.__setitem__("funkce", "společník") %}
-        {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
-        {% set x = my_dict.__setitem__("ico", elem.company.ico) %}
-        {% set x = my_dict.__setitem__("oddil", elem.company.oddil) %}
-        {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
-        {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
-        {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
-        {% set test_list = test_list.append(my_dict) %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+            {% set xxx = [] %}
+        {% else %}        
+            {% set my_dict = {} %}
+            {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
+            {% set x = my_dict.__setitem__("funkce", "společník") %}
+            {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
+            {% set x = my_dict.__setitem__("ico", elem.company.ico) %}
+            {% set x = my_dict.__setitem__("oddil", elem.company.oddil) %}
+            {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
+            {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
+            {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
+            {% set test_list = test_list.append(my_dict) %}
+        {% endif %}
     {% endfor %}    
 
     {% for elem in row.sole_shareholder_association %}
-        {% set my_dict = {} %}
-        {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
-        {% set x = my_dict.__setitem__("funkce", "jediný akcionář") %}
-        {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
-        {% set x = my_dict.__setitem__("ico", elem.company.ico) %}
-        {% set x = my_dict.__setitem__("oddil", elem.company.oddil) %}
-        {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
-        {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
-        {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
-        {% set test_list = test_list.append(my_dict) %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+            {% set xxx = [] %}
+        {% else %}            
+            {% set my_dict = {} %}
+            {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
+            {% set x = my_dict.__setitem__("funkce", "jediný akcionář") %}
+            {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
+            {% set x = my_dict.__setitem__("ico", elem.company.ico) %}
+            {% set x = my_dict.__setitem__("oddil", elem.company.oddil) %}
+            {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
+            {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
+            {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
+            {% set test_list = test_list.append(my_dict) %}
+        {% endif %}
     {% endfor %}
     
     {% for elem in row.prokurista_association %}
-        {% set my_dict = {} %}
-        {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
-        {% set x = my_dict.__setitem__("funkce", "prokurista") %}
-        {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
-        {% set x = my_dict.__setitem__("ico", elem.company.ico) %}
-        {% set x = my_dict.__setitem__("oddil", elem.company.oddil) %}
-        {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
-        {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
-        {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
-        {% set test_list = test_list.append(my_dict) %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+            {% set xxx = [] %}
+        {% else %}     
+            {% set my_dict = {} %}
+            {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
+            {% set x = my_dict.__setitem__("funkce", "prokurista") %}
+            {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
+            {% set x = my_dict.__setitem__("ico", elem.company.ico) %}
+            {% set x = my_dict.__setitem__("oddil", elem.company.oddil) %}
+            {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
+            {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
+            {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
+            {% set test_list = test_list.append(my_dict) %}
+        {% endif %}
     {% endfor %}    
 
     {% for elem in test_list %}

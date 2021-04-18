@@ -5,7 +5,7 @@ from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
 from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_Clen_Association, Fyzicka_Osoba, Spolecnici_Association, Podily_Association, Druhy_Podilu, Pravnicka_Osoba
-from models import Prokurista_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy, Ucel, Ucel_Association
+from models import Prokurista_Association, Dozorci_Rada_Clen_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy, Ucel, Ucel_Association
 from models import Adresy_v2
 from tables import Results
 from sqlalchemy.sql import select
@@ -38,13 +38,13 @@ def search_results_person(search):
 
     first_name = search.fist_name_search.data
     first_name_search_method = search.fist_name_search_selection.data
-    first_name_actual_or_full = search.fist_name_search_actual.data
 
     surname = search.surname_search.data
     surname_search_method = search.surname_search_selection.data
-    surname_actual_or_full = search.surname_search_actual.data    
 
     birthday = search.birthday.data
+
+    actual_selection = search.person_actual_selection.data
 
     qry = Fyzicka_Osoba.query
 
@@ -63,11 +63,12 @@ def search_results_person(search):
             qry = qry.filter(Fyzicka_Osoba.prijmeni.like(f'{surname}%'))
         elif surname_search_method == "text_exact":
             qry = qry.filter(Fyzicka_Osoba.prijmeni == surname)
-
+            
     if birthday:
         qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
 
     results = qry.all()
+    print(results)
 
     if not results:
         flash('No results found!')
@@ -76,7 +77,7 @@ def search_results_person(search):
     else:
         table = Results(results)
         table.border = True
-        return render_template("results_persons.html", results=results, form=search, show_form = True)
+        return render_template("results_persons.html", results=results, form=search, show_form = True, selection_method = actual_selection)
 
 @app.route('/results')
 def search_results(search):

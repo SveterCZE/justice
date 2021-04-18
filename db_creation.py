@@ -732,15 +732,15 @@ def create_indices(conn):
 	"id"
 ); """
 
-	statutarni_organy_relation_4 = """ CREATE INDEX "index statutarni organ relation 4" ON "statutarni_organ_clen_relation" (
+    statutarni_organy_relation_4 = """ CREATE INDEX "index statutarni organ relation 4" ON "statutarni_organ_clen_relation" (
 	"osoba_id"
 ); """
 
-	dr_relation_3 = """ CREATE INDEX "index dr clen relation3" ON "dr_organ_clen_relation" (
+    dr_relation_3 = """ CREATE INDEX "index dr clen relation3" ON "dr_organ_clen_relation" (
 	"osoba_id"
 ); """
 
-	akcionari3 = """ CREATE INDEX "index akcionari3" ON "jediny_akcionar" (
+    akcionari3 = """ CREATE INDEX "index akcionari3" ON "jediny_akcionar" (
 	"akcionar_fo_id"
 ); """
 

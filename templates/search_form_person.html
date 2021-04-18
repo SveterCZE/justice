@@ -25,7 +25,7 @@
         {{ form.fist_name_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.fist_name_search()|safe }} {{ form.fist_name_search_selection }} {{ form.fist_name_search_actual }}
+        {{ form.fist_name_search()|safe }} {{ form.fist_name_search_selection }}
       </div>
     </div>
 
@@ -35,7 +35,7 @@
         {{ form.surname_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.surname_search()|safe }} {{ form.surname_search_selection }} {{ form.surname_search_actual }}
+        {{ form.surname_search()|safe }} {{ form.surname_search_selection }}
       </div>
     </div>
 
@@ -48,7 +48,17 @@
         {{ form.birthday }}
       </div>
     </div>
-    
+
+    <div class="row g-2">
+      <div class="col-sm-3">
+        Vyhledávat údaje:
+      </div>
+      <div class="col-sm">
+        {{ form.person_actual_selection }}
+      </div>
+    </div>
+
+
   </p>
   <p><input type="submit" value="Search">
   </p>
@@ -56,3 +66,5 @@
 
 <p><a href="/trivia">Další zajímvavé údaje z obchodního resjtříku.</a></p>
 {% include 'footer.html' %}
+
+
