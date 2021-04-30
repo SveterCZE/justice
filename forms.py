@@ -82,8 +82,7 @@ class JusticeSearchForm(Form):
     zapis_do = DateField(u'Zapsáno do:', format='%Y-%m-%d')
     zapis_od = DateField(u'Zapsáno od:', format='%Y-%m-%d')
 
-class PersonSearchForm(Form):
-    
+class PersonSearchForm(Form):   
     # VYMAZAT DUPLICITU
     search_options = [("text_anywhere","Kedkoliv v textu"),
              ("text_beginning","Začátek výrazu"),
@@ -103,7 +102,28 @@ class PersonSearchForm(Form):
     person_actual_selection = SelectField('', choices=actual_options)
 
     birthday = DateField(u'Datum narození:', format='%Y-%m-%d')
+
+class EntitySearchForm(Form):
+    # VYMAZAT DUPLICITU
+    search_options = [("text_anywhere","Kedkoliv v textu"),
+             ("text_beginning","Začátek výrazu"),
+             ("text_exact","Přesný výraz"),
+             ]
+    actual_options = [("actual_results","Jen platné"),
+                    ("complete_results","Platné i neplatné"),]
+
+    entity_name_search = StringField(u'Název:')
+    entity_name_search_selection = SelectField('', choices=search_options)
+    entity_name_search_actual = SelectField('', choices=actual_options)
     
+    entity_number_search = StringField(u'Identifikační číslo:')
+    entity_number_search_selection = SelectField('', choices=search_options)
+    entity_number_search_actual = SelectField('', choices=actual_options)
+
+    foreign_entity_number_search = StringField(u'Zahraniční registrační číslo:')
+    foreign_entity_number_search_selection = SelectField('', choices=search_options)
+    foreign_entity_number_search_actual = SelectField('', choices=actual_options)                
+
 class CompanyForm(Form):
     oddil = [('A', 'A'),
                    ('B', 'B'),

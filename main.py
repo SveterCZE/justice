@@ -1,6 +1,6 @@
 from app import app
 from db_setup import init_db, db_session
-from forms import JusticeSearchForm, CompanyForm, PersonSearchForm
+from forms import JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
@@ -31,6 +31,16 @@ def search_person():
         return search_results_person(search)
 
     return render_template('search_form_person.html', form=search)
+
+@app.route('/entity', methods=['GET', 'POST'])
+def search_entity():
+    search = EntitySearchForm(request.form)
+    print(search)
+    if request.method == 'POST':
+        return search_results_entity(search)
+
+    return render_template('search_form_entity.html', form=search)
+
 
 @app.route('/results_person')
 def search_results_person(search):
@@ -78,6 +88,47 @@ def search_results_person(search):
         table = Results(results)
         table.border = True
         return render_template("results_persons.html", results=results, form=search, show_form = True, selection_method = actual_selection)
+
+@app.route('/results_entity')
+def search_results_entity(search):
+    entity_name = search.entity_name_search.data
+    entity_name_search_method = search.entity_name_search_selection.data
+    entity_name_actual_or_full = search.entity_name_search_actual.data
+
+    entity_number = search.entity_number_search.data
+    entity_number_search_method = search.entity_number_search_selection.data
+    entity_number_actual_or_full = search.entity_name_search_actual.data
+
+    qry = Pravnicka_Osoba.query
+
+    if entity_number:
+        if entity_number_search_method == "text_anywhere":
+            qry = qry.filter(Pravnicka_Osoba.ico.contains(entity_number))
+        elif entity_number_search_method == "text_beginning":
+            qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
+        elif entity_number_search_method == "text_exact":
+            qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
+
+    if entity_name:
+        if entity_name_search_method == "text_anywhere":
+            qry = qry.filter(Pravnicka_Osoba.nazev.contains(entity_name))
+        elif entity_name_search_method == "text_beginning":
+            qry = qry.filter(Pravnicka_Osoba.nazev.like(f'{entity_name}%'))
+        elif entity_name_search_method == "text_exact":
+            qry = qry.filter(Pravnicka_Osoba.nazev == entity_name)
+
+    results = qry.all()
+    print(results)
+
+    if not results:
+        flash('No results found!')
+        return redirect('/osoby')
+
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results_entities.html", results=results, form=search, show_form = True)
+
 
 @app.route('/results')
 def search_results(search):
