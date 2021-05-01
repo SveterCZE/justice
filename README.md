@@ -64,6 +64,48 @@ In the fields where you fill-in input data, you can also select one of the follo
 In addition, you can also select whether the application shall return only the persons who are still active in the company or whether it shall reutrn also those that are no longer active.
 
 <h2>Search by natural persons:</h2>
+You will be greeted with the following search form:
+
+![image](https://user-images.githubusercontent.com/46304018/116795207-815b5580-aad3-11eb-856a-1fb4e0f9a831.png)
+
+The form allows you to search for legal persons registered in the Commercial Register as members of executive bodies, members of supervisory boards, shareholders in a limited liability companies, sole shareholders in a joint stock companies. The form allows you to search by the following properties:
+<ul>
+  <li>Company name</li>
+  <li>Identification No. (for Czech companies)</li>
+  <li>Foreign registration No. (for foreign copmpanies)</li>
+</ul>  
+
+In the fields where you fill-in input data, you can also select one of the following options:
+<ul>
+  <li>Your input can be anywere in the result. For example, if you input <i>Trade</i> as a company name, the application will find and return both <i>SILOMAN Trade a.s.</i> and <i>Trade Bridge a.s.</i> </li>
+  <li>The result must start with your input. For example, if you input <i>Trade</i> as a company name, the application will find and reutrn only <i>Trade Bridge a.s.</i>, but not <i>SILOMAN Trade a.s.</i></li>
+  <li>The result and your input must match. For example, if you input <i>Trade</i> as a company name, the application will neither <i>SILOMAN Trade a.s.</i> nor <i>Trade Bridge a.s.</i></li>
+</ul>  
+
+In addition, you can also select whether the application shall return only the legal persons who are still active in the company or whether it shall reutrn also those that are no longer active.
+
+<h2>Display search results:</h2>
+Once you hit the search button, you the results will be displayed to you. Several examples are displayed below.
+
+A stadard result when you search by company properties.
+
+![image](https://user-images.githubusercontent.com/46304018/116795308-4c9bce00-aad4-11eb-91ee-400e3b3b8813.png)
+
+If a company has an active insolvency record, it will be highlighted in red and the relevant insovlency notes will be added.
+
+![image](https://user-images.githubusercontent.com/46304018/116795388-d8adf580-aad4-11eb-8e34-4db9078a56fc.png)
+
+A standard result when you search for a natural person active in a company. It firstly displays the natural person's identification details and then the identification details of the company in which such person is or was active.
+
+![image](https://user-images.githubusercontent.com/46304018/116795416-11e66580-aad5-11eb-86e0-1cd290f2535d.png)
+
+A standard result when you search for a legal person active in a company. It firstly displays the legal person's identification details and then the identification details of the company in which such person is or was active.
+
+![image](https://user-images.githubusercontent.com/46304018/116795551-2a0ab480-aad6-11eb-98b1-24ea1f9072ed.png)
+
+<h2>Display search results:</h2>
+
+
 
 <h2>Trivia:</h2>
 
