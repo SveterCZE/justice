@@ -118,11 +118,11 @@ class EntitySearchForm(Form):
     
     entity_number_search = StringField(u'Identifikační číslo:')
     entity_number_search_selection = SelectField('', choices=search_options)
-    entity_number_search_actual = SelectField('', choices=actual_options)
 
     foreign_entity_number_search = StringField(u'Zahraniční registrační číslo:')
     foreign_entity_number_search_selection = SelectField('', choices=search_options)
-    foreign_entity_number_search_actual = SelectField('', choices=actual_options)                
+
+    entity_actual_selection = SelectField('', choices=actual_options)                
 
 class CompanyForm(Form):
     oddil = [('A', 'A'),

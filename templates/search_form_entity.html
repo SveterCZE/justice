@@ -25,7 +25,7 @@
         {{ form.entity_name_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.entity_name_search()|safe }} {{ form.entity_name_search_selection }} {{ form.entity_name_search_actual }} 
+        {{ form.entity_name_search()|safe }} {{ form.entity_name_search_selection }}
       </div>
     </div>
 
@@ -35,7 +35,7 @@
         {{ form.entity_number_search.label }}
       </div>
       <div class="col-sm">
-        {{ form.entity_number_search()|safe }} {{ form.entity_number_search_selection }} {{ form.entity_number_search_actual }} 
+        {{ form.entity_number_search()|safe }} {{ form.entity_number_search_selection }}
       </div>
     </div>
 
@@ -45,10 +45,19 @@
           {{ form.foreign_entity_number_search.label }}
         </div>
         <div class="col-sm">
-          {{ form.foreign_entity_number_search()|safe }} {{ form.foreign_entity_number_search_selection }} {{ form.foreign_entity_number_search_actual }} 
+          {{ form.foreign_entity_number_search()|safe }} {{ form.foreign_entity_number_search_selection }}
         </div>
       </div>
 
+<!-- Search -->
+      <div class="row g-2">
+        <div class="col-sm-3">
+          Vyhledávat údaje:
+        </div>
+        <div class="col-sm">
+          {{ form.entity_actual_selection }}
+        </div>
+      </div>
   </p>
   <p><input type="submit" value="Search">
   </p>

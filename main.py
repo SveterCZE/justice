@@ -99,6 +99,8 @@ def search_results_entity(search):
     entity_number_search_method = search.entity_number_search_selection.data
     entity_number_actual_or_full = search.entity_name_search_actual.data
 
+    actual_selection = search.entity_actual_selection.data
+
     qry = Pravnicka_Osoba.query
 
     if entity_number:
@@ -122,12 +124,12 @@ def search_results_entity(search):
 
     if not results:
         flash('No results found!')
-        return redirect('/osoby')
+        return redirect('/entity')
 
     else:
         table = Results(results)
         table.border = True
-        return render_template("results_entities.html", results=results, form=search, show_form = True)
+        return render_template("results_entities.html", results=results, form=search, show_form = True, selection_method = actual_selection)
 
 
 @app.route('/results')

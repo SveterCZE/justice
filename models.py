@@ -218,6 +218,17 @@ class Statutarni_Organ_Clen_Association(db.Model):
     jmeno_po = db.relationship("Pravnicka_Osoba")
     statutarni_organ = db.relationship("Statutarni_Organ_Association")
 
+class Pravnicka_Osoba(db.Model):
+    __tablename__ = "pravnicke_osoby"
+    id = db.Column(db.Integer, primary_key=True)
+    ico = db.Column(db.String)
+    reg_cislo = db.Column(db.String)
+    nazev = db.Column(db.String)
+    spolecnik_association = db.relationship("Spolecnici_Association")
+    sole_shareholder_association = db.relationship("Jediny_Akcionar_Association")
+    statut_org_association = db.relationship("Statutarni_Organ_Clen_Association")
+    # supervisory_board_member_association = db.relationship("Dozorci_Rada_Clen_Association")
+
 class Fyzicka_Osoba(db.Model):
     __tablename__ = "fyzicke_osoby"
     id = db.Column(db.Integer, primary_key=True)
@@ -613,10 +624,3 @@ class Druhy_Podilu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     druh_podilu = db.Column(db.String)
 
-
-class Pravnicka_Osoba(db.Model):
-    __tablename__ = "pravnicke_osoby"
-    id = db.Column(db.Integer, primary_key=True)
-    ico = db.Column(db.String)
-    reg_cislo = db.Column(db.String)
-    nazev = db.Column(db.String)
