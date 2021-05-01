@@ -15,7 +15,7 @@ You will be greeted with the following search form.
 
 ![image](https://user-images.githubusercontent.com/46304018/116794252-e90da280-aacb-11eb-92aa-93cb300c2043.png)
 
-The form allows you to search by the following properties:
+The form allows you to search for companies registered in the Commercial Register by the following properties:
 <ul>
   <li>Company name</li>
   <li>Identification number</li>
@@ -43,6 +43,24 @@ In addition, you can also select one of the following options:
 </ul>  
 
 <h2>Search by natural persons:</h2>
+You will be greeted with the following search form:
+![image](https://user-images.githubusercontent.com/46304018/116795147-1dd12800-aad3-11eb-9b83-bbd9cd775090.png)
+
+The form allows you to search for natural persons registered in the Commercial Register as members of executive bodies, members of supervisory boards, prokurists, shareholders in a limited liability companies, sole shareholders in a joint stock companies. The form allows you to search by the following properties:
+<ul>
+  <li>First name</li>
+  <li>Surname</li>
+  <li>Date of birth</li>
+</ul>  
+
+In the fields where you fill-in input data, you can also select one of the following options:
+<ul>
+  <li>Your input can be anywere in the result. For example, if you input <i>Nová</i> as a surname, the application will find and return both <i>Novák</i> and <i>Kuhnová</i> </li>
+  <li>The result must start with your input. For example, if you input <i>Nová</i> as a surname, the application will find and reutrn only <i>Novák</i>, but not <i>Kuhnová</i></li>
+  <li>The result and your input must match. For example, if you input <i>Nová</i> as a surname, the application will neither <i>Novák</i> nor <i>Kuhnová</i></li>
+</ul>  
+
+In addition, you can also select whether the application shall return only the persons who are still active in the company or whether it shall reutrn also those that are no longer active.
 
 <h2>Search by natural persons:</h2>
 
