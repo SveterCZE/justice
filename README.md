@@ -44,6 +44,7 @@ In addition, you can also select one of the following options:
 
 <h2>Search by natural persons:</h2>
 You will be greeted with the following search form:
+
 ![image](https://user-images.githubusercontent.com/46304018/116795147-1dd12800-aad3-11eb-9b83-bbd9cd775090.png)
 
 The form allows you to search for natural persons registered in the Commercial Register as members of executive bodies, members of supervisory boards, prokurists, shareholders in a limited liability companies, sole shareholders in a joint stock companies. The form allows you to search by the following properties:
