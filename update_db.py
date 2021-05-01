@@ -102,6 +102,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_predmet_podnikani(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
                     find_predmet_cinnosti(c, ICO, elem2, conn, primary_sql_key, element)
+                elif udajTyp_name == "UCEL_SUBJEKTU_SEKCE":
+                    find_ucel(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "ZAKLADNI_KAPITAL":
                     find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element)
                 elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
@@ -260,6 +262,24 @@ def find_predmet_cinnosti(c, ICO, predmet_cinnosti_elem, conn, primary_sql_key, 
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except:
         pass
+
+def find_ucel(c, ICO, ucel_elem, conn, primary_sql_key, element):
+    try:
+        my_iter = ucel_elem.findall("podudaje")
+        for elem in my_iter:
+            my_iter2 = elem.iter("Udaj")
+            for elem2 in my_iter2:
+                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
+                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                insert_instructions = [(".//hodnotaText", "ucel", "ucel", "ucel_relation")]
+                for elem in insert_instructions:
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    insert_into_ancillary_table(c, elem, inserted_figure)
+                    ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+    except Exception as f:
+        print(f)
+
 
 def find_zakladni_kapital(c, ICO, elem2, conn, primary_sql_key, element):
     try:
@@ -481,6 +501,12 @@ def find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element):
             osoba_id = find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element)
             adresa_id = sidlo3(c, elem, relationship_table_key)
             c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+        if typ_osoby == "AngazmaPravnicke":
+            spol_ico = str(get_prop(elem, "osoba/ico"))
+            regCislo = str(get_prop(elem, "osoba/regCislo"))
+            prav_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo)
+            adresa_id = sidlo3(c, elem, relationship_table_key)
+            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(f)
 
@@ -548,6 +574,12 @@ def find_clen_dr(c, ICO, elem, conn, relationship_table_key, element):
             # adresa_id = find_and_store_address(c, elem)
             adresa_id = sidlo3(c, elem, relationship_table_key)
             c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+        elif typ_osoby == "AngazmaPravnicke":
+            spol_ico = str(get_prop(elem, "osoba/ico"))
+            regCislo = str(get_prop(elem, "osoba/regCislo"))
+            pravnicka_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo)
+            adresa_id = sidlo3(c, elem, relationship_table_key)
+            c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(f)
 

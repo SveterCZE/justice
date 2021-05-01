@@ -1,0 +1,24 @@
+{% include 'header.html' %}
+
+<h1>Nejčastější účel:</h1>
+
+<table class="table table-hover" style="width: auto">
+    <thead class="thead-dark">
+    <tr class="table-info">
+        <th scope="col">#</th>
+        <th scope="col">Účel</th>
+        <th scope="col">Frekvence</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range (most_common_purpose|length) %}
+    <tr>
+        <th scope = "row">{{ i + 1 }}</th>
+        <td>{{ most_common_purpose[i][0] }}</td>
+        <td>{{ most_common_purpose[i][1] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% include 'footer.html' %}

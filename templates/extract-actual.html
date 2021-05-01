@@ -21,6 +21,13 @@
     {% endif %}
 {% endfor %}
 
+{% set ucel_notes = [] %}
+{% for i in range (row.ucel|length) %}
+    {% if row.ucel[i].vymaz_datum == 0 %}
+        {% set ucel_notes = ucel_notes.append(row.ucel[i].ucel.ucel) %}
+    {% endif %}
+{% endfor %}
+
 {% set zakladni_kapital_notes = [] %}
 {% for i in range (row.zakladni_kapital|length) %}
     {% if row.zakladni_kapital[i].vymaz_datum == 0 %}
@@ -97,22 +104,6 @@
         {% set konkurz_notes = konkurz_notes.append(row.konkurz[i].konkurz_event) %}
     {% endif %}
 {% endfor %}
-
-{% if row.soud == "MSPH" %}
-    {% set soud = "Městského soudu v Praze" %}
-{% elif row.soud == "KSCB" %}
-    {% set soud = "Krajského soudu v Českých Budějovicích" %}
-{% elif row.soud == "KSOS" %}
-    {% set soud = "Krajského soudu v Ostravě" %}
-{% elif row.soud == "KSPL" %}
-    {% set soud = "Krajského soudu v Plzni" %}
-{% elif row.soud == "KSBR" %}
-    {% set soud = "Krajského soudu v Brně" %}
-{% elif row.soud == "KSHK" %}
-    {% set soud = "Krajského soudu v Hradci Králové" %}
-{% elif row.soud == "KSUL" %}
-    {% set soud = "Krajského soudu v Ústí nad Labem" %}
-{% endif %}
 
 {% if insolvency_notes|length > 0 %}
     {% set table_style = "table table-danger" %}
@@ -255,6 +246,17 @@
     {% endif %}
     <!-- END Display areas of activities -->
 
+    <!-- Display purpose -->
+    {% if ucel_notes|length > 0 %}
+    {% for i in range (ucel_notes|length) %}
+    <tr>
+        <td>{% if i == 0%}Účel:{% endif %}</td>
+        <td>{{ ucel_notes[i] }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+    <!-- END Display purpose -->    
+
     <!-- Display statutory bodies -->
     {% if statutarni_organ_notes|length > 0 %}
     {% for i in range (statutarni_organ_notes|length) %}
@@ -269,8 +271,8 @@
             {% if statutarni_organ_notes[i].clenove[j].vymaz_datum == 0 %}
             <tr>
                 <td style = padding-left:2em>{% if statutarni_organ_notes[i].clenove[j].funkce != "0" %} {{ statutarni_organ_notes[i].clenove[j].funkce }} {% endif %}</td>        
-                <td>{% if statutarni_organ_notes[i].clenove[j].jmeno.jmeno != "0" %}{{ statutarni_organ_notes[i].clenove[j].jmeno.jmeno }} {% endif %}
-                    {{ statutarni_organ_notes[i].clenove[j].jmeno.prijmeni }}{% if statutarni_organ_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ statutarni_organ_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+                <td>{% if statutarni_organ_notes[i].clenove[j].jmeno != None %}{{ statutarni_organ_notes[i].clenove[j].jmeno }}
+                    {% else %}{{ statutarni_organ_notes[i].clenove[j].jmeno_po.nazev}}{% if statutarni_organ_notes[i].clenove[j].jmeno_po.reg_cislo != 0 %}, reg č. {{ statutarni_organ_notes[i].clenove[j].jmeno_po.reg_cislo }}{% endif %}{% if statutarni_organ_notes[i].clenove[j].jmeno_po.ico != 0 %}, IČ <a href="/{{ statutarni_organ_notes[i].clenove[j].jmeno_po.ico }}">{{ statutarni_organ_notes[i].clenove[j].jmeno_po.ico }}</a>{% endif %} {% endif %}<br> 
                     {{ statutarni_organ_notes[i].clenove[j].adresa }} 
                     {% if statutarni_organ_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ statutarni_organ_notes[i].clenove[j].funkce_od}}{% endif %}
                     {% if statutarni_organ_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ statutarni_organ_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
@@ -323,8 +325,8 @@
             {% if dozorci_rada_notes[i].clenove[j].vymaz_datum == 0 %}
             <tr>
                 <td style = padding-left:2em>{% if dozorci_rada_notes[i].clenove[j].funkce != "0" %} {{dozorci_rada_notes[i].clenove[j].funkce }} {% endif %}</td>     
-                <td>{% if dozorci_rada_notes[i].clenove[j].jmeno.jmeno != 0 %}{{ dozorci_rada_notes[i].clenove[j].jmeno.jmeno }} {% endif %}
-                    {{ dozorci_rada_notes[i].clenove[j].jmeno.prijmeni }}{% if dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz != "" %}, nar. {{ dozorci_rada_notes[i].clenove[j].jmeno.datum_naroz }}{% endif %} <br> 
+                <td>{% if dozorci_rada_notes[i].clenove[j].jmeno != None %}{{ dozorci_rada_notes[i].clenove[j].jmeno }}
+                    {% else %}{{ dozorci_rada_notes[i].clenove[j].jmeno_po.nazev}}{% if dozorci_rada_notes[i].clenove[j].jmeno_po.reg_cislo != 0 %}, reg č. {{ dozorci_rada_notes[i].clenove[j].jmeno_po.reg_cislo }}{% endif %}{% if dozorci_rada_notes[i].clenove[j].jmeno_po.ico != 0 %}, IČ <a href="/{{ dozorci_rada_notes[i].clenove[j].jmeno_po.ico }}">{{ dozorci_rada_notes[i].clenove[j].jmeno_po.ico }}</a>{% endif %} {% endif %}<br> 
                     {{ dozorci_rada_notes[i].clenove[j].adresa }} 
                     {% if dozorci_rada_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ dozorci_rada_notes[i].clenove[j].funkce_od}}{% endif %}
                     {% if dozorci_rada_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ dozorci_rada_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>
@@ -354,8 +356,7 @@
     {% for i in range (prokurist_notes|length) %}
     <tr>
         <td>{% if i == 0%}Prokura:{% endif %}</td>
-        <td>{% if prokurist_notes[i].jmeno.jmeno != "0" %}{{ prokurist_notes[i].jmeno.jmeno }} {% endif %}
-            {{ prokurist_notes[i].jmeno.prijmeni }}{% if prokurist_notes[i].jmeno.datum_naroz != "" %}, nar. {{ prokurist_notes[i].jmeno.datum_naroz }}{% endif %}<br> 
+        <td>{{ prokurist_notes[i].jmeno}}<br> 
             {{ prokurist_notes[i].adresa }}{% if prokurist_notes[i].text_prokurista != "0" %}<br>{{ prokurist_notes[i].text_prokurista }}{% endif %}</td>
     </tr>    
     {% endfor %}
@@ -375,9 +376,7 @@
         {% for i in range (sole_shareholder_notes|length) %}
         <tr>
             <td>{% if i == 0%}Jediný akcionář:{% endif %}</td>
-            <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %} 
-                {% if sole_shareholder_notes[i].jmeno.jmeno != "0" %}{{ sole_shareholder_notes[i].jmeno.jmeno }} {% endif %}
-                {{ sole_shareholder_notes[i].jmeno.prijmeni }}{% if sole_shareholder_notes[i].jmeno.datum_naroz != "" %}, nar. {{ sole_shareholder_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+            <td>{% if sole_shareholder_notes[i].akcionar_po_id == None %}{{ sole_shareholder_notes[i].jmeno }}{% endif %}   
                 {% if sole_shareholder_notes[i].akcionar_fo_id == None %} {{ sole_shareholder_notes[i].oznaceni_po.nazev }}{% if sole_shareholder_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ sole_shareholder_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if sole_shareholder_notes[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ sole_shareholder_notes[i].oznaceni_po.ico }}-actual">{{ sole_shareholder_notes[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
                 <br>{{sole_shareholder_notes[i].adresa}}</td>
         </tr>   
@@ -394,9 +393,7 @@
         {% for i in range (spolecnici_notes|length) %}
         <tr>
             <td style = padding-left:2em>Společník:</td>
-            <td>{% if spolecnici_notes[i].spolecnik_po_id == None %} 
-                {% if spolecnici_notes[i].jmeno.jmeno != "0" %}{{ spolecnici_notes[i].jmeno.jmeno }} {% endif %}
-                {{ spolecnici_notes[i].jmeno.prijmeni }}{% if spolecnici_notes[i].jmeno.datum_naroz != "" %}, nar. {{ spolecnici_notes[i].jmeno.datum_naroz }}{% endif %} {% endif %}   
+            <td>{% if spolecnici_notes[i].spolecnik_po_id == None %}{{ spolecnici_notes[i].jmeno }}{% endif %}   
                 {% if spolecnici_notes[i].spolecnik_fo_id == None %} {{ spolecnici_notes[i].oznaceni_po.nazev }}{% if spolecnici_notes[i].oznaceni_po.reg_cislo != 0 %}, reg č. {{ spolecnici_notes[i].oznaceni_po.reg_cislo }}{% endif %}{% if spolecnici_notes[i].oznaceni_po.ico != 0 %}, IČ <a href="/{{ spolecnici_notes[i].oznaceni_po.ico }}-actual">{{ spolecnici_notes[i].oznaceni_po.ico }}</a>{% endif %} {% endif %} 
                 <br>{{spolecnici_notes[i].adresa}}</td>
         </tr>
@@ -452,44 +449,7 @@
         {% for i in range (shares_notes|length) %}
         <tr>
             <td>{% if i == 0%}Akcie:{% endif %}</td>
-            {% if shares_notes[i].akcie_podoba == "LISTINNA" %}
-                {% set akcie_podoba_description = "v listinné podobě" %}
-            {% elif shares_notes[i].akcie_podoba == "ZAKNIHOVANA" %}
-                {% set akcie_podoba_description = "v zaknihované podobě" %}
-            {% elif shares_notes[i].akcie_podoba == "IMOBILIZOVANA" %}
-                {% set akcie_podoba_description = "v imobilizované podobě" %}            
-            {% else %}
-                {% set akcie_podoba_description = "" %}    
-            {% endif %}
-            
-            {% if shares_notes[i].akcie_typ == "KMENOVE_NA_JMENO" %}
-                {% set akcie_typ_description = "kmenové akcie na jméno" %}
-            {% elif shares_notes[i].akcie_typ == "KMENOVE_NA_MAJITELE" %}
-                {% set akcie_typ_description = "kmenové akcie na majitele" %}
-            {% elif shares_notes[i].akcie_typ == "KUSOVE_NA_JMENO" %}
-                {% set akcie_typ_description = "kusové akcie" %}
-            {% elif shares_notes[i].akcie_typ == "NA_JMENO" %}
-                {% set akcie_typ_description = "akcie na jméno" %}
-            {% elif shares_notes[i].akcie_typ == "NA_MAJITELE" %}
-                {% set akcie_typ_description = "akcie na majitele" %}
-            {% elif shares_notes[i].akcie_typ == "PRIORITNI_NA_JMENO" %}
-                {% set akcie_typ_description = "prioritní akcie na jméno" %}                   
-            {% elif shares_notes[i].akcie_typ == "ZAMESTNANECKE_NA_JMENO" %}
-                {% set akcie_typ_description = "zaměstnanecké akcie na jméno" %}
-            {% elif shares_notes[i].akcie_typ == "ZVLASTNI_PRAVA" %}
-                {% set akcie_typ_description = "akcie se zvláštními právy" %}
-            {% else %}
-                {% set akcie_typ_description = "" %}    
-            {% endif %}  
-
-            {% if shares_notes[i].akcie_hodnota_typ == "KORUNY" %}
-                {% set akcie_hodnota_typ_symbol = "Kč" %}
-            {% elif shares_notes[i].akcie_hodnota_typ == "EURA" %}
-                {% set akcie_hodnota_typ_symbol = "euro" %}  
-            {% else %}
-                {% set akcie_hodnota_typ_symbol = "" %}
-            {% endif %}
-            <td>{{ shares_notes[i].akcie_pocet }} ks {{ akcie_typ_description }} {{ akcie_podoba_description }}  ve jmenovité hodnotě {{ shares_notes[i].akcie_hodnota_value }} {{ akcie_hodnota_typ_symbol }} {% if shares_notes[i].akcie_text != "0"  %} <br> {{ shares_notes[i].akcie_text }} {% endif %}</td>
+            <td>{{ shares_notes[i] }} {% if shares_notes[i].akcie_text != "0"  %} <br> {{ shares_notes[i].akcie_text }} {% endif %}</td>
         </tr>   
         {% endfor %}
     {% endif %}
