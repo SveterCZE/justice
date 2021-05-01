@@ -16,18 +16,18 @@ You will be greeted with the following search form.
 ![image](https://user-images.githubusercontent.com/46304018/116794252-e90da280-aacb-11eb-92aa-93cb300c2043.png)
 
 The form allows you to search by the following properties:
-<list>
-  <ul>Company name</ul>
-  <ul>Identification number</ul>
-  <ul>Municipality</ul>
-  <ul>Street name</ul>
-  <ul>Court register section (<i>oddíl</i>)</ul>
-  <ul>Court register file No. (<i>vložka</i>)</ul>
-  <ul>Legal form</ul>
-  <ul>Court of registration</ul>
-  <ul>Active insolvency record</ul>
-  <ul>Date of registration</ul>
-</list>  
+<ul>
+  <li>Company name</li>
+  <li>Identification number</li>
+  <li>Municipality</li>
+  <li>Street name</li>
+  <li>Court register section (<i>oddíl</i>)</li>
+  <li>Court register file No. (<i>vložka</i>)</li>
+  <li>Legal form</li>
+  <li>Court of registration</li>
+  <li>Active insolvency record</li>
+  <li>Date of registration</li>
+</ul>  
   
 <h2>Search by natural persons:</h2>
 
