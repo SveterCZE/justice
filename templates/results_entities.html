@@ -59,8 +59,7 @@
         {% endif %}
     {% endfor %}
 
-    <!-- Insert once data on supervisory board members (natural persons) are available -->
-    <!-- {% for elem in row.supervisory_board_member_association %}
+    {% for elem in row.supervisory_board_member_association %}
         {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
             {% set xxx = [] %}
         {% else %}    
@@ -75,7 +74,7 @@
             {% set x = my_dict.__setitem__("zapis", elem.dozorci_rada.company.zapis) %}
             {% set test_list = test_list.append(my_dict) %}
         {% endif %}
-    {% endfor %}     -->
+    {% endfor %}
 
     {% for elem in test_list %}
         {% if count.value % 2 == 0 %}

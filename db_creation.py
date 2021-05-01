@@ -84,7 +84,8 @@ def create_tables(conn):
     dr_organ_clen_relation = """ CREATE TABLE "dr_organ_clen_relation" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"dozorci_rada_id"	INTEGER NOT NULL,
-	"osoba_id"	INTEGER NOT NULL,
+	"osoba_id"	INTEGER,
+	"pravnicka_osoba_id" INTEGER,
 	"adresa_id"	INTEGER,
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,

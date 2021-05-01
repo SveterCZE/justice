@@ -325,7 +325,8 @@
             {% if dozorci_rada_notes[i].clenove[j].vymaz_datum == 0 %}
             <tr>
                 <td style = padding-left:2em>{% if dozorci_rada_notes[i].clenove[j].funkce != "0" %} {{dozorci_rada_notes[i].clenove[j].funkce }} {% endif %}</td>     
-                <td>{{ dozorci_rada_notes[i].clenove[j].jmeno }}<br> 
+                <td>{% if dozorci_rada_notes[i].clenove[j].jmeno != None %}{{ dozorci_rada_notes[i].clenove[j].jmeno }}
+                    {% else %}{{ dozorci_rada_notes[i].clenove[j].jmeno_po.nazev}}{% if dozorci_rada_notes[i].clenove[j].jmeno_po.reg_cislo != 0 %}, reg č. {{ dozorci_rada_notes[i].clenove[j].jmeno_po.reg_cislo }}{% endif %}{% if dozorci_rada_notes[i].clenove[j].jmeno_po.ico != 0 %}, IČ <a href="/{{ dozorci_rada_notes[i].clenove[j].jmeno_po.ico }}">{{ dozorci_rada_notes[i].clenove[j].jmeno_po.ico }}</a>{% endif %} {% endif %}<br> 
                     {{ dozorci_rada_notes[i].clenove[j].adresa }} 
                     {% if dozorci_rada_notes[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ dozorci_rada_notes[i].clenove[j].funkce_od}}{% endif %}
                     {% if dozorci_rada_notes[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ dozorci_rada_notes[i].clenove[j].clenstvi_od}}{% endif %}</td>

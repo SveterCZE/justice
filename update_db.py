@@ -574,6 +574,12 @@ def find_clen_dr(c, ICO, elem, conn, relationship_table_key, element):
             # adresa_id = find_and_store_address(c, elem)
             adresa_id = sidlo3(c, elem, relationship_table_key)
             c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+        elif typ_osoby == "AngazmaPravnicke":
+            spol_ico = str(get_prop(elem, "osoba/ico"))
+            regCislo = str(get_prop(elem, "osoba/regCislo"))
+            pravnicka_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo)
+            adresa_id = sidlo3(c, elem, relationship_table_key)
+            c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(f)
 

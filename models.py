@@ -227,7 +227,7 @@ class Pravnicka_Osoba(db.Model):
     spolecnik_association = db.relationship("Spolecnici_Association")
     sole_shareholder_association = db.relationship("Jediny_Akcionar_Association")
     statut_org_association = db.relationship("Statutarni_Organ_Clen_Association")
-    # supervisory_board_member_association = db.relationship("Dozorci_Rada_Clen_Association")
+    supervisory_board_member_association = db.relationship("Dozorci_Rada_Clen_Association")
 
 class Fyzicka_Osoba(db.Model):
     __tablename__ = "fyzicke_osoby"
@@ -266,6 +266,7 @@ class Dozorci_Rada_Clen_Association(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dozorci_rada_id = db.Column(db.Integer, db.ForeignKey('dozorci_rada_relation.id'))
     osoba_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
+    pravnicka_osoba_id = db.Column(db.Integer, db.ForeignKey('pravnicke_osoby.id'))
     adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
@@ -276,6 +277,7 @@ class Dozorci_Rada_Clen_Association(db.Model):
     funkce = db.Column(db.String)
     adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
+    jmeno_po = db.relationship("Pravnicka_Osoba")
     dozorci_rada = db.relationship("Dozorci_Rada_Association")
 
 class Spolecnici_Association(db.Model):
