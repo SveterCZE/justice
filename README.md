@@ -28,7 +28,20 @@ The form allows you to search by the following properties:
   <li>Active insolvency record</li>
   <li>Date of registration</li>
 </ul>  
-  
+
+In the fields where you fill-in input data, you can also select one of the following options:
+<ul>
+  <li>Your input can be anywere in the result. For example, if you input <i>Trade</i> as a company name, the application will find and return both <i>SILOMAN Trade a.s.</i> and <i>Trade Bridge a.s.</i> </li>
+  <li>The result must start with your input. For example, if you input <i>Trade</i> as a company name, the application will find and reutrn only <i>Trade Bridge a.s.</i>, but not <i>SILOMAN Trade a.s.</i></li>
+  <li>The result and your input must match. For example, if you input <i>Trade</i> as a company name, the application will neither <i>SILOMAN Trade a.s.</i> nor <i>Trade Bridge a.s.</i></li>
+</ul>  
+
+In addition, you can also select one of the following options:
+<ul>
+  <li>Your input must match the company data that are up-to-date. For example, if you input <i>Trade</i> as a company name, a company that used to be names <i>Global Trade, a.s.</i>, but had since been renamed, will not be found.</li>
+  <li>Your input may match the company data that are no longer up-to-date. For example, if you input <i>Trade</i> as a company name, a company that used to be names <i>Global Trade, a.s.</i>, but had since been renamed, will be found.</li>
+</ul>  
+
 <h2>Search by natural persons:</h2>
 
 <h2>Search by natural persons:</h2>
