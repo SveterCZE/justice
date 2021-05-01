@@ -1,4 +1,3 @@
-# justice
 <h1>Introduction:</h1>
 My first larger project, an application using Pyhon, Flask and SQLite to download open commercial register data from the Czech Ministry of Justice (justice.cz) and convert them into an sqlite3 database. The applicaton also contains a front-end component to search in the database by various properties. The main goal of the application is to provide users with more advanced search options compared to the official search at the Ministry of Justice website. 
 
@@ -103,11 +102,30 @@ A standard result when you search for a legal person active in a company. It fir
 
 ![image](https://user-images.githubusercontent.com/46304018/116795551-2a0ab480-aad6-11eb-98b1-24ea1f9072ed.png)
 
-<h2>Display search results:</h2>
+<h2>Display detailed company data:</h2>
+The application also allows you to display detailed data about each company in two forms:
 
+<ul>
+<li>Historical extract, showing all data, including those that are no longer relevant</li>
+<li>Current extract, showing only the up-to-date data</li>
+</ul>
 
+A historical extract can look something like this. The data that are no longer up-to-date are underlined.
+
+![image](https://user-images.githubusercontent.com/46304018/116795933-c930ab80-aad8-11eb-8254-6d6e3a4d751d.png)
+
+A current extract looks like this.
+![image](https://user-images.githubusercontent.com/46304018/116795940-d6e63100-aad8-11eb-94d4-2a4841329f56.png)
 
 <h2>Trivia:</h2>
+You can also explore some interesting information about the data stored in the Commercial register. You can find, for example, a list of the oldest existing companies or addresses at which the most companies have their registered office. Go and check it yourselves :)
 
 <h1>Known issues:</h1>
+This is an early prototype not yet suitable for production deployment as there are multiple issues that need to be resolved. The main issues are as follows:
+<ul>
+<li>Czech diacritics are not processed properly and based on my initial research, I suspect that this is due to SQLite limitations.</li>
+<li>Not all information available in the open data sets are stored in the application database.</li>  
+<li>The underlying code should be refactored to remove excessive duplications.</li>
+<li>I do not know how to deploy such application :)</li>
 
+</ul>
