@@ -398,3 +398,4 @@ templates/extract.html
 __pycache__/db_creation.cpython-38.pyc
 __pycache__/download_files.cpython-38.pyc
 __pycache__/update_db.cpython-38.pyc
+key_gen.py
