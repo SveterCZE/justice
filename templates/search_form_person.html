@@ -1,0 +1,69 @@
+{% include 'header.html' %}
+<title>Justice Database</title>
+
+<h2>Justice Database</h2>
+
+<p></p><p>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+{% from "_formhelpers.html" import render_field %}
+
+<!-- NAME -->
+<form method="post">
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.fist_name_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.fist_name_search()|safe }} {{ form.fist_name_search_selection }}
+      </div>
+    </div>
+
+<!-- SURNAME -->
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.surname_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.surname_search()|safe }} {{ form.surname_search_selection }}
+      </div>
+    </div>
+
+<!-- BIRTHDAY -->    
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.birthday.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.birthday }}
+      </div>
+    </div>
+
+    <div class="row g-2">
+      <div class="col-sm-3">
+        Vyhledávat údaje:
+      </div>
+      <div class="col-sm">
+        {{ form.person_actual_selection }}
+      </div>
+    </div>
+
+
+  </p>
+  <p><input type="submit" value="Search">
+  </p>
+</form>
+
+{% include 'footer.html' %}
+
+

@@ -1,0 +1,68 @@
+{% include 'header.html' %}
+<title>Justice Database</title>
+
+<h2>Justice Database</h2>
+
+<p></p><p>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+{% from "_formhelpers.html" import render_field %}
+
+<!-- NAME -->
+<form method="post">
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.entity_name_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.entity_name_search()|safe }} {{ form.entity_name_search_selection }}
+      </div>
+    </div>
+
+<!-- ID No. -->
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.entity_number_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.entity_number_search()|safe }} {{ form.entity_number_search_selection }}
+      </div>
+    </div>
+
+<!-- Foreign ID No. -->
+    <div class="row g-2">
+        <div class="col-sm-3">
+          {{ form.foreign_entity_number_search.label }}
+        </div>
+        <div class="col-sm">
+          {{ form.foreign_entity_number_search()|safe }} {{ form.foreign_entity_number_search_selection }}
+        </div>
+      </div>
+
+<!-- Search -->
+      <div class="row g-2">
+        <div class="col-sm-3">
+          Vyhledávat údaje:
+        </div>
+        <div class="col-sm">
+          {{ form.entity_actual_selection }}
+        </div>
+      </div>
+  </p>
+  <p><input type="submit" value="Search">
+  </p>
+</form>
+
+{% include 'footer.html' %}
+
+

@@ -84,7 +84,8 @@ def create_tables(conn):
     dr_organ_clen_relation = """ CREATE TABLE "dr_organ_clen_relation" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"dozorci_rada_id"	INTEGER NOT NULL,
-	"osoba_id"	INTEGER NOT NULL,
+	"osoba_id"	INTEGER,
+	"pravnicka_osoba_id" INTEGER,
 	"adresa_id"	INTEGER,
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
@@ -323,6 +324,7 @@ def create_tables(conn):
 	"id"	INTEGER NOT NULL UNIQUE,
 	"statutarni_organ_id"	INTEGER NOT NULL,
 	"osoba_id"	INTEGER,
+	"prav_osoba_id"	INTEGER,
 	"adresa_id"	INTEGER,
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
@@ -352,6 +354,23 @@ def create_tables(conn):
 	"id"	INTEGER NOT NULL UNIQUE,
 	"statutarni_organ_text"	TEXT NOT NULL UNIQUE,
 	PRIMARY KEY("id" AUTOINCREMENT)
+); """
+
+    ucel = """ CREATE TABLE "ucel" (
+	"id"	INTEGER NOT NULL,
+	"ucel"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+); """
+
+    ucel_relation = """ CREATE TABLE "ucel_relation" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"company_id"	INTEGER NOT NULL,
+	"ucel_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	FOREIGN KEY("ucel_id") REFERENCES "ucel"("id")
 ); """
 
     zakladni_kapital = """ CREATE TABLE "zakladni_kapital" (
@@ -400,7 +419,7 @@ def create_tables(conn):
     jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, pravni_formy, 
     pravni_formy_relation, pravnicke_osoby, predmety_cinnosti, predmety_cinnosti_relation, prdmety_podnikani, predmety_podnikani_relation,
     prokura_common_texts, prokuriste, sidlo_relation, spolecnici, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, 
-    zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
+    ucel, ucel_relation, zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
     for elem in list_of_tables:
         try:
             c = conn.cursor()
@@ -537,6 +556,22 @@ def create_indices(conn):
 	"id"
 ); """
 
+    pravnicke_osoby1 = """ CREATE INDEX "pravnicke_osoby1" ON "pravnicke_osoby" (
+	"ico"
+); """
+
+    pravnicke_osoby2 = """ CREATE INDEX "pravnicke_osoby2" ON "pravnicke_osoby" (
+	"id"
+); """
+
+    pravnicke_osoby3 = """ CREATE INDEX "pravnicke_osoby3" ON "pravnicke_osoby" (
+	"reg_cislo"
+); """
+
+    pravnicke_osoby4 = """ CREATE INDEX "pravnicke_osoby4" ON "pravnicke_osoby" (
+	"nazev"
+); """
+
     predmety_cinnosti_relation1 = """ CREATE INDEX "index predmety cinnosti relation1" ON "predmety_cinnosti_relation" (
 	"company_id"
 ); """
@@ -650,6 +685,26 @@ def create_indices(conn):
 	"company_id"
 ); """
 
+    ucel1 = """ CREATE INDEX "index ucel1" ON "ucel" (
+	"ucel"
+); """
+
+    ucel2 = """ CREATE INDEX "index ucel2" ON "predmety_podnikani" (
+	"id"
+); """
+
+    ucel_relation1 = """ CREATE INDEX "index ucel relation1" ON "ucel_relation" (
+	"company_id"
+); """
+
+    ucel_relation2 = """ CREATE INDEX "index ucel relation2" ON "ucel_relation" (
+	"id"
+); """
+
+    ucel_relation3 = """ CREATE INDEX "index ucel relation3" ON "ucel_relation" (
+	"ucel_id"
+); """
+
     zakladni_kapital1 = """ CREATE INDEX "index zakladni kapital1" ON "zakladni_kapital" (
 	"company_id"
 ); """
@@ -674,36 +729,32 @@ def create_indices(conn):
 	"zpusob_jednani_id"
 ); """
 
-    pravnicke_osoby1 = """ CREATE INDEX "pravnicke_osoby1" ON "pravnicke_osoby" (
-	"ico"
-); """
-
-    pravnicke_osoby2 = """ CREATE INDEX "pravnicke_osoby2" ON "pravnicke_osoby" (
+    fyzicke_osoby1 = """ CREATE INDEX "index fyzicke_osoby1" ON "fyzicke_osoby" (
 	"id"
 ); """
 
-    pravnicke_osoby3 = """ CREATE INDEX "pravnicke_osoby3" ON "pravnicke_osoby" (
-	"reg_cislo"
+    statutarni_organy_relation_4 = """ CREATE INDEX "index statutarni organ relation 4" ON "statutarni_organ_clen_relation" (
+	"osoba_id"
 ); """
 
-    pravnicke_osoby4 = """ CREATE INDEX "pravnicke_osoby4" ON "pravnicke_osoby" (
-	"nazev"
+    dr_relation_3 = """ CREATE INDEX "index dr clen relation3" ON "dr_organ_clen_relation" (
+	"osoba_id"
 ); """
 
-    fyzicke_osoby1 = """ CREATE INDEX "fyzicke_osoby1" ON "fyzicke_osoby" (
-	"id"
+    akcionari3 = """ CREATE INDEX "index akcionari3" ON "jediny_akcionar" (
+	"akcionar_fo_id"
 ); """
 
     list_of_indices = [companies1, companies2, companies3, companies4, companies5, adresy1, adresy2, adresy3,
-	akcie, akcie2, akcionari1, akcionari2, dr_clen_relation1, dr_clen_relation2, dr_relation, dr_relation2, 
+	akcie, akcie2, akcionari1, akcionari2, akcionari3, dr_clen_relation1, dr_clen_relation2, dr_relation, dr_relation2, dr_relation_3, 
 	insolvency1, insolvency2, konkurz1, konkurz2, nazvy1, nazvy2, nazvy3, ostatni_skutecnosti, ostatni_skutecnosti2, 
 	pocty_clenu_organ1, pocty_clenu_organ2, podily1, podily2, pravni_formy, pravni_formy_relation1, pravni_formy_relation2, 
 	predmety_cinnosti_relation1, predmety_cinnosti_relation2, predmety_cinnosti_relation3, predmety_podnikani_relation1, predmety_podnikani_relation2, 
 	predmety_podnikani_relation3, predmety_cinnosti1, predmety_cinnosti2, predmety_podnikani1, predmety_podnikani2, prokuriste1, 
 	prokuriste2, prokuriste3, prokuriste4, sidlo_relation1, sidlo_relation_2, sidlo_relation_3, soudni_zapis1, soudni_zapis2, spolecnici1, 
 	spolecnici2, spolecnici3, spolecnici4, spolecnici5, statutarni_organy, statutarni_organy_relation1, statutarni_organy_relation2, 
-	statutarni_organy_relation_3, zakladni_kapital1, zakladni_kapital2, zpusob_jednani, zpusob_jednani_relation1, zpusob_jednani_relation2, 
-	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, fyzicke_osoby1]
+	statutarni_organy_relation_3, statutarni_organy_relation_4, zakladni_kapital1, zakladni_kapital2, zpusob_jednani, zpusob_jednani_relation1, zpusob_jednani_relation2, 
+	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, fyzicke_osoby1, ucel1, ucel2, ucel_relation1, ucel_relation2, ucel_relation3]
     i = 0
     for elem in list_of_indices:
         i += 1

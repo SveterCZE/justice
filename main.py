@@ -1,15 +1,18 @@
 from app import app
 from db_setup import init_db, db_session
-from forms import JusticeSearchForm, CompanyForm
+from forms import JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
 from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_Clen_Association, Fyzicka_Osoba, Spolecnici_Association, Podily_Association, Druhy_Podilu, Pravnicka_Osoba
-from models import Prokurista_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy
+from models import Prokurista_Association, Dozorci_Rada_Clen_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy, Ucel, Ucel_Association
 from models import Adresy_v2
 from tables import Results
+from sqlalchemy.sql import select
+from sqlalchemy.sql import text
+from sqlalchemy import create_engine
 
-init_db()
+# init_db()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -18,7 +21,116 @@ def index():
     if request.method == 'POST':
         return search_results(search)
 
-    return render_template('index.html', form=search)
+    return render_template('search_form.html', form=search)
+
+@app.route('/osoby', methods=['GET', 'POST'])
+def search_person():
+    search = PersonSearchForm(request.form)
+    print(search)
+    if request.method == 'POST':
+        return search_results_person(search)
+
+    return render_template('search_form_person.html', form=search)
+
+@app.route('/entity', methods=['GET', 'POST'])
+def search_entity():
+    search = EntitySearchForm(request.form)
+    print(search)
+    if request.method == 'POST':
+        return search_results_entity(search)
+
+    return render_template('search_form_entity.html', form=search)
+
+
+@app.route('/results_person')
+def search_results_person(search):
+    result = []
+
+    first_name = search.fist_name_search.data
+    first_name_search_method = search.fist_name_search_selection.data
+
+    surname = search.surname_search.data
+    surname_search_method = search.surname_search_selection.data
+
+    birthday = search.birthday.data
+
+    actual_selection = search.person_actual_selection.data
+
+    qry = Fyzicka_Osoba.query
+
+    if first_name:
+        if first_name_search_method == "text_anywhere":
+            qry = qry.filter(Fyzicka_Osoba.jmeno.contains(first_name))
+        elif first_name_search_method == "text_beginning":
+            qry = qry.filter(Fyzicka_Osoba.jmeno.like(f'{first_name}%'))
+        elif first_name_search_method == "text_exact":
+            qry = qry.filter(Fyzicka_Osoba.jmeno == first_name)
+
+    if surname:
+        if surname_search_method == "text_anywhere":
+            qry = qry.filter(Fyzicka_Osoba.prijmeni.contains(surname))
+        elif surname_search_method == "text_beginning":
+            qry = qry.filter(Fyzicka_Osoba.prijmeni.like(f'{surname}%'))
+        elif surname_search_method == "text_exact":
+            qry = qry.filter(Fyzicka_Osoba.prijmeni == surname)
+            
+    if birthday:
+        qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
+
+    results = qry.all()
+    print(results)
+
+    if not results:
+        flash('No results found!')
+        return redirect('/osoby')
+
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results_persons.html", results=results, form=search, show_form = True, selection_method = actual_selection)
+
+@app.route('/results_entity')
+def search_results_entity(search):
+    entity_name = search.entity_name_search.data
+    entity_name_search_method = search.entity_name_search_selection.data
+    entity_name_actual_or_full = search.entity_name_search_actual.data
+
+    entity_number = search.entity_number_search.data
+    entity_number_search_method = search.entity_number_search_selection.data
+    entity_number_actual_or_full = search.entity_name_search_actual.data
+
+    actual_selection = search.entity_actual_selection.data
+
+    qry = Pravnicka_Osoba.query
+
+    if entity_number:
+        if entity_number_search_method == "text_anywhere":
+            qry = qry.filter(Pravnicka_Osoba.ico.contains(entity_number))
+        elif entity_number_search_method == "text_beginning":
+            qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
+        elif entity_number_search_method == "text_exact":
+            qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
+
+    if entity_name:
+        if entity_name_search_method == "text_anywhere":
+            qry = qry.filter(Pravnicka_Osoba.nazev.contains(entity_name))
+        elif entity_name_search_method == "text_beginning":
+            qry = qry.filter(Pravnicka_Osoba.nazev.like(f'{entity_name}%'))
+        elif entity_name_search_method == "text_exact":
+            qry = qry.filter(Pravnicka_Osoba.nazev == entity_name)
+
+    results = qry.all()
+    print(results)
+
+    if not results:
+        flash('No results found!')
+        return redirect('/entity')
+
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results_entities.html", results=results, form=search, show_form = True, selection_method = actual_selection)
+
 
 @app.route('/results')
 def search_results(search):
@@ -160,7 +272,30 @@ def search_results(search):
     else:
         table = Results(results)
         table.border = True
-        return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do)
+        return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do, show_form = True)
+
+
+
+@app.route('/results-sidlo-<int:adresa_id>', methods=['GET', 'POST'])
+def search_results_sidlo(adresa_id):
+    search = JusticeSearchForm(request.form)
+
+    results = []
+    qry = Company.query
+    qry = qry.join(Sidlo_Association, Company.sidlo_text)
+    qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+    qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+    qry = qry.filter(Adresy_v2.id == adresa_id)
+    results = qry.all()
+
+    if not results:
+        flash('No results found!')
+        return redirect('/')
+
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results2.html", results=results, form=search, show_form = False)
 
 @app.route("/<int:ico>", methods=['GET', 'POST'])
 def extract(ico):
@@ -175,6 +310,133 @@ def extract_actual(ico):
     qry = qry.filter(Company.ico == ico)
     results = qry.all()
     return render_template("extract-actual.html", ico = ico, results = results)
+
+@app.route("/trivia", methods=['GET', 'POST'])
+def trivia():
+    number_entities = count_number_entries()
+    return render_template("trivia.html", number_entities = number_entities)
+
+@app.route("/most_common_addresses", methods=['GET', 'POST'])
+def find_most_common_addresses():
+    most_common_addresses = count_common_addresses()
+    return render_template("most_common_addresses.html", most_common_addresses = most_common_addresses)    
+
+@app.route("/oldest_companies", methods=['GET', 'POST'])
+def find_oldest_companies():
+    oldest_companies = count_oldest_companies()
+    return render_template("oldest_companies.html", oldest_companies = oldest_companies)
+
+@app.route("/most_common_purpose", methods=['GET', 'POST'])
+def find_most_common_purpose():
+    most_common_purpose = count_common_purpose()
+    return render_template("most_common_purpose.html", most_common_purpose = most_common_purpose)    
+
+@app.route("/most_common_business", methods=['GET', 'POST'])
+def find_most_common_business():
+    most_common_business = count_common_business()
+    return render_template("most_common_business.html", most_common_business = most_common_business)    
+
+@app.route("/most_common_activity", methods=['GET', 'POST'])
+def find_most_common_activity():
+    most_common_activity = count_common_activity()
+    return render_template("most_common_activity.html", most_common_activity = most_common_activity)        
+
+@app.route("/most_common_degree", methods=['GET', 'POST'])
+def find_most_common_degree():
+    most_common_degree_before = count_common_degrees("before")
+    most_common_degree_after = count_common_degrees("after")
+    return render_template("most_common_degree.html", most_common_degree_before = most_common_degree_before, most_common_degree_after = most_common_degree_after)        
+
+def count_number_entries():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT COUNT(id) FROM companies;")
+    entries_number = conn.execute(text_instruction).fetchall()
+    conn.close()
+    return entries_number[0][0]
+
+def count_common_addresses():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT sidlo_id, COUNT(`sidlo_id`) AS `value_occurrence` FROM sidlo_relation INNER JOIN adresy_v2 ON sidlo_relation.sidlo_id=adresy_v2.id WHERE vymaz_datum = 0 GROUP BY `sidlo_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    addresses_frequency = []
+    for elem in result:
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[0])
+        selected_address = qry.all()
+        addresses_frequency.append((selected_address[0], elem[1], elem[0]))
+    conn.close()
+    return addresses_frequency
+
+def count_common_business():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT predmet_podnikani_id, COUNT(`predmet_podnikani_id`) AS `value_occurrence` FROM predmety_podnikani_relation INNER JOIN predmety_podnikani ON predmety_podnikani_relation.predmet_podnikani_id=predmety_podnikani.id WHERE vymaz_datum = 0 GROUP BY `predmet_podnikani_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    business_frequency = []
+    for elem in result:
+        qry = Predmet_Podnikani.query
+        qry = qry.filter(Predmet_Podnikani.id == elem[0])
+        selected_business = qry.all()
+        business_frequency.append((selected_business[0].predmet_podnikani, elem[1]))
+    conn.close()
+    return business_frequency  
+
+def count_common_activity():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT predmet_cinnosti_id, COUNT(`predmet_cinnosti_id`) AS `value_occurrence` FROM predmety_cinnosti_relation INNER JOIN predmety_cinnosti ON predmety_cinnosti_relation.predmet_cinnosti_id=predmety_cinnosti.id WHERE vymaz_datum = 0 GROUP BY `predmet_cinnosti_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    activity_frequency = []
+    for elem in result:
+        qry = Predmet_Cinnosti.query
+        qry = qry.filter(Predmet_Cinnosti.id == elem[0])
+        selected_activity = qry.all()
+        activity_frequency.append((selected_activity[0].predmet_cinnosti, elem[1]))
+    conn.close()
+    return activity_frequency    
+
+def count_common_purpose():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT ucel_id, COUNT(`ucel_id`) AS `value_occurrence` FROM ucel_relation INNER JOIN ucel ON ucel_relation.ucel_id=ucel.id WHERE vymaz_datum = 0 GROUP BY `ucel_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    addresses_frequency = []
+    for elem in result:
+        qry = Ucel.query
+        qry = qry.filter(Ucel.id == elem[0])
+        selected_purpose = qry.all()
+        addresses_frequency.append((selected_purpose[0].ucel, elem[1]))
+    conn.close()
+    return addresses_frequency    
+
+def count_common_degrees(method):
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    if method == "before":
+        text_instruction = text("SELECT titul_pred, COUNT(`titul_pred`) AS `value_occurrence` FROM fyzicke_osoby GROUP BY `titul_pred` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    else:
+        text_instruction = text("SELECT titul_za, COUNT(`titul_za`) AS `value_occurrence` FROM fyzicke_osoby GROUP BY `titul_za` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    degree_frequency = []
+    for elem in result:
+        degree_frequency.append((elem[0], elem[1]))
+    return degree_frequency[1:]
+
+def count_oldest_companies():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT id from companies ORDER BY zapis ASC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    oldest_companies = []
+    for elem in result:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[0])
+        selected_company = qry.all()
+        oldest_companies.append((selected_company[0].nazev, selected_company[0].zapis, selected_company[0].ico)) 
+    return oldest_companies
+    
 
 if __name__ == '__main__':
     app.run()

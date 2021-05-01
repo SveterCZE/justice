@@ -9,12 +9,6 @@ Created on Sun Jan 17 10:05:34 2021
 from wtforms import Form, StringField, SelectField, BooleanField
 from wtforms.fields.html5 import DateField
 
-# class JusticeSearchForm(Form):
-#     choices = [('ico', 'Identifikační číslo'),
-#                ('nazev', 'Obchodní firma'),]
-#     select = SelectField('Search for company:', choices=choices)
-#     search = StringField('')
-
 class JusticeSearchForm(Form):
     search_options = [("text_anywhere","Kedkoliv v textu"),
              ("text_beginning","Začátek výrazu"),
@@ -87,7 +81,49 @@ class JusticeSearchForm(Form):
     insolvent_only_search = BooleanField("Pouze společnosti s insolvenčním zápisem")
     zapis_do = DateField(u'Zapsáno do:', format='%Y-%m-%d')
     zapis_od = DateField(u'Zapsáno od:', format='%Y-%m-%d')
+
+class PersonSearchForm(Form):   
+    # VYMAZAT DUPLICITU
+    search_options = [("text_anywhere","Kedkoliv v textu"),
+             ("text_beginning","Začátek výrazu"),
+             ("text_exact","Přesný výraz"),
+             ]
+    actual_options = [("actual_results","Jen platné"),
+                    ("complete_results","Platné i neplatné"),]
+
+    fist_name_search = StringField(u'Jméno:')
+    fist_name_search_selection = SelectField('', choices=search_options)
+    fist_name_search_actual = SelectField('', choices=actual_options)
+
+    surname_search = StringField(u'Příjmení:')
+    surname_search_selection = SelectField('', choices=search_options)
+    surname_search_actual = SelectField('', choices=actual_options)
+
+    person_actual_selection = SelectField('', choices=actual_options)
+
+    birthday = DateField(u'Datum narození:', format='%Y-%m-%d')
+
+class EntitySearchForm(Form):
+    # VYMAZAT DUPLICITU
+    search_options = [("text_anywhere","Kedkoliv v textu"),
+             ("text_beginning","Začátek výrazu"),
+             ("text_exact","Přesný výraz"),
+             ]
+    actual_options = [("actual_results","Jen platné"),
+                    ("complete_results","Platné i neplatné"),]
+
+    entity_name_search = StringField(u'Název:')
+    entity_name_search_selection = SelectField('', choices=search_options)
+    entity_name_search_actual = SelectField('', choices=actual_options)
     
+    entity_number_search = StringField(u'Identifikační číslo:')
+    entity_number_search_selection = SelectField('', choices=search_options)
+
+    foreign_entity_number_search = StringField(u'Zahraniční registrační číslo:')
+    foreign_entity_number_search_selection = SelectField('', choices=search_options)
+
+    entity_actual_selection = SelectField('', choices=actual_options)                
+
 class CompanyForm(Form):
     oddil = [('A', 'A'),
                    ('B', 'B'),
