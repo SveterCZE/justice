@@ -9,6 +9,10 @@ You will need the following packages:
   <li>requests</li>
   <li>send2trash</li>
   <li>lxml</li>
+  <li>flask</li>
+  <li>flask_sqlalchemy</li>
+  <li>flask_table</li>
+  <li>wtforms</li>
 </ul>  
 
 <h1>Running the application:</h1>
