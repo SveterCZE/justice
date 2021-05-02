@@ -16,6 +16,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///justice.db'
 app.config["SQLALCHEMY_ECHO"] = True
 app.debug = True
 # SELECT YOUR OWN SECRET KEY
-app.secret_key = ""
+app.secret_key = "123456"
 # toolbar = DebugToolbarExtension(app)
 db = SQLAlchemy(app)
