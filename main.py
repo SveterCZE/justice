@@ -90,11 +90,12 @@ def search_results_person(search):
 def search_results_entity(search):
     entity_name = search.entity_name_search.data
     entity_name_search_method = search.entity_name_search_selection.data
-    entity_name_actual_or_full = search.entity_name_search_actual.data
 
     entity_number = search.entity_number_search.data
     entity_number_search_method = search.entity_number_search_selection.data
-    entity_number_actual_or_full = search.entity_name_search_actual.data
+
+    foreign_entity_number = search.foreign_entity_number_search.data
+    foreign_entity_number_search_method = search.foreign_entity_number_search_selection.data
 
     actual_selection = search.entity_actual_selection.data
 
@@ -107,6 +108,14 @@ def search_results_entity(search):
             qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
         elif entity_number_search_method == "text_exact":
             qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
+
+    if foreign_entity_number:
+        if foreign_entity_number_search_method == "text_anywhere":
+            qry = qry.filter(Pravnicka_Osoba.reg_cislo.contains(foreign_entity_number))
+        elif foreign_entity_number_search_method == "text_beginning":
+            qry = qry.filter(Pravnicka_Osoba.reg_cislo.like(f'{foreign_entity_number}%'))
+        elif foreign_entity_number_search_method == "text_exact":
+            qry = qry.filter(Pravnicka_Osoba.reg_cislo == foreign_entity_number)
 
     if entity_name:
         if entity_name_search_method == "text_anywhere":
