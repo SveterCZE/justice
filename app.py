@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///justice.db'
 app.config["SQLALCHEMY_ECHO"] = True
 app.debug = True
-# SELECT YOUR OWN SECRET KEY
+# HIDE THIS BEFORE DEPLOYING TO PRODUCTION :)
 app.secret_key = "123456"
 # toolbar = DebugToolbarExtension(app)
 db = SQLAlchemy(app)

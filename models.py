@@ -356,8 +356,6 @@ class Podily_Association(db.Model):
         if self.druh_podilu.druh_podilu != "0":
             podil_descr += "\n" + "Druh podílu: " + self.druh_podilu.druh_podilu
         return podil_descr.split("\n")
-        
-
 
 class Zpusob_Jednani_Association(db.Model):
     __tablename__ = 'zpusoby_jednani_relation'
@@ -625,4 +623,3 @@ class Druhy_Podilu(db.Model):
     __tablename__ = "druhy_podilu"
     id = db.Column(db.Integer, primary_key=True)
     druh_podilu = db.Column(db.String)
-
