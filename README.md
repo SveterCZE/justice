@@ -83,7 +83,7 @@ The form allows you to search for legal persons registered in the Commercial Reg
 <ul>
   <li>Company name</li>
   <li>Identification No. (for Czech companies)</li>
-  <li>Foreign registration No. (for foreign copmpanies)</li>
+  <li>Foreign registration No. (for foreign copmpanies) --- this is yet to be implemented</li>
 </ul>  
 
 In the fields where you fill-in input data, you can also select one of the following options:
