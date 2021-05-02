@@ -138,6 +138,8 @@ This is an early prototype not yet suitable for production deployment as there a
 <li>Czech diacritics are not processed properly and based on my initial research, I suspect that this is due to SQLite limitations.</li>
 <li>Not all information available in the open data sets are stored in the application database.</li>  
 <li>The underlying code should be refactored to remove excessive duplications.</li>
+<li>I should unify the naming of functions and variables. Now, it is a mixtrue of Czech and English language, partly because it uses some Czech legal terms and the same variables that are used in the source open data.</li>  
+<li>I should somehow hide the secret keys before deploying the app. I am keeping it in to make it easier for people to test the app.</li>
 <li>I do not know how to deploy such application :)</li>
 
 </ul>
