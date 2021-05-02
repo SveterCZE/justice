@@ -1,5 +1,4 @@
 from app import app
-from db_setup import init_db, db_session
 from forms import JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
@@ -11,8 +10,6 @@ from tables import Results
 from sqlalchemy.sql import select
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
-
-# init_db()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
