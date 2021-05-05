@@ -29,23 +29,14 @@
       </div>
     </div>
 
-<!-- ID No. -->
-    <div class="row g-2">
-      <div class="col-sm-3">
-        {{ form.entity_number_search.label }}
-      </div>
-      <div class="col-sm">
-        {{ form.entity_number_search()|safe }} {{ form.entity_number_search_selection }}
-      </div>
-    </div>
 
 <!-- Foreign ID No. -->
     <div class="row g-2">
         <div class="col-sm-3">
-          {{ form.foreign_entity_number_search.label }}
+          {{ form.entity_number_search.label }}
         </div>
         <div class="col-sm">
-          {{ form.foreign_entity_number_search()|safe }} {{ form.foreign_entity_number_search_selection }}
+          {{ form.entity_number_search()|safe }} {{ form.entity_number_search_selection }}
         </div>
       </div>
 

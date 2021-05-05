@@ -94,28 +94,41 @@ def search_results_entity(search):
     entity_number = search.entity_number_search.data
     entity_number_search_method = search.entity_number_search_selection.data
 
-    foreign_entity_number = search.foreign_entity_number_search.data
-    foreign_entity_number_search_method = search.foreign_entity_number_search_selection.data
+    # foreign_entity_number = search.foreign_entity_number_search.data
+    # foreign_entity_number_search_method = search.foreign_entity_number_search_selection.data
 
     actual_selection = search.entity_actual_selection.data
 
     qry = Pravnicka_Osoba.query
 
     if entity_number:
+        qry1 = Pravnicka_Osoba.query
         if entity_number_search_method == "text_anywhere":
             qry = qry.filter(Pravnicka_Osoba.ico.contains(entity_number))
+            qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo.contains(entity_number)) 
         elif entity_number_search_method == "text_beginning":
             qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
+            qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo.like(f'{entity_number}%'))
         elif entity_number_search_method == "text_exact":
             qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
+            qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo == entity_number)
+        qry = qry.union(qry1)
 
-    if foreign_entity_number:
-        if foreign_entity_number_search_method == "text_anywhere":
-            qry = qry.filter(Pravnicka_Osoba.reg_cislo.contains(foreign_entity_number))
-        elif foreign_entity_number_search_method == "text_beginning":
-            qry = qry.filter(Pravnicka_Osoba.reg_cislo.like(f'{foreign_entity_number}%'))
-        elif foreign_entity_number_search_method == "text_exact":
-            qry = qry.filter(Pravnicka_Osoba.reg_cislo == foreign_entity_number)
+    # if entity_number:
+    #     if entity_number_search_method == "text_anywhere":
+    #         qry = qry.filter(Pravnicka_Osoba.ico.contains(entity_number))
+    #     elif entity_number_search_method == "text_beginning":
+    #         qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
+    #     elif entity_number_search_method == "text_exact":
+    #         qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
+
+    # if foreign_entity_number:
+    #     if foreign_entity_number_search_method == "text_anywhere":
+    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo.contains(foreign_entity_number))
+    #     elif foreign_entity_number_search_method == "text_beginning":
+    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo.like(f'{foreign_entity_number}%'))
+    #     elif foreign_entity_number_search_method == "text_exact":
+    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo == foreign_entity_number)
 
     if entity_name:
         if entity_name_search_method == "text_anywhere":
