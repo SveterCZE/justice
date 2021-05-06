@@ -74,7 +74,7 @@ In the fields where you fill-in input data, you can also select one of the follo
 
 In addition, you can also select whether the application shall return only the persons who are still active in the company or whether it shall reutrn also those that are no longer active.
 
-<h2>Search by natural persons:</h2>
+<h2>Search by legal persons:</h2>
 You will be greeted with the following search form:
 
 ![image](https://user-images.githubusercontent.com/46304018/116795207-815b5580-aad3-11eb-856a-1fb4e0f9a831.png)
