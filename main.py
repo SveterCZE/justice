@@ -178,6 +178,14 @@ def search_results(search):
     ulice_search_method = search.ulice_search_selection.data
     ulice_actual_or_full = search.ulice_search_actual.data
 
+    co = search.co_search.data
+    co_search_method = search.co_search_selection.data
+    co_actual_or_full = search.co_search_actual.data
+
+    cp = search.cp_search.data
+    cp_search_method = search.cp_search_selection.data
+    cp_actual_or_full = search.cp_search_actual.data
+
     pravni_forma = search.pravni_forma_search.data
     pravni_forma_actual_or_full = search.pravni_forma_actual.data
     
@@ -263,7 +271,31 @@ def search_results(search):
             qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
         elif ulice_search_method == "text_exact":
             qry = qry.filter(Adresy_v2.ulice == ulice)       
-   
+
+    if cp:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if cp_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if cp_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+        elif cp_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+        elif cp_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloPo == cp)       
+
+    if co:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if co_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if co_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+        elif co_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+        elif co_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloOr == co)    
+
     if pravni_forma:
         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
         if pravni_forma_actual_or_full == "actual_results":

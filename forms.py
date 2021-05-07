@@ -30,6 +30,14 @@ class JusticeSearchForm(Form):
     ulice_search = StringField(u'Ulice:')
     ulice_search_selection = SelectField('', choices=search_options)
     ulice_search_actual = SelectField('', choices=actual_options) 
+
+    cp_search = StringField(u'Číslo popisné:')
+    cp_search_selection = SelectField('', choices=search_options)
+    cp_search_actual = SelectField('', choices=actual_options) 
+
+    co_search = StringField(u'Číslo orientační:')
+    co_search_selection = SelectField('', choices=search_options)
+    co_search_actual = SelectField('', choices=actual_options) 
     
     oddil_search = StringField(u'Oddíl:')
     oddil_search_selection = SelectField('', choices=search_options) 

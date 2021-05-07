@@ -57,6 +57,24 @@
     
     <div class="row g-2">
       <div class="col-sm-3">
+        {{ form.cp_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.cp_search()|safe }} {{ form.cp_search_selection }} {{ form.cp_search_actual }}
+      </div>
+    </div>
+
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.co_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.co_search()|safe }} {{ form.co_search_selection }} {{ form.co_search_actual }}
+      </div>
+    </div>
+
+    <div class="row g-2">
+      <div class="col-sm-3">
         {{ form.oddil_search.label }}
       </div>
       <div class="col-sm">
