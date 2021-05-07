@@ -51,6 +51,18 @@ def search_results_person(search):
 
     birthday = search.birthday.data
 
+    obec = search.obec_search.data
+    obec_search_method = search.obec_search_selection.data
+    
+    ulice = search.ulice_search.data
+    ulice_search_method = search.ulice_search_selection.data
+
+    co = search.co_search.data
+    co_search_method = search.co_search_selection.data
+
+    cp = search.cp_search.data
+    cp_search_method = search.cp_search_selection.data
+
     actual_selection = search.person_actual_selection.data
 
     qry = Fyzicka_Osoba.query
@@ -70,7 +82,43 @@ def search_results_person(search):
             qry = qry.filter(Fyzicka_Osoba.prijmeni.like(f'{surname}%'))
         elif surname_search_method == "text_exact":
             qry = qry.filter(Fyzicka_Osoba.prijmeni == surname)
-            
+
+    if obec:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if obec_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.obec.contains(obec))
+        elif obec_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.obec.like(f'{obec}%'))
+        elif obec_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.obec == obec)
+
+    if ulice:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if ulice_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.ulice.contains(ulice))
+        elif ulice_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
+        elif ulice_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.ulice == ulice)
+
+    if cp:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if cp_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+        elif cp_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+        elif cp_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloPo == cp)
+
+    if co:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if co_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+        elif co_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+        elif co_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloOr == co)
+
     if birthday:
         qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
 
@@ -94,9 +142,6 @@ def search_results_entity(search):
     entity_number = search.entity_number_search.data
     entity_number_search_method = search.entity_number_search_selection.data
 
-    # foreign_entity_number = search.foreign_entity_number_search.data
-    # foreign_entity_number_search_method = search.foreign_entity_number_search_selection.data
-
     actual_selection = search.entity_actual_selection.data
 
     qry = Pravnicka_Osoba.query
@@ -113,22 +158,6 @@ def search_results_entity(search):
             qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
             qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo == entity_number)
         qry = qry.union(qry1)
-
-    # if entity_number:
-    #     if entity_number_search_method == "text_anywhere":
-    #         qry = qry.filter(Pravnicka_Osoba.ico.contains(entity_number))
-    #     elif entity_number_search_method == "text_beginning":
-    #         qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
-    #     elif entity_number_search_method == "text_exact":
-    #         qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
-
-    # if foreign_entity_number:
-    #     if foreign_entity_number_search_method == "text_anywhere":
-    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo.contains(foreign_entity_number))
-    #     elif foreign_entity_number_search_method == "text_beginning":
-    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo.like(f'{foreign_entity_number}%'))
-    #     elif foreign_entity_number_search_method == "text_exact":
-    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo == foreign_entity_number)
 
     if entity_name:
         if entity_name_search_method == "text_anywhere":

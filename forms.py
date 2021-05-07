@@ -9,6 +9,8 @@ Created on Sun Jan 17 10:05:34 2021
 from wtforms import Form, StringField, SelectField, BooleanField
 from wtforms.fields.html5 import DateField
 
+# CREATE A GENERAL CLASS TO REMOVE DUPLICITIES?
+
 class JusticeSearchForm(Form):
     search_options = [("text_anywhere","Kedkoliv v textu"),
              ("text_beginning","Začátek výrazu"),
@@ -106,6 +108,24 @@ class PersonSearchForm(Form):
     surname_search = StringField(u'Příjmení:')
     surname_search_selection = SelectField('', choices=search_options)
     surname_search_actual = SelectField('', choices=actual_options)
+
+    # Delete the duplicity
+
+    obec_search = StringField(u'Obec:')
+    obec_search_selection = SelectField('', choices=search_options)
+    obec_search_actual = SelectField('', choices=actual_options) 
+    
+    ulice_search = StringField(u'Ulice:')
+    ulice_search_selection = SelectField('', choices=search_options)
+    ulice_search_actual = SelectField('', choices=actual_options) 
+
+    cp_search = StringField(u'Číslo popisné:')
+    cp_search_selection = SelectField('', choices=search_options)
+    cp_search_actual = SelectField('', choices=actual_options) 
+
+    co_search = StringField(u'Číslo orientační:')
+    co_search_selection = SelectField('', choices=search_options)
+    co_search_actual = SelectField('', choices=actual_options) 
 
     person_actual_selection = SelectField('', choices=actual_options)
 
