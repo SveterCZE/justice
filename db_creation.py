@@ -234,7 +234,9 @@ def create_tables(conn):
 	"ico"	INTEGER,
 	"reg_cislo"	INTEGER,
 	"nazev"	TEXT,
-	UNIQUE("ico","reg_cislo","nazev"),
+	"adresa_id" INTEGER,
+	UNIQUE("ico","reg_cislo","nazev","adresa_id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 ); """
 

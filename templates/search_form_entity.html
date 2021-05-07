@@ -40,6 +40,46 @@
         </div>
       </div>
 
+<!-- MUNICIPALITY -->
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.obec_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.obec_search()|safe }} {{ form.obec_search_selection }}
+      </div>
+    </div>
+
+<!-- STREET -->
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.ulice_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.ulice_search()|safe }} {{ form.ulice_search_selection }}
+      </div>
+    </div>
+
+<!-- DESCR. NO. -->
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.cp_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.cp_search()|safe }} {{ form.cp_search_selection }}
+      </div>
+    </div>
+
+<!-- OREINT. NO. -->
+    <div class="row g-2">
+      <div class="col-sm-3">
+        {{ form.co_search.label }}
+      </div>
+      <div class="col-sm">
+        {{ form.co_search()|safe }} {{ form.co_search_selection }}
+      </div>
+    </div>
+
 <!-- Search -->
       <div class="row g-2">
         <div class="col-sm-3">

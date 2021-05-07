@@ -147,6 +147,23 @@ class EntitySearchForm(Form):
     entity_number_search = StringField(u'IČO nebo zahraniční registrační číslo:')
     entity_number_search_selection = SelectField('', choices=search_options)
 
+    # REMOVE DUPLICITY
+    obec_search = StringField(u'Obec:')
+    obec_search_selection = SelectField('', choices=search_options)
+    obec_search_actual = SelectField('', choices=actual_options) 
+    
+    ulice_search = StringField(u'Ulice:')
+    ulice_search_selection = SelectField('', choices=search_options)
+    ulice_search_actual = SelectField('', choices=actual_options) 
+
+    cp_search = StringField(u'Číslo popisné:')
+    cp_search_selection = SelectField('', choices=search_options)
+    cp_search_actual = SelectField('', choices=actual_options) 
+
+    co_search = StringField(u'Číslo orientační:')
+    co_search_selection = SelectField('', choices=search_options)
+    co_search_actual = SelectField('', choices=actual_options) 
+
     entity_actual_selection = SelectField('', choices=actual_options)                
 
 class CompanyForm(Form):

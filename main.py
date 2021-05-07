@@ -142,6 +142,18 @@ def search_results_entity(search):
     entity_number = search.entity_number_search.data
     entity_number_search_method = search.entity_number_search_selection.data
 
+    obec = search.obec_search.data
+    obec_search_method = search.obec_search_selection.data
+    
+    ulice = search.ulice_search.data
+    ulice_search_method = search.ulice_search_selection.data
+
+    co = search.co_search.data
+    co_search_method = search.co_search_selection.data
+
+    cp = search.cp_search.data
+    cp_search_method = search.cp_search_selection.data
+
     actual_selection = search.entity_actual_selection.data
 
     qry = Pravnicka_Osoba.query
@@ -166,6 +178,42 @@ def search_results_entity(search):
             qry = qry.filter(Pravnicka_Osoba.nazev.like(f'{entity_name}%'))
         elif entity_name_search_method == "text_exact":
             qry = qry.filter(Pravnicka_Osoba.nazev == entity_name)
+
+    if obec:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if obec_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.obec.contains(obec))
+        elif obec_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.obec.like(f'{obec}%'))
+        elif obec_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.obec == obec)
+
+    if ulice:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if ulice_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.ulice.contains(ulice))
+        elif ulice_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
+        elif ulice_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.ulice == ulice)
+
+    if cp:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if cp_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+        elif cp_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+        elif cp_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloPo == cp)
+
+    if co:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if co_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+        elif co_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+        elif co_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloOr == co)    
 
     results = qry.all()
     print(results)

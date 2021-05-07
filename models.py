@@ -228,6 +228,8 @@ class Pravnicka_Osoba(db.Model):
     sole_shareholder_association = db.relationship("Jediny_Akcionar_Association")
     statut_org_association = db.relationship("Statutarni_Organ_Clen_Association")
     supervisory_board_member_association = db.relationship("Dozorci_Rada_Clen_Association")
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
+    adresa = db.relationship("Adresy_v2")
 
 class Fyzicka_Osoba(db.Model):
     __tablename__ = "fyzicke_osoby"
@@ -341,7 +343,6 @@ class Podily_Association(db.Model):
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     druh_podilu_id = db.Column(db.Integer, db.ForeignKey('druhy_podilu.id'))
-    # vklad_typ = db.Column(db.String)
     vklad_typ = db.Column(MyCurrency)
     vklad_text = db.Column(db.String)
     souhrn_typ = db.Column(MyContribution)
