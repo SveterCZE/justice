@@ -21,6 +21,7 @@
             {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
             {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
+            {% set x = my_dict.__setitem__("pravni_forma", elem.company.current_legal_form_text()) %}
             {% set test_list = test_list.append(my_dict) %}
         {% endif %}
     {% endfor %}    
@@ -38,6 +39,7 @@
             {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
             {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
+            {% set x = my_dict.__setitem__("pravni_forma", elem.company.current_legal_form_text()) %}
             {% set test_list = test_list.append(my_dict) %}
         {% endif %}
     {% endfor %}
@@ -55,6 +57,7 @@
             {% set x = my_dict.__setitem__("vlozka", elem.statutarni_organ.company.vlozka) %}
             {% set x = my_dict.__setitem__("soud", elem.statutarni_organ.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.statutarni_organ.company.zapis) %}
+            {% set x = my_dict.__setitem__("pravni_forma", elem.statutarni_organ.company.current_legal_form_text()) %}
             {% set test_list = test_list.append(my_dict) %}
         {% endif %}
     {% endfor %}
@@ -72,6 +75,7 @@
             {% set x = my_dict.__setitem__("vlozka", elem.dozorci_rada.company.vlozka) %}
             {% set x = my_dict.__setitem__("soud", elem.dozorci_rada.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.dozorci_rada.company.zapis) %}
+            {% set x = my_dict.__setitem__("pravni_forma", elem.dozorci_rada.company.current_legal_form_text()) %}
             {% set test_list = test_list.append(my_dict) %}
         {% endif %}
     {% endfor %}
@@ -105,7 +109,7 @@
             </tr>
 
             <tr>
-                <td><i>ve společnosti:</i></td>
+                <td><i>{{ elem.pravni_forma }}:</i></td>
                 <td></td>
                 <td></td>
                 <td></td>
