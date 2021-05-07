@@ -1,5 +1,5 @@
 from app import app
-from forms import JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm
+from forms import JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm, GeneralSearchForm
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu

@@ -11,6 +11,9 @@ from wtforms.fields.html5 import DateField
 
 # CREATE A GENERAL CLASS TO REMOVE DUPLICITIES?
 
+class GeneralSearchForm(Form):
+    pass
+
 class JusticeSearchForm(Form):
     search_options = [("text_anywhere","Kedkoliv v textu"),
              ("text_beginning","Začátek výrazu"),
