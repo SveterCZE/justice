@@ -1,5 +1,5 @@
 from app import app
-from forms import JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm, GeneralSearchForm
+from forms import GeneralSearchForm, JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm 
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 @app.route('/', methods=['GET', 'POST'])
 def index():
     search = JusticeSearchForm(request.form)
-    print(search)
+    # print(search)
     if request.method == 'POST':
         return search_results(search)
 
@@ -23,7 +23,7 @@ def index():
 @app.route('/osoby', methods=['GET', 'POST'])
 def search_person():
     search = PersonSearchForm(request.form)
-    print(search)
+    # print(search)
     if request.method == 'POST':
         return search_results_person(search)
 
@@ -32,7 +32,7 @@ def search_person():
 @app.route('/entity', methods=['GET', 'POST'])
 def search_entity():
     search = EntitySearchForm(request.form)
-    print(search)
+    # print(search)
     if request.method == 'POST':
         return search_results_entity(search)
 
