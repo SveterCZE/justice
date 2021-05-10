@@ -40,6 +40,7 @@ def get_files_list(my_file):
         for elem in l1:
             if is_valid_file(elem[1:-1]) == True:
                 valid_files.append(elem[1:-1])
+    valid_files.sort()
     return valid_files
 
 def is_valid_file(tested_file):    
