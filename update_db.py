@@ -3,17 +3,8 @@ import os
 from lxml import etree
 import sqlite3
 
-def update_DB(typy_po, soudy, DB_name):
-    rok = str(datetime.now().year)
-    for osoba in typy_po:
-        for soud in soudy:
-            try:
-                parse_to_DB(os.path.join(str(os.getcwd()), "data", osoba) + "-full-" + soud + "-" + rok + ".xml", DB_name)
-            except:
-                pass
-
 # The function opens a file and parses the extracted data into the database
-def parse_to_DB(file, DB_name):
+def update_DB(file, DB_name):
     print("Processing ", str(file))
     conn = sqlite3.connect(DB_name)
     c = conn.cursor()

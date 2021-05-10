@@ -144,6 +144,9 @@ bin/*
 bin/
 lib/
 lib/*
+data/*.xml
+data/*.xml.gz
+*.db*
 pyvenv.cfg
 __pycache__/app.cpython-38.pyc
 __pycache__/db_setup.cpython-38.pyc
