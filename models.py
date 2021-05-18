@@ -395,6 +395,12 @@ class Company(db.Model):
     jediny_akcionar = db.relationship("Jediny_Akcionar_Association")
     sidlo_text = db.relationship("Sidlo_Association")
 
+    def current_legal_form_text(self):
+        for elem in self.pravni_forma_text:
+            if elem.vymaz_datum == 0:
+                return elem.pravni_forma_text.predlozka_v() + " " + elem.pravni_forma_text.sesty_pad()
+        return "v právnické osobě"
+
 class Adresy_v2(db.Model):
     __tablename__ = "adresy_v2"
     id = db.Column(db.Integer, primary_key=True)
@@ -517,6 +523,142 @@ class Pravni_Formy(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pravni_forma = db.Column(db.String)
     company_pravni_forma = db.relationship("Pravni_Forma_Association_v2")
+
+    def predlozka_v(self):
+        if self.pravni_forma == "Akciová společnost":
+            return "v"
+        elif self.pravni_forma == "Společnost s ručením omezeným":
+            return "ve"
+        elif self.pravni_forma == "Komanditní společnost":
+            return "v"
+        elif self.pravni_forma == "Veřejná obchodní společnost":
+            return "ve"
+        elif self.pravni_forma == "Družstvo":
+            return "v"
+        elif self.pravni_forma == "Ostatní":
+            return "v"
+        elif self.pravni_forma == "Evropská společnost":
+            return "v"
+        elif self.pravni_forma == "Spolek":
+            return "ve"
+        elif self.pravni_forma == "Zájmové sdružení právnických osob":
+            return "v"
+        elif self.pravni_forma == "Fyzická osoba - podnikatel":
+            return "u"
+        elif self.pravni_forma == "Zájmové sdružení právnických osob zapsané v OR":
+            return "v"
+        elif self.pravni_forma == "Zájmové sdružení":
+            return "v"
+        elif self.pravni_forma == "Zahraniční fyzická osoba":
+            return "v"
+        elif self.pravni_forma == "Odštěpný závod zahraniční právnické osoby":
+            return "v"
+        elif self.pravni_forma == "Ústav":
+            return "v"
+        elif self.pravni_forma == "Obecně prospěšná společnost":
+            return "v"
+        elif self.pravni_forma == "Společenství vlastníků jednotek":
+            return "ve"
+        elif self.pravni_forma == "Odborová organizace a organizace zaměstnavatelů":
+            return "v"
+        elif self.pravni_forma == "Organizace zaměstnavatelů":
+            return "v"
+        elif self.pravni_forma == "Mezinárodní nevládní organizace":
+            return "v"
+        elif self.pravni_forma == "Pobočný spolek":
+            return "v"
+        elif self.pravni_forma == "Občanské sdružení":
+            return "v"
+        elif self.pravni_forma == "Příspěvková organizace":
+            return "v"
+        elif self.pravni_forma == "Odštěpný závod zahraniční fyzické osoby":
+            return "v"
+        elif self.pravni_forma == "Organizační složka zahraničního nadačního fondu":
+            return "v"
+        elif self.pravni_forma == "Organizační složka zahraniční nadace":
+            return "v"
+        elif self.pravni_forma == "Pobočná odborová organizace a organizace zaměstnavatelů":
+            return "v"
+        elif self.pravni_forma == "Odborová organizace":
+            return "v"
+        elif self.pravni_forma == "Nadační fond":
+            return "v"
+        elif self.pravni_forma == "Nadace":
+            return "v"
+        elif self.pravni_forma == "Evropské hospodářské zájmové sdružení":
+            return "v"
+        elif self.pravni_forma == "Evropská družstevní společnost":
+            return "v"
+        else:
+            return "v"
+    
+    def sesty_pad(self):
+        if self.pravni_forma == "Akciová společnost":
+            return "akciové společnosti"
+        elif self.pravni_forma == "Společnost s ručením omezeným":
+            return "společnosti s ručením omezeným"
+        elif self.pravni_forma == "Komanditní společnost":
+            return "komanditní společnosti"
+        elif self.pravni_forma == "Veřejná obchodní společnost":
+            return "veřejné obchodní společnosti"
+        elif self.pravni_forma == "Družstvo":
+            return "družstvu"
+        elif self.pravni_forma == "Ostatní":
+            return "právnické osobě"
+        elif self.pravni_forma == "Evropská společnost":
+            return "evropské společnosti"
+        elif self.pravni_forma == "Spolek":
+            return "spolku"
+        elif self.pravni_forma == "Zájmové sdružení právnických osob":
+            return "zájmovém sdružení právnických osob"
+        elif self.pravni_forma == "Fyzická osoba - podnikatel":
+            return "fyzické osoby, podnikatele"
+        elif self.pravni_forma == "Zájmové sdružení právnických osob zapsané v OR":
+            return "zájmovém sdružení právnických osob zapsané v OR"
+        elif self.pravni_forma == "Zájmové sdružení":
+            return "zájmovém sdružení"
+        elif self.pravni_forma == "Zahraniční fyzická osoba":
+            return "zahraniční fyzické osobě"
+        elif self.pravni_forma == "Odštěpný závod zahraniční právnické osoby":
+            return "odštěpném závodu zahraniční právnické osoby"
+        elif self.pravni_forma == "Ústav":
+            return "ústavu"
+        elif self.pravni_forma == "Obecně prospěšná společnost":
+            return "obecně prospěšné společnosti"
+        elif self.pravni_forma == "Společenství vlastníků jednotek":
+            return "společenství vlastníků jednotek"
+        elif self.pravni_forma == "Odborová organizace a organizace zaměstnavatelů":
+            return "odborové organizaci a organizaci zaměstnavatelů"
+        elif self.pravni_forma == "Organizace zaměstnavatelů":
+            return "organizaci zaměstnavatelů"
+        elif self.pravni_forma == "Mezinárodní nevládní organizace":
+            return "mezinárodní nevládní organizaci"
+        elif self.pravni_forma == "Pobočný spolek":
+            return "pobočném spolku"
+        elif self.pravni_forma == "Občanské sdružení":
+            return "občanském sdružení"
+        elif self.pravni_forma == "Příspěvková organizace":
+            return "příspěvkové organizaci"
+        elif self.pravni_forma == "Odštěpný závod zahraniční fyzické osoby":
+            return "odštěpném závodu zahraniční fyzické osoby"
+        elif self.pravni_forma == "Organizační složka zahraničního nadačního fondu":
+            return "organizační složce zahraničního nadačního fondu"
+        elif self.pravni_forma == "Organizační složka zahraniční nadace":
+            return "organizační složce zahraniční nadace"
+        elif self.pravni_forma == "Pobočná odborová organizace a organizace zaměstnavatelů":
+            return "pobočné odborové organizaci a organizaco zaměstnavatelů"
+        elif self.pravni_forma == "Odborová organizace":
+            return "odborové organizaci"
+        elif self.pravni_forma == "Nadační fond":
+            return "nadačním fondu"
+        elif self.pravni_forma == "Nadace":
+            return "nadaci"
+        elif self.pravni_forma == "Evropské hospodářské zájmové sdružení":
+            return "evropském hospodářském zájmovém sdružení"
+        elif self.pravni_forma == "Evropská družstevní společnost":
+            return "evropské družstevní společnosti"
+        else:
+            return "právnické osobě"
 
 class Statutarni_Organy(db.Model):
     __tablename__ = "statutarni_organy"
