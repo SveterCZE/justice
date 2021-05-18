@@ -258,7 +258,7 @@
         <td>{{ underlne_style_open|safe }} 
             {% if row.statutarni_organ_text[i].clenove[j].jmeno != None %}{{ row.statutarni_organ_text[i].clenove[j].jmeno }}
             {% else %}{{ row.statutarni_organ_text[i].clenove[j].jmeno_po.nazev}}{% if row.statutarni_organ_text[i].clenove[j].jmeno_po.reg_cislo != 0 %}, reg č. {{ row.statutarni_organ_text[i].clenove[j].jmeno_po.reg_cislo }}{% endif %}{% if row.statutarni_organ_text[i].clenove[j].jmeno_po.ico != 0 %}, IČ <a href="/{{ row.statutarni_organ_text[i].clenove[j].jmeno_po.ico }}">{{ row.statutarni_organ_text[i].clenove[j].jmeno_po.ico }}</a>{% endif %} {% endif %}<br> 
-            {{ row.statutarni_organ_text[i].clenove[j].adresa }} 
+            {{ row.statutarni_organ_text[i].clenove[j].adresa }}
             {% if row.statutarni_organ_text[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.statutarni_organ_text[i].clenove[j].funkce_od}}{% endif %}
             {% if row.statutarni_organ_text[i].clenove[j].funkce_do != 0 %}<br>Den zániku funkce: {{ row.statutarni_organ_text[i].clenove[j].funkce_do}}{% endif %}
             {% if row.statutarni_organ_text[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.statutarni_organ_text[i].clenove[j].clenstvi_od}}{% endif %}
@@ -343,7 +343,7 @@
         <td>{{ underlne_style_open|safe }}
             {% if row.dozorci_rada_text[i].clenove[j].jmeno != None %}{{ row.dozorci_rada_text[i].clenove[j].jmeno }}
             {% else %}{{ row.dozorci_rada_text[i].clenove[j].jmeno_po.nazev}}{% if row.dozorci_rada_text[i].clenove[j].jmeno_po.reg_cislo != 0 %}, reg č. {{ row.dozorci_rada_text[i].clenove[j].jmeno_po.reg_cislo }}{% endif %}{% if row.dozorci_rada_text[i].clenove[j].jmeno_po.ico != 0 %}, IČ <a href="/{{ row.dozorci_rada_text[i].clenove[j].jmeno_po.ico }}">{{ row.dozorci_rada_text[i].clenove[j].jmeno_po.ico }}</a>{% endif %} {% endif %}<br>
-            {{ row.dozorci_rada_text[i].clenove[j].adresa }} 
+            {{ row.dozorci_rada_text[i].clenove[j].adresa }}
             {% if row.dozorci_rada_text[i].clenove[j].funkce_od != 0 %}<br>Den vzniku funkce: {{ row.dozorci_rada_text[i].clenove[j].funkce_od}}{% endif %}
             {% if row.dozorci_rada_text[i].clenove[j].funkce_do != 0 %}<br>Den zániku funkce: {{ row.dozorci_rada_text[i].clenove[j].funkce_do}}{% endif %}
             {% if row.dozorci_rada_text[i].clenove[j].clenstvi_od != 0 %}<br>Den vzniku členství: {{ row.dozorci_rada_text[i].clenove[j].clenstvi_od}}{% endif %}
@@ -397,7 +397,7 @@
             {% set underlne_style_close = "" %}
         {% endif %}
         <td>{{ underlne_style_open|safe }}
-            {{ row.prokurista[i].jmeno }}<br> 
+            {{ row.prokurista[i].jmeno }}<br>
             {{ row.prokurista[i].adresa }}{% if row.prokurista[i].text_prokurista != "0" %}<br>{{ row.prokurista[i].text_prokurista }}{% endif %}{{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.prokurista[i].zapis_datum }} {% if row.prokurista[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.prokurista[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>

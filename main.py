@@ -1,5 +1,5 @@
 from app import app
-from forms import JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm
+from forms import GeneralSearchForm, JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm 
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 @app.route('/', methods=['GET', 'POST'])
 def index():
     search = JusticeSearchForm(request.form)
-    print(search)
+    # print(search)
     if request.method == 'POST':
         return search_results(search)
 
@@ -23,7 +23,7 @@ def index():
 @app.route('/osoby', methods=['GET', 'POST'])
 def search_person():
     search = PersonSearchForm(request.form)
-    print(search)
+    # print(search)
     if request.method == 'POST':
         return search_results_person(search)
 
@@ -32,7 +32,7 @@ def search_person():
 @app.route('/entity', methods=['GET', 'POST'])
 def search_entity():
     search = EntitySearchForm(request.form)
-    print(search)
+    # print(search)
     if request.method == 'POST':
         return search_results_entity(search)
 
@@ -50,6 +50,18 @@ def search_results_person(search):
     surname_search_method = search.surname_search_selection.data
 
     birthday = search.birthday.data
+
+    obec = search.obec_search.data
+    obec_search_method = search.obec_search_selection.data
+    
+    ulice = search.ulice_search.data
+    ulice_search_method = search.ulice_search_selection.data
+
+    co = search.co_search.data
+    co_search_method = search.co_search_selection.data
+
+    cp = search.cp_search.data
+    cp_search_method = search.cp_search_selection.data
 
     actual_selection = search.person_actual_selection.data
 
@@ -70,7 +82,43 @@ def search_results_person(search):
             qry = qry.filter(Fyzicka_Osoba.prijmeni.like(f'{surname}%'))
         elif surname_search_method == "text_exact":
             qry = qry.filter(Fyzicka_Osoba.prijmeni == surname)
-            
+
+    if obec:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if obec_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.obec.contains(obec))
+        elif obec_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.obec.like(f'{obec}%'))
+        elif obec_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.obec == obec)
+
+    if ulice:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if ulice_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.ulice.contains(ulice))
+        elif ulice_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
+        elif ulice_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.ulice == ulice)
+
+    if cp:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if cp_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+        elif cp_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+        elif cp_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloPo == cp)
+
+    if co:
+        qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
+        if co_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+        elif co_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+        elif co_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloOr == co)
+
     if birthday:
         qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
 
@@ -94,8 +142,17 @@ def search_results_entity(search):
     entity_number = search.entity_number_search.data
     entity_number_search_method = search.entity_number_search_selection.data
 
-    # foreign_entity_number = search.foreign_entity_number_search.data
-    # foreign_entity_number_search_method = search.foreign_entity_number_search_selection.data
+    obec = search.obec_search.data
+    obec_search_method = search.obec_search_selection.data
+    
+    ulice = search.ulice_search.data
+    ulice_search_method = search.ulice_search_selection.data
+
+    co = search.co_search.data
+    co_search_method = search.co_search_selection.data
+
+    cp = search.cp_search.data
+    cp_search_method = search.cp_search_selection.data
 
     actual_selection = search.entity_actual_selection.data
 
@@ -114,22 +171,6 @@ def search_results_entity(search):
             qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo == entity_number)
         qry = qry.union(qry1)
 
-    # if entity_number:
-    #     if entity_number_search_method == "text_anywhere":
-    #         qry = qry.filter(Pravnicka_Osoba.ico.contains(entity_number))
-    #     elif entity_number_search_method == "text_beginning":
-    #         qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
-    #     elif entity_number_search_method == "text_exact":
-    #         qry = qry.filter(Pravnicka_Osoba.ico == entity_number)
-
-    # if foreign_entity_number:
-    #     if foreign_entity_number_search_method == "text_anywhere":
-    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo.contains(foreign_entity_number))
-    #     elif foreign_entity_number_search_method == "text_beginning":
-    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo.like(f'{foreign_entity_number}%'))
-    #     elif foreign_entity_number_search_method == "text_exact":
-    #         qry = qry.filter(Pravnicka_Osoba.reg_cislo == foreign_entity_number)
-
     if entity_name:
         if entity_name_search_method == "text_anywhere":
             qry = qry.filter(Pravnicka_Osoba.nazev.contains(entity_name))
@@ -137,6 +178,42 @@ def search_results_entity(search):
             qry = qry.filter(Pravnicka_Osoba.nazev.like(f'{entity_name}%'))
         elif entity_name_search_method == "text_exact":
             qry = qry.filter(Pravnicka_Osoba.nazev == entity_name)
+
+    if obec:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if obec_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.obec.contains(obec))
+        elif obec_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.obec.like(f'{obec}%'))
+        elif obec_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.obec == obec)
+
+    if ulice:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if ulice_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.ulice.contains(ulice))
+        elif ulice_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
+        elif ulice_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.ulice == ulice)
+
+    if cp:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if cp_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+        elif cp_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+        elif cp_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloPo == cp)
+
+    if co:
+        qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
+        if co_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+        elif co_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+        elif co_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloOr == co)    
 
     results = qry.all()
     print(results)
@@ -177,6 +254,14 @@ def search_results(search):
     ulice = search.ulice_search.data
     ulice_search_method = search.ulice_search_selection.data
     ulice_actual_or_full = search.ulice_search_actual.data
+
+    co = search.co_search.data
+    co_search_method = search.co_search_selection.data
+    co_actual_or_full = search.co_search_actual.data
+
+    cp = search.cp_search.data
+    cp_search_method = search.cp_search_selection.data
+    cp_actual_or_full = search.cp_search_actual.data
 
     pravni_forma = search.pravni_forma_search.data
     pravni_forma_actual_or_full = search.pravni_forma_actual.data
@@ -263,7 +348,31 @@ def search_results(search):
             qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
         elif ulice_search_method == "text_exact":
             qry = qry.filter(Adresy_v2.ulice == ulice)       
-   
+
+    if cp:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if cp_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if cp_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+        elif cp_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+        elif cp_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloPo == cp)       
+
+    if co:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if co_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if co_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+        elif co_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+        elif co_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloOr == co)    
+
     if pravni_forma:
         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
         if pravni_forma_actual_or_full == "actual_results":

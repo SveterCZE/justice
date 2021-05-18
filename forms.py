@@ -9,20 +9,16 @@ Created on Sun Jan 17 10:05:34 2021
 from wtforms import Form, StringField, SelectField, BooleanField
 from wtforms.fields.html5 import DateField
 
-class JusticeSearchForm(Form):
+# CREATE A GENERAL CLASS TO REMOVE DUPLICITIES?
+
+class GeneralSearchForm(Form):
     search_options = [("text_anywhere","Kedkoliv v textu"),
              ("text_beginning","Začátek výrazu"),
              ("text_exact","Přesný výraz"),
              ]
     actual_options = [("actual_results","Jen platné"),
                     ("complete_results","Platné i neplatné"),]
-    nazev_subjektu = StringField(u'Název subjektu:')
-    nazev_subjektu_selection = SelectField('', choices=search_options)
-    nazev_search_actual = SelectField('', choices=actual_options)
 
-    ico_search = StringField(u'Identifikační číslo:')
-    ico_search_selection = SelectField('', choices=search_options) 
-    
     obec_search = StringField(u'Obec:')
     obec_search_selection = SelectField('', choices=search_options)
     obec_search_actual = SelectField('', choices=actual_options) 
@@ -30,7 +26,26 @@ class JusticeSearchForm(Form):
     ulice_search = StringField(u'Ulice:')
     ulice_search_selection = SelectField('', choices=search_options)
     ulice_search_actual = SelectField('', choices=actual_options) 
+
+    cp_search = StringField(u'Číslo popisné:')
+    cp_search_selection = SelectField('', choices=search_options)
+    cp_search_actual = SelectField('', choices=actual_options) 
+
+    co_search = StringField(u'Číslo orientační:')
+    co_search_selection = SelectField('', choices=search_options)
+    co_search_actual = SelectField('', choices=actual_options) 
+
+class JusticeSearchForm(GeneralSearchForm):   
+    search_options = GeneralSearchForm.search_options
+    actual_options = GeneralSearchForm.actual_options
     
+    nazev_subjektu = StringField(u'Název subjektu:')
+    nazev_subjektu_selection = SelectField('', choices=search_options)
+    nazev_search_actual = SelectField('', choices=actual_options)
+
+    ico_search = StringField(u'Identifikační číslo:')
+    ico_search_selection = SelectField('', choices=search_options) 
+       
     oddil_search = StringField(u'Oddíl:')
     oddil_search_selection = SelectField('', choices=search_options) 
     oddil_search_actual = SelectField('', choices=actual_options)
@@ -82,14 +97,9 @@ class JusticeSearchForm(Form):
     zapis_do = DateField(u'Zapsáno do:', format='%Y-%m-%d')
     zapis_od = DateField(u'Zapsáno od:', format='%Y-%m-%d')
 
-class PersonSearchForm(Form):   
-    # VYMAZAT DUPLICITU
-    search_options = [("text_anywhere","Kedkoliv v textu"),
-             ("text_beginning","Začátek výrazu"),
-             ("text_exact","Přesný výraz"),
-             ]
-    actual_options = [("actual_results","Jen platné"),
-                    ("complete_results","Platné i neplatné"),]
+class PersonSearchForm(GeneralSearchForm):   
+    search_options = GeneralSearchForm.search_options
+    actual_options = GeneralSearchForm.actual_options
 
     fist_name_search = StringField(u'Jméno:')
     fist_name_search_selection = SelectField('', choices=search_options)
@@ -103,14 +113,9 @@ class PersonSearchForm(Form):
 
     birthday = DateField(u'Datum narození:', format='%Y-%m-%d')
 
-class EntitySearchForm(Form):
-    # VYMAZAT DUPLICITU
-    search_options = [("text_anywhere","Kedkoliv v textu"),
-             ("text_beginning","Začátek výrazu"),
-             ("text_exact","Přesný výraz"),
-             ]
-    actual_options = [("actual_results","Jen platné"),
-                    ("complete_results","Platné i neplatné"),]
+class EntitySearchForm(GeneralSearchForm):
+    search_options = GeneralSearchForm.search_options
+    actual_options = GeneralSearchForm.actual_options
 
     entity_name_search = StringField(u'Název:')
     entity_name_search_selection = SelectField('', choices=search_options)
