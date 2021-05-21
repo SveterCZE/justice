@@ -1,0 +1,19 @@
+
+
+        
+        
+        
+        
+    {% if test_list|length == 0 %}
+        {% set test_list = test_list.append(my_dict) %}  
+    {% else %}
+        {% set duplicity_found = namespace(found=false) %}  
+        {% for record in test_list %}
+            {% if record.ico == my_dict.ico and record.adresa == my_dict.adresa and record.funkce == my_dict.funkce %}
+                {% set duplicity_found.found = true %}
+            {% endif %} 
+        {% endfor %}
+        {% if duplicity_found.found == false %}
+            {% set test_list = test_list.append(my_dict) %}
+        {% endif %}
+    {% endif %}
