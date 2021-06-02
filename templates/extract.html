@@ -137,32 +137,6 @@
             {% set underlne_style_close = "" %}
         {% endif %}
 
-        <!-- TODO: Have backend handle this -->
-        {% if row.zakladni_kapital[i].vklad_typ == "KORUNY" %}
-            {% set vklad_typ_symbol = "Kč" %}
-            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
-        {% elif row.zakladni_kapital[i].vklad_typ == "EURA" %}
-            {% set vklad_typ_symbol = "euro" %}
-            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
-        {% else %}
-            {% set vklad_typ_symbol = "" %}
-            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
-        {% endif %}           
-
-        {% if row.zakladni_kapital[i].splaceni_typ == "KORUNY" %}
-            {% set splaceni_typ_symbol = "Kč" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% elif row.zakladni_kapital[i].splaceni_typ == "PROCENTA" %}
-            {% set splaceni_typ_symbol = "%" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% elif row.zakladni_kapital[i].splaceni_typ == "EURA" %}
-            {% set splaceni_typ_symbol = "euro" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% else %}
-            {% set splaceni_typ_symbol = "" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% endif %}  
-
         <td>{{ underlne_style_open|safe }} {% for elem in row.zakladni_kapital[i].my_rep() %} {{elem}}<br>{% endfor %} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.zakladni_kapital[i].zapis_datum }} {% if row.zakladni_kapital[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.zakladni_kapital[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
@@ -497,6 +471,30 @@
     {% endfor %}
     {% endif %}
     <!-- END Display shareholders -->
+
+    <!-- Display UBO -->
+    {% if row.ubo|length > 0 %}
+    <tr>
+        <td>Konečný vlastník:</td>
+        <td></td>
+        <td></td>
+    </tr>
+    {% for i in range (row.ubo|length) %}
+    <tr>
+        <td></td>
+        {% if row.ubo[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{row.ubo[i].jmeno }}<br>{{ubo_notes[i].jmeno.adresa }} {% if row.ubo[i].slovni_vyjadreni != "0" %}<br>{{row.ubo[i].slovni_vyjadreni }}</br>{% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ubo[i].zapis_datum }} {% if row.ubo[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.ubo[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+    <!-- END Display UBO -->
 
     <!-- Display shares -->
     {% if row.akcie|length > 0 %}

@@ -111,6 +111,9 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_insolvency(c, ICO, elem2, conn, primary_sql_key)
                 elif udajTyp_name == "KONKURS_SEKCE":
                     find_konkurz(c, ICO, elem2, conn, primary_sql_key)
+                elif udajTyp_name == "SKUTECNY_MAJITEL_SEKCE":
+                    find_UBO(c, ICO, elem2, conn, primary_sql_key, element)
+
     except:
         pass
 
@@ -181,6 +184,29 @@ def find_statutar(c, ICO, elem2, conn, primary_sql_key, element):
                 find_clen_statut_org(c, ICO, elem, conn, relationship_table_key, element)
             else:
                 pass
+    except Exception as f:
+        print(f)
+
+def find_UBO(c, ICO, elem2, conn, primary_sql_key, element):
+    try:
+        my_iter = elem2.findall("podudaje/Udaj")
+        for elem in my_iter:
+            zapis_datum = str(get_prop(elem, "zapisDatum"))
+            vymaz_datum = str(get_prop(elem, "vymazDatum"))
+            UBO_valid = str(get_prop(elem, "hodnotaUdaje/valid"))
+            spravce = str(get_prop(elem, "hodnotaUdaje/spravce"))
+            T_TBC = str(get_prop(elem, "hodnotaUdaje/T"))
+            postaveni_jinak = str(get_prop(elem, "hodnotaUdaje/postaveniJinak"))
+            postaveni = str(get_prop(elem, "hodnotaUdaje/postaveni")) 
+            primaUcast = str(get_prop(elem, "hodnotaUdaje/PrimaUcast"))
+            primaUcastPodil = str(get_prop(elem, "hodnotaUdaje/primaUcastPodil"))
+            rozdeleniProstredku = str(get_prop(elem, "hodnotaUdaje/PrimaUcast"))
+            slovni_vyjadreni = str(get_prop(elem, "hodnotaUdaje/slovniVyjadreni"))
+            urcenPoziciVeStatOrg = str(get_prop(elem, "hodnotaUdaje/urcenPoziciVeStatOrg"))
+            email = str(get_prop(elem, "hodnotaUdaje/email"))
+            adresa_id = find_sidlo(c, elem, primary_sql_key)
+            UBO_id = find_fyzicka_osoba(c, ICO, elem, conn, primary_sql_key, element, adresa_id)
+            c.execute("INSERT INTO ubo (company_id, UBO_id, zapis_datum, vymaz_datum, UBO_valid, spravce, T_TBC, postaveni_jinak, postaveni, primaUcast, primaUcastPodil, rozdeleniProstredku, slovni_vyjadreni, urcenPoziciVeStatOrg, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, UBO_id, zapis_datum, vymaz_datum, UBO_valid, spravce, T_TBC, postaveni_jinak, postaveni, primaUcast, primaUcastPodil, rozdeleniProstredku, slovni_vyjadreni, urcenPoziciVeStatOrg, email,))
     except Exception as f:
         print(f)
 

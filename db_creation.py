@@ -94,7 +94,7 @@ def create_tables(conn):
 	"clenstvi_od"	DATE,
 	"clenstvi_do"	DATE,
 	"funkce"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy"("id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
 	FOREIGN KEY("dozorci_rada_id") REFERENCES "dozorci_rada_relation"("id"),
 	FOREIGN KEY("osoba_id") REFERENCES "fyzicke_osoby"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
@@ -138,7 +138,7 @@ def create_tables(conn):
 	"akcionar_po_id"	INTEGER,
 	"akcionar_fo_id"	INTEGER,
 	"adresa_id"	INTEGER,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy"("id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
 	FOREIGN KEY("akcionar_po_id") REFERENCES "pravnicke_osoby"("id"),
 	FOREIGN KEY("akcionar_fo_id") REFERENCES "fyzicke_osoby"("id"),
@@ -292,7 +292,7 @@ def create_tables(conn):
 	"prokurista_fo_id"	INTEGER,
 	"adresa_id"	INTEGER,
 	"text_prokurista"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy"("id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
 	FOREIGN KEY("prokurista_fo_id") REFERENCES "fyzicke_osoby"("id"),
 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
@@ -318,7 +318,7 @@ def create_tables(conn):
 	"vymaz_datum"	DATE,
 	"adresa_id"	INTEGER,
 	"text_spolecnik"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy"("id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("spolecnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
@@ -339,7 +339,7 @@ def create_tables(conn):
 	"funkce"	TEXT,
 	FOREIGN KEY("osoba_id") REFERENCES "fyzicke_osoby"("id"),
 	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organ_relation"("id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy"("id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 ); """
 
@@ -359,6 +359,28 @@ def create_tables(conn):
 	"statutarni_organ_text"	TEXT NOT NULL UNIQUE,
 	PRIMARY KEY("id" AUTOINCREMENT)
 ); """
+
+    ubo = """ CREATE TABLE "ubo" (
+	"id" INTEGER NOT NULL UNIQUE,
+	"company_id"  INTEGER NOT NULL, 
+	"UBO_id" INTEGER NOT NULL, 
+	"zapis_datum"  DATE,
+	"vymaz_datum"  DATE,
+	"UBO_valid" TEXT, 
+	"spravce" TEXT,  
+	"T_TBC" TEXT, 
+	"postaveni_jinak" TEXT, 
+	"postaveni" TEXT, 
+	"primaUcast" TEXT, 
+	"primaUcastPodil" TEXT, 
+	"rozdeleniProstredku"  TEXT, 
+	"slovni_vyjadreni"  TEXT, 
+	"urcenPoziciVeStatOrg"  TEXT, 
+	"email" TEXT,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	FOREIGN KEY("UBO_id") REFERENCES "fyzicke_osoby"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
+	); """
 
     ucel = """ CREATE TABLE "ucel" (
 	"id"	INTEGER NOT NULL,
@@ -422,7 +444,7 @@ def create_tables(conn):
     list_of_tables = [companies, adresy_v2, akcie, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events, 
     jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, pravni_formy, 
     pravni_formy_relation, pravnicke_osoby, predmety_cinnosti, predmety_cinnosti_relation, prdmety_podnikani, predmety_podnikani_relation,
-    prokura_common_texts, prokuriste, sidlo_relation, spolecnici, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, 
+    prokura_common_texts, prokuriste, sidlo_relation, spolecnici, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, ubo, 
     ucel, ucel_relation, zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
     for elem in list_of_tables:
         try:
@@ -689,6 +711,20 @@ def create_indices(conn):
 	"company_id"
 ); """
 
+
+    ubo1 = """ CREATE INDEX "index ubo1" ON "ubo" (
+	"id"
+); """
+
+    ubo2 = """ CREATE INDEX "index ubo2" ON "ubo" (
+	"company_id"
+); """
+
+    ubo3 = """ CREATE INDEX "index ubo3" ON "ubo" (
+	"UBO_id"
+); """
+
+
     ucel1 = """ CREATE INDEX "index ucel1" ON "ucel" (
 	"ucel"
 ); """
@@ -767,7 +803,7 @@ def create_indices(conn):
 	prokuriste2, prokuriste3, prokuriste4, sidlo_relation1, sidlo_relation_2, sidlo_relation_3, soudni_zapis1, soudni_zapis2, spolecnici1, 
 	spolecnici2, spolecnici3, spolecnici4, spolecnici5, statutarni_organy, statutarni_organy_relation1, statutarni_organy_relation2, 
 	statutarni_organy_relation_3, statutarni_organy_relation_4, zakladni_kapital1, zakladni_kapital2, zpusob_jednani, zpusob_jednani_relation1, zpusob_jednani_relation2, 
-	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, statutarni_organy_relation_5, fyzicke_osoby1, ucel1, ucel2, ucel_relation1, ucel_relation2, ucel_relation3]
+	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, statutarni_organy_relation_5, fyzicke_osoby1, ubo1, ubo2, ubo3, ucel1, ucel2, ucel_relation1, ucel_relation2, ucel_relation3]
     i = 0
     for elem in list_of_indices:
         i += 1

@@ -300,6 +300,17 @@ class Spolecnici_Association(db.Model):
     podily = db.relationship("Podily_Association")
     company = db.relationship("Company")
 
+class Ubo(db.Model):
+    __tablename__ = "ubo"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    UBO_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))   
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    slovni_vyjadreni = db.Column(db.String)
+    jmeno = db.relationship("Fyzicka_Osoba")
+    company = db.relationship("Company")    
+
 class Prokurista_Association(db.Model):
     __tablename__ = "prokuriste"
     id = db.Column(db.Integer, primary_key=True)
@@ -397,6 +408,7 @@ class Company(db.Model):
     prokura_common_text = db.relationship("Prokura_Common_Text_Association")
     jediny_akcionar = db.relationship("Jediny_Akcionar_Association")
     sidlo_text = db.relationship("Sidlo_Association")
+    ubo = db.relationship("Ubo")
 
     def current_legal_form_text(self):
         for elem in self.pravni_forma_text:
@@ -715,7 +727,8 @@ class Akcie(db.Model):
         elif self.akcie_podoba == "IMOBILIZOVANA":
             joined_share_descr += "v imobilizované podobě "
 
-        joined_share_descr += "ve jmenovité hodnotě " + self.akcie_hodnota_value        
+        if self.akcie_hodnota_value != "0":
+            joined_share_descr += "ve jmenovité hodnotě " + self.akcie_hodnota_value        
 
         if self.akcie_hodnota_typ == "KORUNY":
             joined_share_descr += "Kč"

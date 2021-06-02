@@ -56,6 +56,13 @@
     {% endif %}
 {% endfor %}
 
+{% set ubo_notes = [] %}
+{% for i in range (row.ubo|length) %}
+    {% if row.ubo[i].vymaz_datum == 0 %}
+        {% set ubo_notes = ubo_notes.append(row.ubo[i]) %}
+    {% endif %}
+{% endfor %}
+
 {% set shares_notes = [] %}
 {% for i in range (row.akcie|length) %}
     {% if row.akcie[i].vymaz_datum == 0 %}
@@ -193,33 +200,9 @@
     <!-- Display registered capital -->
     {% if zakladni_kapital_notes|length > 0 %}
     <tr>
-        {% if zakladni_kapital_notes[0].vklad_typ == "KORUNY" %}
-            {% set vklad_typ_symbol = "Kč" %}
-            {% set vklad_typ_description = zakladni_kapital_notes[0].vklad_hodnota %}
-        {% elif zakladni_kapital_notes[0].vklad_typ == "EURA" %}
-            {% set vklad_typ_symbol = "euro" %}
-            {% set vklad_typ_description = zakladni_kapital_notes[0].vklad_hodnota %}
-        {% else %}
-            {% set vklad_typ_symbol = "" %}
-            {% set vklad_typ_description = zakladni_kapital_notes[0].vklad_hodnota %}
-        {% endif %}           
-
-        {% if zakladni_kapital_notes[0].splaceni_typ == "KORUNY" %}
-            {% set splaceni_typ_symbol = "Kč" %}
-            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
-        {% elif zakladni_kapital_notes[0].splaceni_typ == "PROCENTA" %}
-            {% set splaceni_typ_symbol = "%" %}
-            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
-        {% elif zakladni_kapital_notes[0].splaceni_typ == "EURA" %}
-            {% set splaceni_typ_symbol = "euro" %}
-            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
-        {% else %}
-            {% set splaceni_typ_symbol = "" %}
-            {% set splaceni_typ_description = zakladni_kapital_notes[0].splaceni_hodnota %}
-        {% endif %}  
 
         <td>Základní kapitál:</td>
-        <td>{{ underlne_style_open|safe }} {{ vklad_typ_description }} {{ vklad_typ_symbol }} {% if splaceni_typ_description != "0" %} <br> Splaceno: {{ splaceni_typ_description }} {{ splaceni_typ_symbol }} {% endif %}  {{ underlne_style_close|safe }}</td>
+        <td>{% for elem in zakladni_kapital_notes[0].my_rep() %} {{elem}}<br>{% endfor %}</td>
     </tr>
     {% endif %}
     <!-- END Display registered capital -->
@@ -406,43 +389,32 @@
         
         {% for k in range (spolecnik_podily|length) %}
         <tr>
-            <td style = padding-left:4em>Podíl:</td>
-                <!-- Set type of deposit -->
-                {% if spolecnik_podily[k].vklad_typ == "KORUNY" %}
-                    {% set vklad_typ_string = "Kč" %}
-                {% elif spolecnik_podily[k].vklad_typ == "EURA" %}
-                    {% set vklad_typ_string = "Euro" %}
-                {% else %}
-                    {% set vklad_typ_string = "" %}
-                {% endif %}
-
-                <!-- Set type of repaid contribution -->
-                {% if spolecnik_podily[k].splaceni_typ == "KORUNY" %}
-                    {% set splaceni_typ_string = "Kč" %}
-                {% elif spolecnik_podily[k].splaceni_typ == "PROCENTA" %}
-                    {% set splaceni_typ_string = "%" %}                      
-                {% elif spolecnik_podily[k].splaceni_typ == "EURA" %}
-                    {% set splaceni_typ_string = "Euro" %}
-                {% else %}
-                    {% set splaceni_typ_string = "" %}
-                {% endif %}
-                
-                <!-- Set type of share -->
-                {% if spolecnik_podily[k].souhrn_typ == "PROCENTA" %}
-                    {% set souhrn_typ_string = "%" %}
-                {% else %}
-                    {% set souhrn_typ_string = "" %}
-                {% endif %}            
-            <td>Vklad: {{ spolecnik_podily[k].vklad_text }} {{ vklad_typ_string }}<br>
-                    Splaceno: {{ spolecnik_podily[k].splaceni_text }} {{ splaceni_typ_string }}<br>
-                    {% if spolecnik_podily[k].souhrn_text != "0"%}Podíl: {{ spolecnik_podily[k].souhrn_text }} {{ souhrn_typ_string }}{% endif %}
-                    {% if spolecnik_podily[k].druh_podilu.druh_podilu != "0" %}<br>Druh podílu: {{ spolecnik_podily[k].druh_podilu.druh_podilu }}{% endif %}
+            <td style = padding-left:4em>Podíl:</td>      
+            <td>
+                {% for elem in spolecnik_podily[k].my_rep() %}
+                    {{ elem }}<br>
+                {% endfor %} 
             </td>
         </tr>
         {% endfor %}        
         {% endfor %}
     {% endif %}
     <!-- END Display shareholders -->
+
+    <!-- Display UBO -->
+    {% if ubo_notes|length > 0 %}
+    <tr>
+        <td>Konečný vlastník:</td>
+        <td></td>
+    </tr>
+    {% for i in range (ubo_notes|length) %}
+    <tr>
+        <td></td>
+        <td>{{ubo_notes[i].jmeno }}<br>{{ubo_notes[i].jmeno.adresa }} {% if ubo_notes[i].slovni_vyjadreni != "0" %}<br>{{ ubo_notes[i].slovni_vyjadreni }}</br>{% endif %} </td>
+    </tr>   
+    {% endfor %}
+    {% endif %}
+    <!-- END Display UBO -->
 
     <!-- Display shares -->
     {% if shares_notes|length > 0 %}
