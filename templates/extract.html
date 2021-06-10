@@ -489,7 +489,9 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-        <td>{{ underlne_style_open|safe }} {{row.ubo[i].jmeno }}<br>{{ubo_notes[i].jmeno.adresa }} {% if row.ubo[i].slovni_vyjadreni != "0" %}<br>{{row.ubo[i].slovni_vyjadreni }}</br>{% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} {{row.ubo[i].jmeno }} {{row.ubo[i].jmeno.adresa}} 
+            {% if row.ubo[i].postaveni != "0" %}<br>{{row.ubo[i].postaveni }}{% endif %}
+            {% if row.ubo[i].koncovyPrijemceText != "0" %}<br>{{row.ubo[i].koncovyPrijemceText }}{% endif %} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ubo[i].zapis_datum }} {% if row.ubo[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.ubo[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
     {% endfor %}

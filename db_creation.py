@@ -363,22 +363,22 @@ def create_tables(conn):
     ubo = """ CREATE TABLE "ubo" (
 	"id" INTEGER NOT NULL UNIQUE,
 	"company_id"  INTEGER NOT NULL, 
-	"UBO_id" INTEGER NOT NULL, 
+	"UBO_id" INTEGER NOT NULL,
+	"adresa_id" INTEGER,
 	"zapis_datum"  DATE,
 	"vymaz_datum"  DATE,
-	"UBO_valid" TEXT, 
-	"spravce" TEXT,  
-	"T_TBC" TEXT, 
-	"postaveni_jinak" TEXT, 
-	"postaveni" TEXT, 
-	"primaUcast" TEXT, 
-	"primaUcastPodil" TEXT, 
-	"rozdeleniProstredku"  TEXT, 
-	"slovni_vyjadreni"  TEXT, 
-	"urcenPoziciVeStatOrg"  TEXT, 
-	"email" TEXT,
+	"postaveni" TEXT,
+	"koncovyPrijemceText" TEXT,
+	"skutecnymMajitelemOd" TEXT,
+	"vlastniPodilNaProspechu" TEXT,
+	"vlastniPodilNaProspechu_typ" TEXT,
+	"vlastniPodilNaProspechu_textValue" TEXT,
+	"vlastniPodilNaHlasovani" TEXT,
+	"vlastniPodilNaHlasovani_typ" TEXT,
+	"vlastniPodilNaHlasovani_value" TEXT,
 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
 	FOREIGN KEY("UBO_id") REFERENCES "fyzicke_osoby"("id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 	); """
 
@@ -724,6 +724,9 @@ def create_indices(conn):
 	"UBO_id"
 ); """
 
+    ubo4 = """ CREATE INDEX "index ubo4" ON "ubo" (
+	"UBO_adresa_id"
+); """
 
     ucel1 = """ CREATE INDEX "index ucel1" ON "ucel" (
 	"ucel"

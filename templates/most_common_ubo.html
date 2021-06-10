@@ -1,0 +1,24 @@
+{% include 'header.html' %}
+
+<h1>Nejčastější koneční vlastníci:</h1>
+
+<table class="table table-hover" style="width: auto">
+    <thead class="thead-dark">
+    <tr class="table-info">
+        <th scope="col">#</th>
+        <th scope="col">Jméno</th>
+        <th scope="col">Počet společností</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range (most_common_ubo|length) %}
+    <tr>
+        <th scope = "row">{{ i + 1 }}</th>
+        <td><a href="/results-ubo-{{most_common_ubo[i][2]}}">{{ most_common_ubo[i][0] }}</a></td>
+        <td>{{ most_common_ubo[i][1] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% include 'footer.html' %}

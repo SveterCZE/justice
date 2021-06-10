@@ -410,7 +410,10 @@
     {% for i in range (ubo_notes|length) %}
     <tr>
         <td></td>
-        <td>{{ubo_notes[i].jmeno }}<br>{{ubo_notes[i].jmeno.adresa }} {% if ubo_notes[i].slovni_vyjadreni != "0" %}<br>{{ ubo_notes[i].slovni_vyjadreni }}</br>{% endif %} </td>
+        <td>{{ubo_notes[i].jmeno }} {{ubo_notes[i].jmeno.adresa }} 
+            {% if ubo_notes[i].postaveni != "0" %}<br>{{ ubo_notes[i].postaveni }}{% endif %}
+            {% if ubo_notes[i].koncovyPrijemceText != "0" %}<br>{{ ubo_notes[i].koncovyPrijemceText }}{% endif %}
+        </td>
     </tr>   
     {% endfor %}
     {% endif %}

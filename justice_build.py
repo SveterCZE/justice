@@ -11,7 +11,7 @@ def main():
     for valid_file in valid_files:
         download_data(valid_file)
     for valid_file in valid_files:
-        modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
-        update_DB(modified_file_name, DB_name)
-  
+            modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
+            update_DB(modified_file_name, DB_name)
+            
 main()

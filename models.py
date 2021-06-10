@@ -245,6 +245,7 @@ class Fyzicka_Osoba(db.Model):
     prokurista_association = db.relationship("Prokurista_Association")
     sole_shareholder_association = db.relationship("Jediny_Akcionar_Association")
     supervisory_board_member_association = db.relationship("Dozorci_Rada_Clen_Association")
+    ubo_association = db.relationship("Ubo")
     adresa = db.relationship("Adresy_v2")
 
     def get_name(self):
@@ -304,10 +305,14 @@ class Ubo(db.Model):
     __tablename__ = "ubo"
     id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    UBO_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))   
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
-    slovni_vyjadreni = db.Column(db.String)
+    UBO_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
+    adresa = db.relationship("Adresy_v2")   
+    postaveni = db.Column(db.String)
+    koncovyPrijemceText = db.Column(db.String)
+    skutecnymMajitelemOd = db.Column(MyType)
     jmeno = db.relationship("Fyzicka_Osoba")
     company = db.relationship("Company")    
 
@@ -458,7 +463,7 @@ class Adresy_v2(db.Model):
             joined_address += self.psc + " "
         if self.obec != "0" and self.obec != None:
             joined_address += self.obec
-        if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno"):
+        if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno") and (self.stat != "0"):
             joined_address += ", " + self.stat
         return joined_address
 
