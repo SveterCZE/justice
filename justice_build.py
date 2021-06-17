@@ -1,10 +1,12 @@
 from db_creation import create_DB
 from download_files import download_data, get_valid_filenames
 from update_db import update_DB
+from backup_DB import backup_DB
 import os
 
 def main():
     DB_name = "justice.db"
+    backup_DB()
     create_DB(DB_name)
     valid_files = get_valid_filenames()
     os.makedirs("data", exist_ok=True)

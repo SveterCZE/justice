@@ -528,8 +528,8 @@ def insert_individual_relations_v2(c, ICO, conn, primary_sql_key, zapis_datum, v
 
 def find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element, adresa_id):
     try:
-        jmeno = str(get_prop(elem, "osoba/jmeno"))
-        prijmeni = str(get_prop(elem, "osoba/prijmeni"))
+        jmeno = lower_names_chars(str(get_prop(elem, "osoba/jmeno")))
+        prijmeni = lower_names_chars(str(get_prop(elem, "osoba/prijmeni")))
         datum_narozeni = str(get_prop(elem, "osoba/narozDatum"))
         titulPred = str(get_prop(elem, "osoba/titulPred"))
         titulZa = str(get_prop(elem, "osoba/titulZa"))
@@ -538,6 +538,20 @@ def find_fyzicka_osoba(c, ICO, elem, conn, relationship_table_key, element, adre
         return osoba_id
     except:
         pass
+
+def lower_names_chars(string_name):
+    updated_name = ""
+    previous_non_alpha = True
+    for elem in string_name:
+        if previous_non_alpha == True:
+            updated_name += elem
+        else:
+            updated_name += elem.lower()
+        if elem.isalpha() == True:
+            previous_non_alpha = False
+        else:
+            previous_non_alpha = True
+    return updated_name
 
 def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id):
     try:
