@@ -212,12 +212,12 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
     try:
         my_iter = elem2.findall("podudaje/Udaj")
         for elem in my_iter:
-            spolecnik_type = str(get_prop(elem, "udajTyp/kod"))
+            spolecnik_kod = str(get_prop(elem, "udajTyp/kod"))
             zapis_datum = str(get_prop(elem, "zapisDatum"))
             vymaz_datum = str(get_prop(elem, "vymazDatum"))
             spolecnik_typ =  str(get_prop(elem, "hodnotaUdaje/typ"))
             # TODO Chech these conditions, they sometimes cause a person not being stored (IC 27650081)
-            if spolecnik_type == "SPOLECNIK_OSOBA" and spolecnik_typ == "OSOBA":
+            if spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "OSOBA":
                 # TODO alternativy pro None, Spolecny podil a Uvolneny podil
                 text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
                 nazev = str(get_prop(elem, "osoba/nazev"))
@@ -237,7 +237,17 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
                     c.execute("INSERT INTO spolecnici (company_id, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
                     c.execute ("SELECT last_insert_rowid()")
                     spolecnik_id = c.fetchone()[0]
-                insert_podily(c, elem, spolecnik_id)             
+                insert_podily(c, elem, spolecnik_id)
+            elif spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "SPOLECNY_PODIL":
+                pass
+                # text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
+                # print(text_spolecnik)
+            elif spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "UVOLNENY_PODIL":
+                text_uvolneny_podil = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
+                c.execute("INSERT INTO spolecnici_uvolneny_podil (company_id, zapis_datum, vymaz_datum, text_uvolneny_podil) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_uvolneny_podil,))               
+                c.execute ("SELECT last_insert_rowid()")
+                uvolneny_op_id = c.fetchone()[0]
+                insert_vacant_podily(c, elem, uvolneny_op_id)
     except Exception as f:
         print(f)
 
@@ -251,7 +261,7 @@ def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key
                 vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
                 insert_instructions = [(".//hodnotaText","predmety_podnikani", "predmet_podnikani", "predmety_podnikani_relation")]
                 for elem in insert_instructions:
-                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
                     insert_into_ancillary_table(c, elem, inserted_figure)
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
@@ -268,7 +278,7 @@ def find_predmet_cinnosti(c, ICO, predmet_cinnosti_elem, conn, primary_sql_key, 
                 vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
                 insert_instructions = [(".//hodnotaText","predmety_cinnosti", "predmet_cinnosti", "predmety_cinnosti_relation")]
                 for elem in insert_instructions:
-                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
                     insert_into_ancillary_table(c, elem, inserted_figure)
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
@@ -285,7 +295,7 @@ def find_ucel(c, ICO, ucel_elem, conn, primary_sql_key, element):
                 vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
                 insert_instructions = [(".//hodnotaText", "ucel", "ucel", "ucel_relation")]
                 for elem in insert_instructions:
-                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
                     insert_into_ancillary_table(c, elem, inserted_figure)
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
@@ -624,6 +634,23 @@ def insert_podily(c, elem, spolecnik_id):
             c.execute("INSERT INTO podily (spolecnik_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
     except Exception as f:
         print(f)
+
+def insert_vacant_podily(c, elem, vacant_id):
+    try:
+        podil_iter = elem.findall("podudaje/Udaj")
+        for podil_elem in podil_iter:
+            zapisDatum = str(get_prop(podil_elem, "zapisDatum"))
+            vymazDatum = str(get_prop(podil_elem, "vymazDatum"))
+            druh_podilu_id = get_druh_podilu_id(c, podil_elem)
+            vklad_typ = str(get_prop(podil_elem, "hodnotaUdaje/vklad/typ"))
+            vklad_text = str(get_prop(podil_elem, "hodnotaUdaje/vklad/textValue"))
+            souhrn_typ = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/typ"))
+            souhrn_text = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue"))
+            splaceni_typ = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/typ"))
+            splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
+            c.execute("INSERT INTO podily (uvolneny_podil_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (vacant_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
+    except Exception as f:
+        print(f)    
 
 def get_druh_podilu_id(c, podil_elem):
     try:

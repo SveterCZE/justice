@@ -49,6 +49,14 @@
     {% endif %}
 {% endfor %}
 
+
+{% set vacant_shares_notes = [] %}
+{% for i in range (row.spolecnici_uvolneny_podil|length) %}
+    {% if row.spolecnici_uvolneny_podil[i].vymaz_datum == 0 %}
+        {% set vacant_shares_notes = vacant_shares_notes.append(row.spolecnici_uvolneny_podil[i]) %}
+    {% endif %}
+{% endfor %}
+
 {% set sole_shareholder_notes = [] %}
 {% for i in range (row.jediny_akcionar|length) %}
     {% if row.jediny_akcionar[i].vymaz_datum == 0 %}
@@ -368,7 +376,7 @@
     <!-- END Display sole shareholder -->
 
     <!-- Display shareholders -->
-    {% if spolecnici_notes|length > 0 %}
+    {% if spolecnici_notes|length > 0 or vacant_shares_notes|length > 0 %}
     <tr>
         <td>Společníci:</td>
         <td></td>
@@ -398,6 +406,33 @@
         </tr>
         {% endfor %}        
         {% endfor %}
+    
+    <!-- Display vacant shares -->
+        {% for i in range (vacant_shares_notes|length) %}
+        <tr>
+            <td style = padding-left:2em>Uvolněný obchodní podíl:</td>
+            <td>{% if vacant_shares_notes[i].text_uvolneny_podil != "0" %}{{ vacant_shares_notes[i].text_uvolneny_podil }}{% endif %}</td>
+        </tr>
+        {% set vacant_shares = [] %}
+        {% for j in range (vacant_shares_notes[i].podily|length) %}
+            {% if vacant_shares_notes[i].podily[j].vymaz_datum == 0 %}
+                {% set vacant_shares = vacant_shares.append(vacant_shares_notes[i].podily[j]) %}
+            {% endif %}
+        {% endfor %}
+        
+        {% for k in range (vacant_shares|length) %}
+        <tr>
+            <td style = padding-left:4em>Podíl:</td>      
+            <td>
+                {% for elem in vacant_shares[k].my_rep() %}
+                    {{ elem }}<br>
+                {% endfor %} 
+            </td>
+        </tr>
+        {% endfor %}        
+        {% endfor %}   
+    <!-- END Display vacant shares -->
+    
     {% endif %}
     <!-- END Display shareholders -->
 

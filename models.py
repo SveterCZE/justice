@@ -301,6 +301,16 @@ class Spolecnici_Association(db.Model):
     podily = db.relationship("Podily_Association")
     company = db.relationship("Company")
 
+class Uvolneny_Podil_Association(db.Model):
+    __tablename__ = "spolecnici_uvolneny_podil"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    text_uvolneny_podil = db.Column(db.String)
+    podily = db.relationship("Podily_Association")
+    company = db.relationship("Company")
+
 class Ubo(db.Model):
     __tablename__ = "ubo"
     id = db.Column(db.Integer, primary_key=True)
@@ -356,6 +366,7 @@ class Podily_Association(db.Model):
     __tablename__ = "podily"
     id = db.Column(db.Integer, primary_key=True)
     spolecnik_id = db.Column(db.Integer, db.ForeignKey('spolecnici.id'))
+    uvolneny_podil_id = db.Column(db.Integer, db.ForeignKey('spolecnici_uvolneny_podil.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     druh_podilu_id = db.Column(db.Integer, db.ForeignKey('druhy_podilu.id'))
@@ -409,6 +420,7 @@ class Company(db.Model):
     statutarni_organ_text = db.relationship("Statutarni_Organ_Association")
     dozorci_rada_text = db.relationship("Dozorci_Rada_Association")
     spolecnici = db.relationship("Spolecnici_Association")
+    spolecnici_uvolneny_podil = db.relationship("Uvolneny_Podil_Association")
     prokurista = db.relationship("Prokurista_Association")
     prokura_common_text = db.relationship("Prokura_Common_Text_Association")
     jediny_akcionar = db.relationship("Jediny_Akcionar_Association")
