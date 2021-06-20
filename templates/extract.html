@@ -513,6 +513,54 @@
     {% endfor %}
     <!-- END of vacant ownership interests  -->
 
+    <!-- Insert common ownership interests -->
+
+    {% for i in range (row.spolecnici_spolecny_podil|length) %}
+    <tr>
+        <td style = padding-left:2em>Společný obchodní podíl:</td>
+        {% if row.spolecnici_spolecny_podil[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {% if row.spolecnici_spolecny_podil[i].text_uvolneny_podil != "0" %}{{ row.spolecnici_spolecny_podil[i].text_spolecny_podil }}{% endif %}   
+            {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici_spolecny_podil[i].zapis_datum }} {% if row.spolecnici_spolecny_podil[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici_spolecny_podil[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+
+    <!-- Insert individual vacant ownership interests -->
+        {% if row.spolecnici_spolecny_podil[i].podily|length > 0 %}
+                
+            {% for j in range (row.spolecnici_spolecny_podil[i].podily|length) %}
+            <tr>
+                <td style = padding-left:4em>Podíl:</td>
+                {% if row.spolecnici_spolecny_podil[i].podily[j].vymaz_datum != 0 %}
+                    {% set underlne_style_open = undedrline_open_deleted %}
+                    {% set underlne_style_close = undedrline_closed_deleted %}
+                {% else %}
+                    {% set underlne_style_open = "" %}
+                    {% set underlne_style_close = "" %}
+                {% endif %}
+                <td>{{ underlne_style_open|safe }} 
+                        {% for elem in row.spolecnici_spolecny_podil[i].podily[j].my_rep() %}
+                            {{ elem }}<br>
+                        {% endfor %}
+                    {{ underlne_style_close|safe }}
+                </td>
+                <td>{{ underlne_style_open|safe }}Zapsáno: {{ row.spolecnici_spolecny_podil[i].podily[j].zapis_datum }} {% if row.spolecnici_spolecny_podil[i].podily[j].vymaz_datum != 0 %}<br>Vymazáno: {{ row.spolecnici_spolecny_podil[i].podily[j].vymaz_datum }}{% endif %}{{ underlne_style_close|safe }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    <!-- END of individual vacant ownership interests -->
+    {% endfor %}
+
+
+    <!-- END of common ownership interests -->
+
+
+
 {% endif %}
     <!-- END Display shareholders -->
 
