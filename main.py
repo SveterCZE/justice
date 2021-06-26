@@ -1,11 +1,11 @@
 from app import app
 from forms import GeneralSearchForm, JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm 
 from flask import flash, render_template, request, redirect
-from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association 
+from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Ubo 
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
 from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_Clen_Association, Fyzicka_Osoba, Spolecnici_Association, Podily_Association, Druhy_Podilu, Pravnicka_Osoba
 from models import Prokurista_Association, Dozorci_Rada_Clen_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy, Ucel, Ucel_Association
-from models import Adresy_v2
+from models import Adresy_v2, Uvolneny_Podil_Association, Spolecny_Podil_Association, Podilnici_Association
 from tables import Results
 from sqlalchemy.sql import select
 from sqlalchemy.sql import text
@@ -425,6 +425,30 @@ def search_results_sidlo(adresa_id):
         table.border = True
         return render_template("results2.html", results=results, form=search, show_form = False)
 
+
+# UBO reults
+@app.route('/results-ubo-<int:ubo_id>', methods=['GET', 'POST'])
+def search_results_ubo(ubo_id):
+    search = JusticeSearchForm(request.form)
+
+    results = []
+    qry = Company.query
+    qry = qry.join(Ubo, Company.ubo)
+    qry = qry.filter(Ubo.vymaz_datum == 0)
+    qry = qry.join(Fyzicka_Osoba, Ubo.jmeno)
+    qry = qry.filter(Fyzicka_Osoba.id == ubo_id)
+    results = qry.all()
+
+    if not results:
+        flash('No results found!')
+        return redirect('/')
+
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results2.html", results=results, form=search, show_form = False)
+
+
 @app.route("/<int:ico>", methods=['GET', 'POST'])
 def extract(ico):
     qry = Company.query
@@ -457,7 +481,12 @@ def find_oldest_companies():
 @app.route("/most_common_purpose", methods=['GET', 'POST'])
 def find_most_common_purpose():
     most_common_purpose = count_common_purpose()
-    return render_template("most_common_purpose.html", most_common_purpose = most_common_purpose)    
+    return render_template("most_common_purpose.html", most_common_purpose = most_common_purpose)
+
+@app.route("/most_common_ubo", methods=['GET', 'POST'])
+def find_most_common_ubo():
+    most_common_ubo = count_common_ubo()
+    return render_template("most_common_ubo.html", most_common_ubo = most_common_ubo)        
 
 @app.route("/most_common_business", methods=['GET', 'POST'])
 def find_most_common_business():
@@ -537,7 +566,22 @@ def count_common_purpose():
         selected_purpose = qry.all()
         addresses_frequency.append((selected_purpose[0].ucel, elem[1]))
     conn.close()
-    return addresses_frequency    
+    return addresses_frequency
+
+def count_common_ubo():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT UBO_id, COUNT(`UBO_id`) AS `value_occurrence` FROM ubo INNER JOIN fyzicke_osoby ON ubo.UBO_id=fyzicke_osoby.id WHERE vymaz_datum = 0 GROUP BY `UBO_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    ubo_frequency = []
+    for elem in result:
+        qry = Fyzicka_Osoba.query
+        qry = qry.filter(Fyzicka_Osoba.id == elem[0])
+        selected_ubo = qry.all()
+        # ubo_frequency.append((selected_ubo[0].jmeno + " " + selected_ubo[0].prijmeni, elem[1], elem[0]))
+        ubo_frequency.append((selected_ubo[0], elem[1], elem[0]))
+    conn.close()
+    return ubo_frequency
 
 def count_common_degrees(method):
     engine = create_engine('sqlite:///justice.db', echo=True)

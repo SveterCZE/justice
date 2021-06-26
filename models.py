@@ -245,6 +245,7 @@ class Fyzicka_Osoba(db.Model):
     prokurista_association = db.relationship("Prokurista_Association")
     sole_shareholder_association = db.relationship("Jediny_Akcionar_Association")
     supervisory_board_member_association = db.relationship("Dozorci_Rada_Clen_Association")
+    ubo_association = db.relationship("Ubo")
     adresa = db.relationship("Adresy_v2")
 
     def get_name(self):
@@ -300,6 +301,57 @@ class Spolecnici_Association(db.Model):
     podily = db.relationship("Podily_Association")
     company = db.relationship("Company")
 
+class Podilnici_Association(db.Model):
+    __tablename__ = "podilnici"
+    id = db.Column(db.Integer, primary_key=True)
+    podil_id = db.Column(db.Integer, db.ForeignKey('spolecnici_spolecny_podil.id'))
+    podilnik_fo_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
+    podilnik_po_id = db.Column(db.Integer, db.ForeignKey('pravnicke_osoby.id'))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
+    # text_podilnik = db.Column(db.String)
+    adresa = db.relationship("Adresy_v2")
+    jmeno = db.relationship("Fyzicka_Osoba")
+    oznaceni_po = db.relationship("Pravnicka_Osoba")
+    podily = db.relationship("Spolecny_Podil_Association")
+
+class Uvolneny_Podil_Association(db.Model):
+    __tablename__ = "spolecnici_uvolneny_podil"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    text_uvolneny_podil = db.Column(db.String)
+    podily = db.relationship("Podily_Association")
+    company = db.relationship("Company")
+
+class Spolecny_Podil_Association(db.Model):
+    __tablename__ = "spolecnici_spolecny_podil"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    text_spolecny_podil = db.Column(db.String)
+    podily = db.relationship("Podily_Association")
+    podilnici = db.relationship("Podilnici_Association")
+    company = db.relationship("Company")
+
+class Ubo(db.Model):
+    __tablename__ = "ubo"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    UBO_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
+    adresa = db.relationship("Adresy_v2")   
+    postaveni = db.Column(db.String)
+    koncovyPrijemceText = db.Column(db.String)
+    skutecnymMajitelemOd = db.Column(MyType)
+    jmeno = db.relationship("Fyzicka_Osoba")
+    company = db.relationship("Company")    
+
 class Prokurista_Association(db.Model):
     __tablename__ = "prokuriste"
     id = db.Column(db.Integer, primary_key=True)
@@ -340,6 +392,8 @@ class Podily_Association(db.Model):
     __tablename__ = "podily"
     id = db.Column(db.Integer, primary_key=True)
     spolecnik_id = db.Column(db.Integer, db.ForeignKey('spolecnici.id'))
+    uvolneny_podil_id = db.Column(db.Integer, db.ForeignKey('spolecnici_uvolneny_podil.id'))
+    spolecny_podil_id = db.Column(db.Integer, db.ForeignKey('spolecnici_spolecny_podil.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     druh_podilu_id = db.Column(db.Integer, db.ForeignKey('druhy_podilu.id'))
@@ -393,10 +447,13 @@ class Company(db.Model):
     statutarni_organ_text = db.relationship("Statutarni_Organ_Association")
     dozorci_rada_text = db.relationship("Dozorci_Rada_Association")
     spolecnici = db.relationship("Spolecnici_Association")
+    spolecnici_uvolneny_podil = db.relationship("Uvolneny_Podil_Association")
+    spolecnici_spolecny_podil = db.relationship("Spolecny_Podil_Association")
     prokurista = db.relationship("Prokurista_Association")
     prokura_common_text = db.relationship("Prokura_Common_Text_Association")
     jediny_akcionar = db.relationship("Jediny_Akcionar_Association")
     sidlo_text = db.relationship("Sidlo_Association")
+    ubo = db.relationship("Ubo")
 
     def current_legal_form_text(self):
         for elem in self.pravni_forma_text:
@@ -446,7 +503,7 @@ class Adresy_v2(db.Model):
             joined_address += self.psc + " "
         if self.obec != "0" and self.obec != None:
             joined_address += self.obec
-        if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno"):
+        if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno") and (self.stat != "0"):
             joined_address += ", " + self.stat
         return joined_address
 
@@ -715,7 +772,8 @@ class Akcie(db.Model):
         elif self.akcie_podoba == "IMOBILIZOVANA":
             joined_share_descr += "v imobilizované podobě "
 
-        joined_share_descr += "ve jmenovité hodnotě " + self.akcie_hodnota_value        
+        if self.akcie_hodnota_value != "0":
+            joined_share_descr += "ve jmenovité hodnotě " + self.akcie_hodnota_value        
 
         if self.akcie_hodnota_typ == "KORUNY":
             joined_share_descr += "Kč"

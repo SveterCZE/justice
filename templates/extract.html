@@ -137,32 +137,6 @@
             {% set underlne_style_close = "" %}
         {% endif %}
 
-        <!-- TODO: Have backend handle this -->
-        {% if row.zakladni_kapital[i].vklad_typ == "KORUNY" %}
-            {% set vklad_typ_symbol = "Kč" %}
-            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
-        {% elif row.zakladni_kapital[i].vklad_typ == "EURA" %}
-            {% set vklad_typ_symbol = "euro" %}
-            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
-        {% else %}
-            {% set vklad_typ_symbol = "" %}
-            {% set vklad_typ_description = row.zakladni_kapital[i].vklad_hodnota %}
-        {% endif %}           
-
-        {% if row.zakladni_kapital[i].splaceni_typ == "KORUNY" %}
-            {% set splaceni_typ_symbol = "Kč" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% elif row.zakladni_kapital[i].splaceni_typ == "PROCENTA" %}
-            {% set splaceni_typ_symbol = "%" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% elif row.zakladni_kapital[i].splaceni_typ == "EURA" %}
-            {% set splaceni_typ_symbol = "euro" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% else %}
-            {% set splaceni_typ_symbol = "" %}
-            {% set splaceni_typ_description = row.zakladni_kapital[i].splaceni_hodnota %}
-        {% endif %}  
-
         <td>{{ underlne_style_open|safe }} {% for elem in row.zakladni_kapital[i].my_rep() %} {{elem}}<br>{% endfor %} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.zakladni_kapital[i].zapis_datum }} {% if row.zakladni_kapital[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.zakladni_kapital[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>    
@@ -448,7 +422,7 @@
     <!-- END Display sole shareholder -->
 
     <!-- Display shareholders -->
-    {% if row.spolecnici|length > 0 %}
+{% if row.spolecnici|length > 0 or row.spolecnici_uvolneny_podil|length > 0 %}
     <tr>
         <td>Společníci:</td>
         <td></td>
@@ -492,11 +466,154 @@
             {% endfor %}
         {% endif %}
         <!-- END of individual ownership interests -->
-
     </tr>
     {% endfor %}
+
+
+    <!-- Insert vacant ownership interests  -->
+    {% for i in range (row.spolecnici_uvolneny_podil|length) %}
+    <tr>
+        <td style = padding-left:2em>Uvolněný obchodní podíl:</td>
+        {% if row.spolecnici_uvolneny_podil[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {% if row.spolecnici_uvolneny_podil[i].text_uvolneny_podil != "0" %}{{ row.spolecnici_uvolneny_podil[i].text_uvolneny_podil }}{% endif %}   
+            {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici_uvolneny_podil[i].zapis_datum }} {% if row.spolecnici_uvolneny_podil[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici_uvolneny_podil[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+
+    <!-- Insert individual vacant ownership interests -->
+        {% if row.spolecnici_uvolneny_podil[i].podily|length > 0 %}
+                
+            {% for j in range (row.spolecnici_uvolneny_podil[i].podily|length) %}
+            <tr>
+                <td style = padding-left:4em>Podíl:</td>
+                {% if row.spolecnici_uvolneny_podil[i].podily[j].vymaz_datum != 0 %}
+                    {% set underlne_style_open = undedrline_open_deleted %}
+                    {% set underlne_style_close = undedrline_closed_deleted %}
+                {% else %}
+                    {% set underlne_style_open = "" %}
+                    {% set underlne_style_close = "" %}
+                {% endif %}
+                <td>{{ underlne_style_open|safe }} 
+                        {% for elem in row.spolecnici_uvolneny_podil[i].podily[j].my_rep() %}
+                            {{ elem }}<br>
+                        {% endfor %}
+                    {{ underlne_style_close|safe }}
+                </td>
+                <td>{{ underlne_style_open|safe }}Zapsáno: {{ row.spolecnici_uvolneny_podil[i].podily[j].zapis_datum }} {% if row.spolecnici_uvolneny_podil[i].podily[j].vymaz_datum != 0 %}<br>Vymazáno: {{ row.spolecnici_uvolneny_podil[i].podily[j].vymaz_datum }}{% endif %}{{ underlne_style_close|safe }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    <!-- END of individual vacant ownership interests -->
+    {% endfor %}
+    <!-- END of vacant ownership interests  -->
+
+    <!-- Insert common ownership interests -->
+
+    {% for i in range (row.spolecnici_spolecny_podil|length) %}
+    <tr>
+        <td style = padding-left:2em>Společný obchodní podíl:</td>
+        {% if row.spolecnici_spolecny_podil[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {% if row.spolecnici_spolecny_podil[i].text_uvolneny_podil != "0" %}{{ row.spolecnici_spolecny_podil[i].text_spolecny_podil }}{% endif %}   
+            {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici_spolecny_podil[i].zapis_datum }} {% if row.spolecnici_spolecny_podil[i].vymaz_datum != 0 %} <br>   Vymazáno: {{ row.spolecnici_spolecny_podil[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>
+
+    <!-- Insert individual common ownership interests -->
+        {% if row.spolecnici_spolecny_podil[i].podily|length > 0 %}
+                
+            {% for j in range (row.spolecnici_spolecny_podil[i].podily|length) %}
+            <tr>
+                <td style = padding-left:4em>Podíl:</td>
+                {% if row.spolecnici_spolecny_podil[i].podily[j].vymaz_datum != 0 %}
+                    {% set underlne_style_open = undedrline_open_deleted %}
+                    {% set underlne_style_close = undedrline_closed_deleted %}
+                {% else %}
+                    {% set underlne_style_open = "" %}
+                    {% set underlne_style_close = "" %}
+                {% endif %}
+                <td>{{ underlne_style_open|safe }} 
+                        {% for elem in row.spolecnici_spolecny_podil[i].podily[j].my_rep() %}
+                            {{ elem }}<br>
+                        {% endfor %}
+                    {{ underlne_style_close|safe }}
+                </td>
+                <td>{{ underlne_style_open|safe }}Zapsáno: {{ row.spolecnici_spolecny_podil[i].podily[j].zapis_datum }} {% if row.spolecnici_spolecny_podil[i].podily[j].vymaz_datum != 0 %}<br>Vymazáno: {{ row.spolecnici_spolecny_podil[i].podily[j].vymaz_datum }}{% endif %}{{ underlne_style_close|safe }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    <!-- END of individual common ownership interests -->
+
+    <!-- Insert individual co-shareholders -->
+    {% if row.spolecnici_spolecny_podil[i].podilnici|length > 0 %}
+                
+    {% for j in range (row.spolecnici_spolecny_podil[i].podilnici|length) %}
+    <tr>
+        <td style = padding-left:4em>Podílník:</td>
+        {% if row.spolecnici_spolecny_podil[i].podilnici[j].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} 
+            {% if row.spolecnici_spolecny_podil[i].podilnici[j].podilnik_fo_id != None %}
+                {{ row.spolecnici_spolecny_podil[i].podilnici[j].jmeno }}
+            {% else %}
+                {{ row.spolecnici_spolecny_podil[i].podilnici[j].oznaceni_po.nazev }}{% if row.spolecnici_spolecny_podil[i].podilnici[j].oznaceni_po.reg_cislo != 0 %}, reg č. {{ row.spolecnici_spolecny_podil[i].podilnici[j].oznaceni_po.reg_cislo }}{% endif %}{% if row.spolecnici_spolecny_podil[i].podilnici[j].oznaceni_po.ico != 0 %}, IČ <a href="/{{ row.spolecnici_spolecny_podil[i].podilnici[j].oznaceni_po.ico }}">{{ row.spolecnici_spolecny_podil[i].podilnici[j].oznaceni_po.ico }}</a>{% endif %}
+            {% endif %}
+            <br>{{ row.spolecnici_spolecny_podil[i].podilnici[j].adresa }}
+            {{ underlne_style_close|safe }}
+        </td>
+        <td>{{ underlne_style_open|safe }}Zapsáno: {{ row.spolecnici_spolecny_podil[i].podilnici[j].zapis_datum }} {% if row.spolecnici_spolecny_podil[i].podilnici[j].vymaz_datum != 0 %}<br>Vymazáno: {{ row.spolecnici_spolecny_podil[i].podilnici[j].vymaz_datum }}{% endif %}{{ underlne_style_close|safe }}</td>
+    </tr>
+    {% endfor %}
+{% endif %}
+    <!-- END of individual co-shareholders -->
+
+    {% endfor %}
+    <!-- END of common ownership interests -->
+
     {% endif %}
     <!-- END Display shareholders -->
+
+    <!-- Display UBO -->
+    {% if row.ubo|length > 0 %}
+    <tr>
+        <td>Konečný vlastník:</td>
+        <td></td>
+        <td></td>
+    </tr>
+    {% for i in range (row.ubo|length) %}
+    <tr>
+        <td></td>
+        {% if row.ubo[i].vymaz_datum != 0 %}
+            {% set underlne_style_open = undedrline_open_deleted %}
+            {% set underlne_style_close = undedrline_closed_deleted %}
+        {% else %}
+            {% set underlne_style_open = "" %}
+            {% set underlne_style_close = "" %}
+        {% endif %}
+        <td>{{ underlne_style_open|safe }} {{row.ubo[i].jmeno }} {{row.ubo[i].jmeno.adresa}} 
+            {% if row.ubo[i].postaveni != "0" %}<br>{{row.ubo[i].postaveni }}{% endif %}
+            {% if row.ubo[i].koncovyPrijemceText != "0" %}<br>{{row.ubo[i].koncovyPrijemceText }}{% endif %} {{ underlne_style_close|safe }}</td>
+        <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ubo[i].zapis_datum }} {% if row.ubo[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.ubo[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
+    </tr>    
+    {% endfor %}
+    {% endif %}
+    <!-- END Display UBO -->
 
     <!-- Display shares -->
     {% if row.akcie|length > 0 %}

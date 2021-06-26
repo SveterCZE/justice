@@ -97,6 +97,24 @@
         {% endif %}
     {% endfor %}    
 
+    {% for elem in row.ubo_association %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+            {% set xxx = [] %}
+        {% else %}     
+            {% set my_dict = {} %}
+            {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
+            {% set x = my_dict.__setitem__("funkce", "konečný vlastník") %}
+            {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
+            {% set x = my_dict.__setitem__("ico", elem.company.ico) %}
+            {% set x = my_dict.__setitem__("oddil", elem.company.oddil) %}
+            {% set x = my_dict.__setitem__("vlozka", elem.company.vlozka) %}
+            {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
+            {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
+            {% set x = my_dict.__setitem__("pravni_forma", elem.company.current_legal_form_text()) %}
+            {% set test_list = test_list.append(my_dict) %}
+        {% endif %}
+    {% endfor %}    
+
     {% for elem in test_list %}
         {% if count.value % 2 == 0 %}
             {% set table_style = "table table-light" %}
