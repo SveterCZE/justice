@@ -301,6 +301,21 @@ class Spolecnici_Association(db.Model):
     podily = db.relationship("Podily_Association")
     company = db.relationship("Company")
 
+class Podilnici_Association(db.Model):
+    __tablename__ = "podilnici"
+    id = db.Column(db.Integer, primary_key=True)
+    podil_id = db.Column(db.Integer, db.ForeignKey('spolecnici_spolecny_podil.id'))
+    podilnik_fo_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
+    podilnik_po_id = db.Column(db.Integer, db.ForeignKey('pravnicke_osoby.id'))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
+    # text_podilnik = db.Column(db.String)
+    adresa = db.relationship("Adresy_v2")
+    jmeno = db.relationship("Fyzicka_Osoba")
+    oznaceni_po = db.relationship("Pravnicka_Osoba")
+    podily = db.relationship("Spolecny_Podil_Association")
+
 class Uvolneny_Podil_Association(db.Model):
     __tablename__ = "spolecnici_uvolneny_podil"
     id = db.Column(db.Integer, primary_key=True)
@@ -319,8 +334,8 @@ class Spolecny_Podil_Association(db.Model):
     vymaz_datum = db.Column(MyType)
     text_spolecny_podil = db.Column(db.String)
     podily = db.relationship("Podily_Association")
+    podilnici = db.relationship("Podilnici_Association")
     company = db.relationship("Company")
-
 
 class Ubo(db.Model):
     __tablename__ = "ubo"

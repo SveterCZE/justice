@@ -238,12 +238,15 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
                     c.execute ("SELECT last_insert_rowid()")
                     spolecnik_id = c.fetchone()[0]
                 insert_podily(c, elem, spolecnik_id)
+            
             elif spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "SPOLECNY_PODIL":
                 text_spolecny_podil = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
                 c.execute("INSERT INTO spolecnici_spolecny_podil (company_id, zapis_datum, vymaz_datum, text_spolecny_podil) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_spolecny_podil,))               
                 c.execute ("SELECT last_insert_rowid()")
-                uvolneny_op_id = c.fetchone()[0]               
-                insert_common_podily(c, elem, uvolneny_op_id)
+                spolecny_op_id = c.fetchone()[0]               
+                insert_common_podily(c, elem, spolecny_op_id)
+                insert_common_shareholders(c, elem, spolecny_op_id)
+
             elif spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "UVOLNENY_PODIL":
                 text_uvolneny_podil = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
                 c.execute("INSERT INTO spolecnici_uvolneny_podil (company_id, zapis_datum, vymaz_datum, text_uvolneny_podil) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_uvolneny_podil,))               
@@ -252,6 +255,30 @@ def find_spolecnik(c, ICO, elem2, conn, primary_sql_key, element):
                 insert_vacant_podily(c, elem, uvolneny_op_id)
     except Exception as f:
         print(f)
+
+def insert_common_shareholders(c, elem, spolecny_op_id):
+    try:
+        podil_iter = elem.findall("podudaje/Udaj")
+        for podil_elem in podil_iter:
+            if str(get_prop(podil_elem, "udajTyp/kod")) == "SPOLECNIK_PODILNIK":
+                zapisDatum = str(get_prop(podil_elem, "zapisDatum"))
+                vymazDatum = str(get_prop(podil_elem, "vymazDatum"))
+                typ_podilnika = str(get_prop(podil_elem, "hodnotaText"))
+                if typ_podilnika == "AngazmaFyzicke":
+                    adresa_id = find_sidlo(c, podil_elem, spolecny_op_id)
+                    spolecnik_fo_id = find_fyzicka_osoba(c, 0, podil_elem, 0, spolecny_op_id, 0, adresa_id)
+                    c.execute("INSERT INTO podilnici (podil_id, podilnik_fo_id, zapis_datum, vymaz_datum, adresa_id) VALUES (?, ?, ?, ?, ?)", (spolecny_op_id, spolecnik_fo_id, zapisDatum, vymazDatum, adresa_id))
+                if typ_podilnika == "AngazmaPravnicke":
+                    spol_ico = str(get_prop(podil_elem, "osoba/ico"))
+                    regCislo = str(get_prop(podil_elem, "osoba/regCislo"))
+                    adresa_id = find_sidlo(c, podil_elem, spolecny_op_id)
+                    spolecnik_po_id = find_pravnicka_osoba(c, podil_elem, spol_ico, regCislo, adresa_id)
+                    c.execute("INSERT INTO podilnici (podil_id, podilnik_po_id, zapis_datum, vymaz_datum, adresa_id) VALUES (?, ?, ?, ?, ?)", (spolecny_op_id, spolecnik_po_id, zapisDatum, vymazDatum, adresa_id))
+    except Exception as f:
+        print(f)   
+
+
+
 
 def find_predmet_podnikani(c, ICO, predmet_podnikani_elem, conn, primary_sql_key, element):
     try:

@@ -49,11 +49,17 @@
     {% endif %}
 {% endfor %}
 
-
 {% set vacant_shares_notes = [] %}
 {% for i in range (row.spolecnici_uvolneny_podil|length) %}
     {% if row.spolecnici_uvolneny_podil[i].vymaz_datum == 0 %}
         {% set vacant_shares_notes = vacant_shares_notes.append(row.spolecnici_uvolneny_podil[i]) %}
+    {% endif %}
+{% endfor %}
+
+{% set common_shares_notes = [] %}
+{% for i in range (row.spolecnici_spolecny_podil|length) %}
+    {% if row.spolecnici_spolecny_podil[i].vymaz_datum == 0 %}
+        {% set common_shares_notes = common_shares_notes.append(row.spolecnici_spolecny_podil[i]) %}
     {% endif %}
 {% endfor %}
 
@@ -376,7 +382,7 @@
     <!-- END Display sole shareholder -->
 
     <!-- Display shareholders -->
-    {% if spolecnici_notes|length > 0 or vacant_shares_notes|length > 0 %}
+    {% if spolecnici_notes|length > 0 or vacant_shares_notes|length > 0 or common_shares_notes|length > 0 %}
     <tr>
         <td>Společníci:</td>
         <td></td>
@@ -433,6 +439,54 @@
         {% endfor %}   
     <!-- END Display vacant shares -->
     
+    <!-- Display common shares -->
+    {% for i in range (common_shares_notes|length) %}
+    <tr>
+        <td style = padding-left:2em>Společný obchodní podíl:</td>
+        <td>{% if common_shares_notes[i].text_spolecny_podil != "0" %}{{ common_shares_notes[i].text_spolecny_podil }}{% endif %}</td>
+    </tr>
+    {% set common_shares = [] %}
+    {% for j in range (common_shares_notes[i].podily|length) %}
+        {% if common_shares_notes[i].podily[j].vymaz_datum == 0 %}
+            {% set common_shares = common_shares.append(common_shares_notes[i].podily[j]) %}
+        {% endif %}
+    {% endfor %}
+    
+    {% for k in range (common_shares|length) %}
+    <tr>
+        <td style = padding-left:4em>Podíl:</td>      
+        <td>
+            {% for elem in common_shares[k].my_rep() %}
+                {{ elem }}<br>
+            {% endfor %} 
+        </td>
+    </tr>
+    {% endfor %}        
+
+    {% set common_shares_shareholders = [] %}
+    {% for j in range (common_shares_notes[i].podilnici|length) %}
+        {% if common_shares_notes[i].podilnici[j].vymaz_datum == 0 %}
+            {% set common_shares_shareholders = common_shares_shareholders.append(common_shares_notes[i].podilnici[j]) %}
+        {% endif %}
+    {% endfor %}
+
+    {% for k in range (common_shares_shareholders|length) %}
+    <tr>
+        <td style = padding-left:4em>Podílník:</td>      
+        <td>
+            {% if common_shares_shareholders[k].podilnik_fo_id != None %}
+                {{ common_shares_shareholders[k].jmeno }}
+            {% else %}
+                {{ common_shares_shareholders[k].oznaceni_po.nazev }}{% if common_shares_shareholders[k].oznaceni_po.reg_cislo != 0 %}, reg č. {{ common_shares_shareholders[k].oznaceni_po.reg_cislo }}{% endif %}{% if common_shares_shareholders[k].oznaceni_po.ico != 0 %}, IČ <a href="/{{ common_shares_shareholders[k].oznaceni_po.ico }}">{{ common_shares_shareholders[k].oznaceni_po.ico }}</a>{% endif %}
+            {% endif %}
+            <br>{{ common_shares_shareholders[k].adresa }}
+        </td>
+    </tr>
+    {% endfor %}
+
+    {% endfor %}   
+    <!-- END Display common shares -->
+
     {% endif %}
     <!-- END Display shareholders -->
 

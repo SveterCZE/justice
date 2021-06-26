@@ -195,6 +195,21 @@ def create_tables(conn):
 	PRIMARY KEY("id" AUTOINCREMENT)
 ); """
 
+    podilnici = """ CREATE TABLE "podilnici" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"podil_id"	INTEGER,
+	"podilnik_fo_id"	INTEGER,
+	"podilnik_po_id"	INTEGER,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	"adresa_id"	INTEGER,
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("podilnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
+	FOREIGN KEY("podilnik_po_id") REFERENCES "pravnicke_osoby"("id"),	
+	FOREIGN KEY("podil_id") REFERENCES "spolecnici_spolecny_podil"("id")
+); """
+
     podily = """ CREATE TABLE "podily" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"spolecnik_id"	INTEGER,
@@ -465,7 +480,7 @@ def create_tables(conn):
 ); """
 
     list_of_tables = [companies, adresy_v2, akcie, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events, 
-    jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, pravni_formy, 
+    jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, podilnici, pravni_formy, 
     pravni_formy_relation, pravnicke_osoby, predmety_cinnosti, predmety_cinnosti_relation, prdmety_podnikani, predmety_podnikani_relation,
     prokura_common_texts, prokuriste, sidlo_relation, spolecnici, spolecnici_uvolneny_podil, spolecnici_spolecny_podil, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, ubo, 
     ucel, ucel_relation, zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
@@ -599,6 +614,26 @@ def create_indices(conn):
 
     podily4 = """ CREATE INDEX "index podily4" ON "podily" (
 	"spolecny_podil_id"
+); """
+
+    podilnici1 = """ CREATE INDEX "index podilnici1" ON "podilnici" (
+	"id"
+); """
+
+    podilnici2 = """ CREATE INDEX "index podilnici2" ON "podilnici" (
+	"podil_id"
+); """
+
+    podilnici3 = """ CREATE INDEX "index podilnici3" ON "podilnici" (
+	"podilnik_fo_id"
+); """
+
+    podilnici4 = """ CREATE INDEX "index podilnici4" ON "podilnici" (
+	"podilnik_po_id"
+); """
+
+    podilnici5 = """ CREATE INDEX "index podilnici5" ON "podilnici" (
+	"adresa_id"
 ); """
 
     pravni_formy = """ CREATE INDEX "index pravni_formy" ON "pravni_formy" (
@@ -847,7 +882,8 @@ def create_indices(conn):
     list_of_indices = [companies1, companies2, companies3, companies4, companies5, adresy1, adresy2, adresy3,
 	akcie, akcie2, akcionari1, akcionari2, akcionari3, dr_clen_relation1, dr_clen_relation2, dr_relation, dr_relation2, dr_relation_3, dr_relation_4, 
 	insolvency1, insolvency2, konkurz1, konkurz2, nazvy1, nazvy2, nazvy3, ostatni_skutecnosti, ostatni_skutecnosti2, 
-	pocty_clenu_organ1, pocty_clenu_organ2, podily1, podily2, podily3, podily4, pravni_formy, pravni_formy_relation1, pravni_formy_relation2, 
+	pocty_clenu_organ1, pocty_clenu_organ2, podily1, podily2, podily3, podily4, podilnici1, podilnici2, podilnici3, podilnici4, podilnici5,
+	pravni_formy, pravni_formy_relation1, pravni_formy_relation2, 
 	predmety_cinnosti_relation1, predmety_cinnosti_relation2, predmety_cinnosti_relation3, predmety_podnikani_relation1, predmety_podnikani_relation2, 
 	predmety_podnikani_relation3, predmety_cinnosti1, predmety_cinnosti2, predmety_podnikani1, predmety_podnikani2, prokuriste1, 
 	prokuriste2, prokuriste3, prokuriste4, sidlo_relation1, sidlo_relation_2, sidlo_relation_3, soudni_zapis1, soudni_zapis2, spolecnici1, 
