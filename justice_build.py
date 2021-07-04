@@ -6,7 +6,7 @@ import os
 
 def main():
     DB_name = "justice.db"
-    # backup_DB()
+    backup_DB()
     create_DB(DB_name)
     valid_files = get_valid_filenames()
     os.makedirs("data", exist_ok=True)
