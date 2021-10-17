@@ -20,31 +20,25 @@ You will be greeted with the following search form.
 ![image](https://user-images.githubusercontent.com/46304018/116794252-e90da280-aacb-11eb-92aa-93cb300c2043.png)
 
 The form allows you to search for companies registered in the Commercial Register by the following properties:
-<ul>
-  <li>Company name</li>
-  <li>Identification number</li>
-  <li>Municipality</li>
-  <li>Street name</li>
-  <li>Court register section (<i>oddíl</i>)</li>
-  <li>Court register file No. (<i>vložka</i>)</li>
-  <li>Legal form</li>
-  <li>Court of registration</li>
-  <li>Active insolvency record</li>
-  <li>Date of registration</li>
-</ul>  
+* Company name
+* Identification number
+* Municipality
+* Street name
+* Court register section (<i>oddíl</i>)
+* Court register file No. (<i>vložka</i>)
+* Legal form
+* Court of registration
+* Active insolvency record
+* Date of registration
 
 In the fields where you fill-in input data, you can also select one of the following options:
-<ul>
-  <li>Your input can be anywere in the result. For example, if you input <i>Trade</i> as a company name, the application will find and return both <i>SILOMAN Trade a.s.</i> and <i>Trade Bridge a.s.</i> </li>
-  <li>The result must start with your input. For example, if you input <i>Trade</i> as a company name, the application will find and reutrn only <i>Trade Bridge a.s.</i>, but not <i>SILOMAN Trade a.s.</i></li>
-  <li>The result and your input must match. For example, if you input <i>Trade</i> as a company name, the application will neither <i>SILOMAN Trade a.s.</i> nor <i>Trade Bridge a.s.</i></li>
-</ul>  
+* Your input can be anywere in the result. For example, if you input <i>Trade</i> as a company name, the application will find and return both <i>SILOMAN Trade a.s.</i> and <i>Trade Bridge a.s.</i>
+* The result must start with your input. For example, if you input <i>Trade</i> as a company name, the application will find and reutrn only <i>Trade Bridge a.s.</i>, but not <i>SILOMAN Trade a.s.</i>
+* The result and your input must match. For example, if you input <i>Trade</i> as a company name, the application will neither <i>SILOMAN Trade a.s.</i> nor <i>Trade Bridge a.s.</i>  
 
 In addition, you can also select one of the following options:
-<ul>
-  <li>Your input must match the company data that are up-to-date. For example, if you input <i>Trade</i> as a company name, a company that used to be names <i>Global Trade, a.s.</i>, but had since been renamed, will not be found.</li>
-  <li>Your input may match the company data that are no longer up-to-date. For example, if you input <i>Trade</i> as a company name, a company that used to be names <i>Global Trade, a.s.</i>, but had since been renamed, will be found.</li>
-</ul>  
+* Your input must match the company data that are up-to-date. For example, if you input <i>Trade</i> as a company name, a company that used to be names <i>Global Trade, a.s.</i>, but had since been renamed, will not be found. 
+* Your input may match the company data that are no longer up-to-date. For example, if you input <i>Trade</i> as a company name, a company that used to be names <i>Global Trade, a.s.</i>, but had since been renamed, will be found.
 
 <h2>Search by natural persons:</h2>
 You will be greeted with the following search form:
@@ -52,18 +46,14 @@ You will be greeted with the following search form:
 ![image](https://user-images.githubusercontent.com/46304018/116795147-1dd12800-aad3-11eb-9b83-bbd9cd775090.png)
 
 The form allows you to search for natural persons registered in the Commercial Register as members of executive bodies, members of supervisory boards, prokurists, shareholders in a limited liability companies, sole shareholders in a joint stock companies. The form allows you to search by the following properties:
-<ul>
-  <li>First name</li>
-  <li>Surname</li>
-  <li>Date of birth</li>
-</ul>  
+* First name
+* Surname
+* Date of birth
 
 In the fields where you fill-in input data, you can also select one of the following options:
-<ul>
-  <li>Your input can be anywere in the result. For example, if you input <i>Nová</i> as a surname, the application will find and return both <i>Novák</i> and <i>Kuhnová</i> </li>
-  <li>The result must start with your input. For example, if you input <i>Nová</i> as a surname, the application will find and reutrn only <i>Novák</i>, but not <i>Kuhnová</i></li>
-  <li>The result and your input must match. For example, if you input <i>Nová</i> as a surname, the application will neither <i>Novák</i> nor <i>Kuhnová</i></li>
-</ul>  
+* Your input can be anywere in the result. For example, if you input <i>Nová</i> as a surname, the application will find and return both <i>Novák</i> and <i>Kuhnová</i>
+* The result must start with your input. For example, if you input <i>Nová</i> as a surname, the application will find and reutrn only <i>Novák</i>, but not <i>Kuhnová</i>
+* The result and your input must match. For example, if you input <i>Nová</i> as a surname, the application will neither <i>Novák</i> nor <i>Kuhnová</i>
 
 In addition, you can also select whether the application shall return only the persons who are still active in the company or whether it shall reutrn also those that are no longer active.
 
@@ -73,18 +63,14 @@ You will be greeted with the following search form:
 ![image](https://user-images.githubusercontent.com/46304018/116795207-815b5580-aad3-11eb-856a-1fb4e0f9a831.png)
 
 The form allows you to search for legal persons registered in the Commercial Register as members of executive bodies, members of supervisory boards, shareholders in a limited liability companies, sole shareholders in a joint stock companies. The form allows you to search by the following properties:
-<ul>
-  <li>Company name</li>
-  <li>Identification No. (for Czech companies)</li>
-  <li>Foreign registration No. (for foreign copmpanies) --- this is yet to be implemented</li>
-</ul>  
+* Company name
+* Identification No. (for Czech companies)
+* Foreign registration No. (for foreign copmpanies) --- this is yet to be implemented
 
 In the fields where you fill-in input data, you can also select one of the following options:
-<ul>
-  <li>Your input can be anywere in the result. For example, if you input <i>Trade</i> as a company name, the application will find and return both <i>SILOMAN Trade a.s.</i> and <i>Trade Bridge a.s.</i> </li>
-  <li>The result must start with your input. For example, if you input <i>Trade</i> as a company name, the application will find and reutrn only <i>Trade Bridge a.s.</i>, but not <i>SILOMAN Trade a.s.</i></li>
-  <li>The result and your input must match. For example, if you input <i>Trade</i> as a company name, the application will neither <i>SILOMAN Trade a.s.</i> nor <i>Trade Bridge a.s.</i></li>
-</ul>  
+* Your input can be anywere in the result. For example, if you input <i>Trade</i> as a company name, the application will find and return both <i>SILOMAN Trade a.s.</i> and <i>Trade Bridge a.s.</i>
+* The result must start with your input. For example, if you input <i>Trade</i> as a company name, the application will find and reutrn only <i>Trade Bridge a.s.</i>, but not <i>SILOMAN Trade a.s.</i>
+* The result and your input must match. For example, if you input <i>Trade</i> as a company name, the application will neither <i>SILOMAN Trade a.s.</i> nor <i>Trade Bridge a.s.</i>  
 
 In addition, you can also select whether the application shall return only the legal persons who are still active in the company or whether it shall reutrn also those that are no longer active.
 
@@ -110,10 +96,8 @@ A standard result when you search for a legal person active in a company. It fir
 <h2>Display detailed company data:</h2>
 The application also allows you to display detailed data about each company in two forms:
 
-<ul>
-<li>Historical extract, showing all data, including those that are no longer relevant</li>
-<li>Current extract, showing only the up-to-date data</li>
-</ul>
+* Historical extract, showing all data, including those that are no longer relevant
+* Current extract, showing only the up-to-date data
 
 A historical extract can look something like this. The data that are no longer up-to-date are underlined.
 
@@ -127,12 +111,10 @@ You can also explore some interesting information about the data stored in the C
 
 <h1>Known issues</h1>
 This is an early prototype not yet suitable for production deployment as there are multiple issues that need to be resolved. The main issues are as follows:
-<ul>
-<li>Czech diacritics are not processed properly and based on my initial research, I suspect that this is due to SQLite limitations.</li>
-<li>Not all information available in the open data sets are stored in the application database.</li>  
-<li>The underlying code should be refactored to remove excessive duplications.</li>
-<li>I should unify the naming of functions and variables. Now, it is a mixtrue of Czech and English language, partly because it uses some Czech legal terms and the same variables that are used in the source open data.</li>  
-<li>I should somehow hide the secret keys before deploying the app. I am keeping it in to make it easier for people to test the app.</li>
-<li>I do not know how to deploy such application :)</li>
 
-</ul>
+* Czech diacritics are not processed properly and based on my initial research, I suspect that this is due to SQLite limitations.
+* Not all information available in the open data sets are stored in the application database.
+* The underlying code should be refactored to remove excessive duplications.
+* I should unify the naming of functions and variables. Now, it is a mixtrue of Czech and English language, partly because it uses some Czech legal terms and the same variables that are used in the source open data.
+* I should somehow hide the secret keys before deploying the app. I am keeping it in to make it easier for people to test the app.
+* I do not know how to deploy such application :)
