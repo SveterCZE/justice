@@ -1,0 +1,7 @@
+requests
+send2trash
+lxml
+flask
+flask_sqlalchemy
+flask_table
+wtforms
