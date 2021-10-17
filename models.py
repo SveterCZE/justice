@@ -505,7 +505,14 @@ class Adresy_v2(db.Model):
             joined_address += self.obec
         if (self.stat != "Česká republika") and (self.stat != "Česká republika - neztotožněno") and (self.stat != "0"):
             joined_address += ", " + self.stat
+        # if joined_address == "":
+        #     return "adresa nedostupná"
+        # else:
         return joined_address
+    
+    def __len__(self):
+        address_text = self.__repr__()
+        return len(address_text)
 
 class Insolvency_Events(db.Model):
     __tablename__ = "insolvency_events"

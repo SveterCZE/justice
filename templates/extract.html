@@ -606,7 +606,7 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-        <td>{{ underlne_style_open|safe }} {{row.ubo[i].jmeno }} {{row.ubo[i].jmeno.adresa}} 
+        <td>{{ underlne_style_open|safe }} {{row.ubo[i].jmeno }}{% if row.ubo[i].jmeno.adresa|length > 0 %}, {{row.ubo[i].jmeno.adresa }} {% endif %}
             {% if row.ubo[i].postaveni != "0" %}<br>{{row.ubo[i].postaveni }}{% endif %}
             {% if row.ubo[i].koncovyPrijemceText != "0" %}<br>{{row.ubo[i].koncovyPrijemceText }}{% endif %} {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.ubo[i].zapis_datum }} {% if row.ubo[i].vymaz_datum != 0 %} <br> Vymazáno: {{ row.ubo[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
