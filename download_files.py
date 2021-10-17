@@ -21,7 +21,7 @@ def download_list_filenames():
         # print("Downloading file ", source)
         download.raise_for_status()
     except Exception as exc:
-        print("There was a problem: %s" % (exc))
+        print("There was a problem: %s. Please check whether https://dataor.justice.cz is online. If not, try again later." % (exc))
         return None
     return download
 
