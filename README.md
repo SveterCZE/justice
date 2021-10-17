@@ -1,7 +1,7 @@
-<h1>Introduction:</h1>
+<h1>Introduction</h1>
 My first larger project, an application using Pyhon, Flask and SQLite to download open commercial register data from the Czech Ministry of Justice (justice.cz) and convert them into an sqlite3 database. The applicaton also contains a front-end component to search in the database by various properties. The main goal of the application is to provide users with more advanced search options compared to the official search at the Ministry of Justice website. 
 
-<h1>Installation:</h1>
+<h1>Installation</h1>
 Download a zip file containing the whole repository and store it into a folder on your PC. You should preferably use a virtual environment. 
 
 You will need the following packages:
@@ -15,13 +15,13 @@ You will need the following packages:
   <li>wtforms</li>
 </ul>  
 
-<h1>Running the application:</h1>
+<h1>Running the application</h1>
 Firstly, you need to download the open data from the Ministry of Justice and build the database. Run "python justice_build.py", which will download all the source files, create an SQLite database and parse the downloaded data into the database. Note that after the downloaded data are uncompressed, they are around 13 GB and the database file has around 3.6 GB. It takes approximately 1 hour to download the data and build the database.
 
 Once the database is built, run "python main.py" and open http://127.0.0.1:5000 You will be greeted with a search form that is described below.
 
-<h1>Features:</h1>
-<h2>Search by company properties:</h2>
+<h1>Features</h1>
+<h2>Search by company properties</h2>
 You will be greeted with the following search form.
 
 ![image](https://user-images.githubusercontent.com/46304018/116794252-e90da280-aacb-11eb-92aa-93cb300c2043.png)
@@ -74,7 +74,7 @@ In the fields where you fill-in input data, you can also select one of the follo
 
 In addition, you can also select whether the application shall return only the persons who are still active in the company or whether it shall reutrn also those that are no longer active.
 
-<h2>Search by legal persons:</h2>
+<h2>Search by legal persons</h2>
 You will be greeted with the following search form:
 
 ![image](https://user-images.githubusercontent.com/46304018/116795207-815b5580-aad3-11eb-856a-1fb4e0f9a831.png)
@@ -95,7 +95,7 @@ In the fields where you fill-in input data, you can also select one of the follo
 
 In addition, you can also select whether the application shall return only the legal persons who are still active in the company or whether it shall reutrn also those that are no longer active.
 
-<h2>Display search results:</h2>
+<h2>Display search results</h2>
 Once you hit the search button, you the results will be displayed to you. Several examples are displayed below.
 
 A stadard result when you search by company properties.
@@ -129,10 +129,10 @@ A historical extract can look something like this. The data that are no longer u
 A current extract looks like this.
 ![image](https://user-images.githubusercontent.com/46304018/116795940-d6e63100-aad8-11eb-94d4-2a4841329f56.png)
 
-<h2>Trivia:</h2>
+<h2>Trivia</h2>
 You can also explore some interesting information about the data stored in the Commercial register. You can find, for example, a list of the oldest existing companies or addresses at which the most companies have their registered office. Go and check it yourselves :)
 
-<h1>Known issues:</h1>
+<h1>Known issues</h1>
 This is an early prototype not yet suitable for production deployment as there are multiple issues that need to be resolved. The main issues are as follows:
 <ul>
 <li>Czech diacritics are not processed properly and based on my initial research, I suspect that this is due to SQLite limitations.</li>
