@@ -1,0 +1,29 @@
+{% include 'header.html' %}
+
+<h1>Nejdéle registrovaní statutáři:</h1>
+<table class="table table-hover" style="width: auto">
+    <thead class="thead-dark">
+    <tr class="table-info">
+        <th scope="col">#</th>
+        <th scope="col">Jméno a příjmení</th>
+        <th scope="col">Datum narození</th>
+        <th scope="col">Adresa</th>
+        <th scope="col">Ve společnosti</th>
+        <th scope="col">Datum zápisu</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range (longest_registered_executives_list|length) %}
+    <tr>
+        <th scope = "row">{{ i + 1 }}</th>
+        <td>{% if longest_registered_executives_list[i][0] != "0" %} {{ longest_registered_executives_list[i][0] }} {% endif %}{{ longest_registered_executives_list[i][1] }}</a></td>
+        <td>{{ longest_registered_executives_list[i][2] }}</td>
+        <td>{{ longest_registered_executives_list[i][5] }}</td>
+        <td>{{ longest_registered_executives_list[i][3] }}, IČ: <a href="{{ longest_registered_executives_list[i][4] }}">{{ longest_registered_executives_list[i][4] }}</a></td>
+        <td>{{ longest_registered_executives_list[i][6] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% include 'footer.html' %}

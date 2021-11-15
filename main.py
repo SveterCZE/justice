@@ -504,6 +504,21 @@ def find_most_common_degree():
     most_common_degree_after = count_common_degrees("after")
     return render_template("most_common_degree.html", most_common_degree_before = most_common_degree_before, most_common_degree_after = most_common_degree_after)        
 
+@app.route("/oldest_shareholders", methods=['GET', 'POST'])
+def find_oldest_shareholder():
+    oldest_shareholders_list = count_oldest_shareholders()
+    return render_template("oldest_shareholders.html", oldest_shareholders_list=oldest_shareholders_list)
+
+@app.route("/longest_registered_shareholders", methods=['GET', 'POST'])
+def find_longest_registered_shareholders():
+    longest_registered_shareholders_list = count_longest_registered_shareholders()
+    return render_template("longest_registered_shareholders.html", longest_registered_shareholders_list=longest_registered_shareholders_list)
+
+@app.route("/longest_registered_executives", methods=['GET', 'POST'])
+def find_longest_registered_executives():
+    longest_registered_executives_list = count_longest_registered_executives()
+    return render_template("longest_registered_executives.html", longest_registered_executives_list=longest_registered_executives_list)
+
 def count_number_entries():
     engine = create_engine('sqlite:///justice.db', echo=True)
     conn = engine.connect()
@@ -609,6 +624,54 @@ def count_oldest_companies():
         oldest_companies.append((selected_company[0].nazev, selected_company[0].zapis, selected_company[0].ico)) 
     return oldest_companies
     
+def count_oldest_shareholders():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '2099-10-10' ELSE datum_naroz END ASC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    oldest_shareholders = []
+    for elem in result:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        oldest_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3]))
+    return oldest_shareholders
+
+def count_longest_registered_shareholders():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '2099-10-10' ELSE zapis_datum END ASC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    longest_registered_shareholders = []
+    for elem in result:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        longest_registered_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3]))
+    return longest_registered_shareholders
+
+def count_longest_registered_executives():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '2099-10-10' ELSE zapis_datum END ASC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    longest_registered_shareholders = []
+    for elem in result:
+        qry = Company.query
+        qry = qry.join(Statutarni_Organ_Association, Company.statutarni_organ_text)
+        qry = qry.filter(Statutarni_Organ_Association.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        longest_registered_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3]))
+    return longest_registered_shareholders
 
 if __name__ == '__main__':
     app.run()
