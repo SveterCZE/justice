@@ -94,6 +94,8 @@ class JusticeSearchForm(GeneralSearchForm):
     soud_search_actual = SelectField('', choices=actual_options)
 
     insolvent_only_search = BooleanField("Pouze společnosti s insolvenčním zápisem")
+    criminal_record_only_search = BooleanField("Pouze společnosti s trestním zápisem")
+    
     zapis_do = DateField(u'Zapsáno do:', format='%Y-%m-%d')
     zapis_od = DateField(u'Zapsáno od:', format='%Y-%m-%d')
 

@@ -115,3 +115,11 @@ def unzip_file(filename, temp_file):
 def delete_archive(file):
     send2trash.send2trash(file)
     return 0
+
+def download_criminal_records():
+    source = "https://eservice-po.rejtr.justice.cz/public/odsouzeni_xml"
+    file_address = os.path.join(str(os.getcwd()), "data", "criminal_records.xml")
+    downloaded_criminal_extracts = downloadOR(source)
+    if downloaded_criminal_extracts != None:
+        save_temp_file(downloaded_criminal_extracts, file_address)
+    return 0

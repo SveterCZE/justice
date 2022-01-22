@@ -541,6 +541,31 @@
     {% endif %}
     <!-- END Konkurz Events -->
 
+    <!-- Description of criminal records -->
+    {% if row.criminal_record|length > 0 %}
+    {% for i in range (row.criminal_record|length) %}
+    <tr>
+        <td>{% if i == 0%}Údaje o trestních odsouzeních:{% endif %}</td>
+        <td>Rozsudek první instance: {{ row.criminal_record[i].first_instance }}</td>
+    </tr>
+    {% if row.criminal_record[i].second_instance != Null %}
+    <tr>
+        <td></td>
+        <td>Rozsudek druhé instance: {{ row.criminal_record[i].second_instance }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td></td>
+        <td>Dotčené předpisy: {{ row.criminal_record[i].paragraphs }}</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Udělené tresty: {{ row.criminal_record[i].penalties }}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}    
+    <!-- END Description of criminal records -->
+
     <!-- Ostatni skutecnosti -->
     {% if ostatni_skutecnosti_notes|length > 0 %}   
         {% for i in range (ostatni_skutecnosti_notes|length) %}

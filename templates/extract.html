@@ -672,6 +672,35 @@
     {% endif %}    
 <!-- END Description of bankruptcy event -->
 
+<!-- Description of criminal records -->
+    {% if row.criminal_record|length > 0 %}
+    {% for i in range (row.criminal_record|length) %}
+    <tr>
+        <td>{% if i == 0%}Údaje o trestních odsouzeních:{% endif %}</td>
+        <td>Rozsudek první instance: {{ row.criminal_record[i].first_instance }}</td>
+        <td></td>
+    </tr>
+    {% if row.criminal_record[i].second_instance != None %}
+    <tr>
+        <td></td>
+        <td>Rozsudek druhé instance: {{ row.criminal_record[i].second_instance }}</td>
+        <td></td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td></td>
+        <td>Dotčené předpisy: {{ row.criminal_record[i].paragraphs }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Udělené tresty: {{ row.criminal_record[i].penalties }}</td>
+        <td></td>
+    </tr>
+    {% endfor %}
+    {% endif %}    
+<!-- END Description of criminal records -->
+
 <!-- Insert other information -->
     {% if row.ostatni_skutecnosti|length > 0 %}
     {% for i in range (row.ostatni_skutecnosti|length) %}

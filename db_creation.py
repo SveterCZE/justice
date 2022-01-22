@@ -72,6 +72,17 @@ def create_tables(conn):
 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
 ); """
 
+    criminal_records = """ CREATE TABLE "criminal_records" (
+	"id" 				INTEGER NOT NULL UNIQUE,
+	"company_id"		INTEGER NOT NULL,
+	"first_instance"	TEXT,
+	"second_instance"	TEXT,
+	"paragraphs"		TEXT,
+	"penalties"			TEXT,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
+	) """
+
     dr_relation = """ CREATE TABLE "dozorci_rada_relation" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"company_id"	INTEGER NOT NULL,
@@ -479,7 +490,7 @@ def create_tables(conn):
 	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organ_relation"("id")
 ); """
 
-    list_of_tables = [companies, adresy_v2, akcie, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events, 
+    list_of_tables = [companies, adresy_v2, akcie, criminal_records, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events, 
     jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, podilnici, pravni_formy, 
     pravni_formy_relation, pravnicke_osoby, predmety_cinnosti, predmety_cinnosti_relation, prdmety_podnikani, predmety_podnikani_relation,
     prokura_common_texts, prokuriste, sidlo_relation, spolecnici, spolecnici_uvolneny_podil, spolecnici_spolecny_podil, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, ubo, 

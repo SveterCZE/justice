@@ -5,7 +5,7 @@ from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
 from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_Clen_Association, Fyzicka_Osoba, Spolecnici_Association, Podily_Association, Druhy_Podilu, Pravnicka_Osoba
 from models import Prokurista_Association, Dozorci_Rada_Clen_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy, Ucel, Ucel_Association
-from models import Adresy_v2, Uvolneny_Podil_Association, Spolecny_Podil_Association, Podilnici_Association
+from models import Adresy_v2, Uvolneny_Podil_Association, Spolecny_Podil_Association, Podilnici_Association, Criminal_Records
 from tables import Results
 from sqlalchemy.sql import select
 from sqlalchemy.sql import text
@@ -14,7 +14,6 @@ from sqlalchemy import create_engine
 @app.route('/', methods=['GET', 'POST'])
 def index():
     search = JusticeSearchForm(request.form)
-    # print(search)
     if request.method == 'POST':
         return search_results(search)
 
@@ -23,7 +22,6 @@ def index():
 @app.route('/osoby', methods=['GET', 'POST'])
 def search_person():
     search = PersonSearchForm(request.form)
-    # print(search)
     if request.method == 'POST':
         return search_results_person(search)
 
@@ -32,7 +30,6 @@ def search_person():
 @app.route('/entity', methods=['GET', 'POST'])
 def search_entity():
     search = EntitySearchForm(request.form)
-    # print(search)
     if request.method == 'POST':
         return search_results_entity(search)
 
@@ -270,6 +267,8 @@ def search_results(search):
     soud_actual_or_full = search.soud_search_actual.data
 
     insolvent_only = search.insolvent_only_search.data
+
+    criminal_record_only = search.criminal_record_only_search.data
     
     zapsano_od = search.zapis_od.data
     zapsano_do = search.zapis_do.data
@@ -283,6 +282,9 @@ def search_results(search):
         qry_konkurz = qry_konkurz.join(Konkurz_Events, Company.konkurz)
         qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == 0)
         qry = qry.union(qry_konkurz)
+
+    if criminal_record_only:
+        qry = qry.join(Criminal_Records, Company.criminal_record)
 
     if ico:
         if ico_search_method == "text_anywhere":

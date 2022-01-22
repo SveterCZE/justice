@@ -19,7 +19,12 @@
             {% endif %}    
         {% endfor %}
 
-        {% if insolvency_notes|length > 0 %}
+        {% set criminal_notes = [] %}
+        {% for i in range (row.criminal_record|length) %}
+            {% set criminal_notes = criminal_notes.append(row.criminal_record[i].penalties) %}
+        {% endfor %}
+
+        {% if insolvency_notes|length > 0 or criminal_notes|length > 0 %}
             {% set table_style = "table table-danger" %}
         {% elif loop.index % 2 == 0 %}
             {% set table_style = "table table-light" %}
@@ -73,6 +78,15 @@
         </tr>            
         {% endfor %}
     {% endif %}
+
+    {% if criminal_notes|length > 0 %}
+        {% for i in range (criminal_notes|length) %}
+        <tr>
+            <td colspan="4">Osoba byla odsouzena k následujícím trestům: {{ criminal_notes[i] }}</td>
+        </tr>            
+        {% endfor %}
+    {% endif %}
+
     </table>
     {% endfor %}
     
