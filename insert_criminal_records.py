@@ -96,12 +96,14 @@ def insert_crimnal_data_to_DB(c, primary_sql_key, court_records, relevant_paragr
     else:
         second_instance = None
     text_paragraphs = ""
-    for elem in relevant_paragraphs:
-        text_paragraphs += elem
-        text_paragraphs += ", "
+    if relevant_paragraphs != None:
+        for elem in relevant_paragraphs:
+            text_paragraphs += elem
+            text_paragraphs += ", "
     text_penalties = ""
-    for elem in penalties:
-        text_penalties += elem
-        text_penalties += ", "
+    if penalties != None:
+        for elem in penalties:
+            text_penalties += elem
+            text_penalties += ", "
     c.execute("INSERT INTO criminal_records (company_id, first_instance, second_instance, paragraphs, penalties) VALUES (?, ?, ?, ?, ?)", (primary_sql_key, first_instance, second_instance, text_paragraphs[:-2], text_penalties[:-2],))
     return 0
