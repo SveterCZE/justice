@@ -8,10 +8,10 @@
     {% for row in results %}
     {% set test_list = [] %}
     {% for elem in row.statut_org_association %}
+        {% set my_dict = {} %}
         {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
             {% set xxx = [] %}
         {% else %}
-            {% set my_dict = {} %}
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
             {% set x = my_dict.__setitem__("funkce", elem.funkce) %}
             {% set x = my_dict.__setitem__("nazev", elem.statutarni_organ.company.nazev) %}
@@ -21,15 +21,15 @@
             {% set x = my_dict.__setitem__("soud", elem.statutarni_organ.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.statutarni_organ.company.zapis) %}
             {% set x = my_dict.__setitem__("pravni_forma", elem.statutarni_organ.company.current_legal_form_text()) %}
-            {% set test_list = test_list.append(my_dict) %}
+            {% include 'duplicate_search.html' %}
         {% endif %}
     {% endfor %}
 
     {% for elem in row.supervisory_board_member_association %}
+        {% set my_dict = {} %}
         {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
             {% set xxx = [] %}
         {% else %}    
-            {% set my_dict = {} %}
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
             {% set x = my_dict.__setitem__("funkce", elem.funkce) %}
             {% set x = my_dict.__setitem__("nazev", elem.dozorci_rada.company.nazev) %}
@@ -39,15 +39,15 @@
             {% set x = my_dict.__setitem__("soud", elem.dozorci_rada.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.dozorci_rada.company.zapis) %}
             {% set x = my_dict.__setitem__("pravni_forma", elem.dozorci_rada.company.current_legal_form_text()) %}
-            {% set test_list = test_list.append(my_dict) %}
-        {% endif %}
-    {% endfor %}    
+            {% include 'duplicate_search.html' %}
+            {% endif %}
+    {% endfor %}
 
     {% for elem in row.spolecnik_association %}
+        {% set my_dict = {} %}
         {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
             {% set xxx = [] %}
         {% else %}        
-            {% set my_dict = {} %}
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
             {% set x = my_dict.__setitem__("funkce", "společník") %}
             {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
@@ -57,15 +57,15 @@
             {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
             {% set x = my_dict.__setitem__("pravni_forma", elem.company.current_legal_form_text()) %}
-            {% set test_list = test_list.append(my_dict) %}
-        {% endif %}
-    {% endfor %}    
+            {% include 'duplicate_search.html' %}  
+            {% endif %}
+    {% endfor %}
 
     {% for elem in row.sole_shareholder_association %}
+        {% set my_dict = {} %}
         {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
             {% set xxx = [] %}
         {% else %}            
-            {% set my_dict = {} %}
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
             {% set x = my_dict.__setitem__("funkce", "jediný akcionář") %}
             {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
@@ -75,15 +75,15 @@
             {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
             {% set x = my_dict.__setitem__("pravni_forma", elem.company.current_legal_form_text()) %}
-            {% set test_list = test_list.append(my_dict) %}
+            {% include 'duplicate_search.html' %}
         {% endif %}
     {% endfor %}
     
     {% for elem in row.prokurista_association %}
+        {% set my_dict = {} %}
         {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
             {% set xxx = [] %}
         {% else %}     
-            {% set my_dict = {} %}
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
             {% set x = my_dict.__setitem__("funkce", "prokurista") %}
             {% set x = my_dict.__setitem__("nazev", elem.company.nazev) %}
@@ -93,9 +93,9 @@
             {% set x = my_dict.__setitem__("soud", elem.company.soud) %}
             {% set x = my_dict.__setitem__("zapis", elem.company.zapis) %}
             {% set x = my_dict.__setitem__("pravni_forma", elem.company.current_legal_form_text()) %}
-            {% set test_list = test_list.append(my_dict) %}
-        {% endif %}
-    {% endfor %}    
+            {% include 'duplicate_search.html' %}
+            {% endif %}
+    {% endfor %}
 
     {% for elem in row.ubo_association %}
         {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
