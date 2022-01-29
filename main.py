@@ -1,11 +1,11 @@
 from app import app
-from forms import GeneralSearchForm, JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm 
+from forms import GeneralSearchForm, JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm
 from flask import flash, render_template, request, redirect
-from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Ubo 
+from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Ubo
 from models import Zakladni_Kapital, Akcie, Nazvy, Sidlo, Sidlo_Association, Pravni_Forma_Association_v2, Pravni_Formy, Statutarni_Organ_Association, Statutarni_Organy, Pocty_Clenu_Organu
 from models import Zpusob_Jednani_Association, Zpusob_Jednani, Statutarni_Organ_Clen_Association, Fyzicka_Osoba, Spolecnici_Association, Podily_Association, Druhy_Podilu, Pravnicka_Osoba
 from models import Prokurista_Association, Dozorci_Rada_Clen_Association, Jediny_Akcionar_Association, Prokura_Common_Text_Association, Soudni_Zapisy, Ucel, Ucel_Association
-from models import Adresy_v2, Uvolneny_Podil_Association, Spolecny_Podil_Association, Podilnici_Association, Criminal_Records
+from models import Adresy_v2, Uvolneny_Podil_Association, Spolecny_Podil_Association, Podilnici_Association, Criminal_Records, Dozorci_Rada_Association
 from tables import Results
 from sqlalchemy.sql import select
 from sqlalchemy.sql import text
@@ -50,7 +50,7 @@ def search_results_person(search):
 
     obec = search.obec_search.data
     obec_search_method = search.obec_search_selection.data
-    
+
     ulice = search.ulice_search.data
     ulice_search_method = search.ulice_search_selection.data
 
@@ -141,7 +141,7 @@ def search_results_entity(search):
 
     obec = search.obec_search.data
     obec_search_method = search.obec_search_selection.data
-    
+
     ulice = search.ulice_search.data
     ulice_search_method = search.ulice_search_selection.data
 
@@ -159,7 +159,7 @@ def search_results_entity(search):
         qry1 = Pravnicka_Osoba.query
         if entity_number_search_method == "text_anywhere":
             qry = qry.filter(Pravnicka_Osoba.ico.contains(entity_number))
-            qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo.contains(entity_number)) 
+            qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo.contains(entity_number))
         elif entity_number_search_method == "text_beginning":
             qry = qry.filter(Pravnicka_Osoba.ico.like(f'{entity_number}%'))
             qry1 = qry1.filter(Pravnicka_Osoba.reg_cislo.like(f'{entity_number}%'))
@@ -210,7 +210,7 @@ def search_results_entity(search):
         elif co_search_method == "text_beginning":
             qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
         elif co_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloOr == co)    
+            qry = qry.filter(Adresy_v2.cisloOr == co)
 
     results = qry.all()
     print(results)
@@ -228,26 +228,26 @@ def search_results_entity(search):
 @app.route('/results')
 def search_results(search):
     results = []
-    
+
     ico = search.ico_search.data
     ico_search_method = search.ico_search_selection.data
-    
+
     nazev = search.nazev_subjektu.data
     nazev_search_method = search.nazev_subjektu_selection.data
     nazev_actual_or_full = search.nazev_search_actual.data
-    
+
     oddil = search.oddil_search.data
     oddil_search_method = search.oddil_search_selection.data
     oddil_actual_or_full = search.oddil_search_actual.data
-    
+
     vlozka = search.vlozka_search.data
     vlozka_search_method = search.vlozka_search_selection.data
     vlozka_actual_or_full = search.vlozka_search_actual.data
-    
+
     obec = search.obec_search.data
     obec_search_method = search.obec_search_selection.data
     obec_actual_or_full = search.obec_search_actual.data
-    
+
     ulice = search.ulice_search.data
     ulice_search_method = search.ulice_search_selection.data
     ulice_actual_or_full = search.ulice_search_actual.data
@@ -262,17 +262,17 @@ def search_results(search):
 
     pravni_forma = search.pravni_forma_search.data
     pravni_forma_actual_or_full = search.pravni_forma_actual.data
-    
+
     soud = search.soud_search.data
     soud_actual_or_full = search.soud_search_actual.data
 
     insolvent_only = search.insolvent_only_search.data
 
     criminal_record_only = search.criminal_record_only_search.data
-    
+
     zapsano_od = search.zapis_od.data
     zapsano_do = search.zapis_do.data
-    
+
     qry = Company.query
 
     if insolvent_only:
@@ -349,7 +349,7 @@ def search_results(search):
         elif ulice_search_method == "text_beginning":
             qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
         elif ulice_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.ulice == ulice)       
+            qry = qry.filter(Adresy_v2.ulice == ulice)
 
     if cp:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
@@ -361,7 +361,7 @@ def search_results(search):
         elif cp_search_method == "text_beginning":
             qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
         elif cp_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloPo == cp)       
+            qry = qry.filter(Adresy_v2.cisloPo == cp)
 
     if co:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
@@ -373,21 +373,21 @@ def search_results(search):
         elif co_search_method == "text_beginning":
             qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
         elif co_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloOr == co)    
+            qry = qry.filter(Adresy_v2.cisloOr == co)
 
     if pravni_forma:
         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
         if pravni_forma_actual_or_full == "actual_results":
-            qry = qry.filter(Pravni_Forma_Association_v2.vymaz_datum == 0)     
+            qry = qry.filter(Pravni_Forma_Association_v2.vymaz_datum == 0)
         qry = qry.join(Pravni_Formy, Pravni_Forma_Association_v2.pravni_forma_text)
         qry = qry.filter(Pravni_Formy.pravni_forma == pravni_forma)
-    
+
     if soud:
         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
         if soud_actual_or_full == "actual_results":
             qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
-        qry = qry.filter(Soudni_Zapisy.soud == soud)  
-    
+        qry = qry.filter(Soudni_Zapisy.soud == soud)
+
     if zapsano_od:
         qry = qry.filter(Company.zapis >= zapsano_od)
     if zapsano_do:
@@ -473,7 +473,7 @@ def trivia():
 @app.route("/most_common_addresses", methods=['GET', 'POST'])
 def find_most_common_addresses():
     most_common_addresses = count_common_addresses()
-    return render_template("most_common_addresses.html", most_common_addresses = most_common_addresses)    
+    return render_template("most_common_addresses.html", most_common_addresses = most_common_addresses)
 
 @app.route("/oldest_companies", methods=['GET', 'POST'])
 def find_oldest_companies():
@@ -488,38 +488,35 @@ def find_most_common_purpose():
 @app.route("/most_common_ubo", methods=['GET', 'POST'])
 def find_most_common_ubo():
     most_common_ubo = count_common_ubo()
-    return render_template("most_common_ubo.html", most_common_ubo = most_common_ubo)        
+    return render_template("most_common_ubo.html", most_common_ubo = most_common_ubo)
 
 @app.route("/most_common_business", methods=['GET', 'POST'])
 def find_most_common_business():
     most_common_business = count_common_business()
-    return render_template("most_common_business.html", most_common_business = most_common_business)    
+    return render_template("most_common_business.html", most_common_business = most_common_business)
 
 @app.route("/most_common_activity", methods=['GET', 'POST'])
 def find_most_common_activity():
     most_common_activity = count_common_activity()
-    return render_template("most_common_activity.html", most_common_activity = most_common_activity)        
+    return render_template("most_common_activity.html", most_common_activity = most_common_activity)
 
 @app.route("/most_common_degree", methods=['GET', 'POST'])
 def find_most_common_degree():
     most_common_degree_before = count_common_degrees("before")
     most_common_degree_after = count_common_degrees("after")
-    return render_template("most_common_degree.html", most_common_degree_before = most_common_degree_before, most_common_degree_after = most_common_degree_after)        
+    return render_template("most_common_degree.html", most_common_degree_before = most_common_degree_before, most_common_degree_after = most_common_degree_after)
 
-@app.route("/oldest_shareholders", methods=['GET', 'POST'])
-def find_oldest_shareholder():
-    oldest_shareholders_list = count_oldest_shareholders()
-    return render_template("oldest_shareholders.html", oldest_shareholders_list=oldest_shareholders_list)
+@app.route("/oldest_persons", methods=['GET', 'POST'])
+def find_oldest_persons():
+    connected_list = count_oldest_shareholders() + count_oldest_executieves() + count_oldest_sole_shareholders() + count_oldest_prokurists() + count_oldest_supervisory_members()
+    sorted_list = sorted(connected_list, key=lambda elem: elem[2])
+    return render_template("oldest_persons.html", oldest_persons_list=sorted_list[:100])
 
-@app.route("/longest_registered_shareholders", methods=['GET', 'POST'])
-def find_longest_registered_shareholders():
-    longest_registered_shareholders_list = count_longest_registered_shareholders()
-    return render_template("longest_registered_shareholders.html", longest_registered_shareholders_list=longest_registered_shareholders_list)
-
-@app.route("/longest_registered_executives", methods=['GET', 'POST'])
-def find_longest_registered_executives():
-    longest_registered_executives_list = count_longest_registered_executives()
-    return render_template("longest_registered_executives.html", longest_registered_executives_list=longest_registered_executives_list)
+@app.route("/longest_registered_persons", methods=['GET', 'POST'])
+def find_longest_registered_persons():
+    connected_list = count_longest_registered_executives() + count_longest_registered_shareholders() + count_longest_registered_sole_shareholders() + count_longest_registered_prokurists() + count_longest_registered_supervsiory_members()
+    sorted_list = sorted(connected_list, key=lambda elem: elem[6])
+    return render_template("longest_registered_persons.html", longest_registered_persons_list=sorted_list[:100])
 
 def count_number_entries():
     engine = create_engine('sqlite:///justice.db', echo=True)
@@ -555,7 +552,7 @@ def count_common_business():
         selected_business = qry.all()
         business_frequency.append((selected_business[0].predmet_podnikani, elem[1]))
     conn.close()
-    return business_frequency  
+    return business_frequency
 
 def count_common_activity():
     engine = create_engine('sqlite:///justice.db', echo=True)
@@ -569,7 +566,7 @@ def count_common_activity():
         selected_activity = qry.all()
         activity_frequency.append((selected_activity[0].predmet_cinnosti, elem[1]))
     conn.close()
-    return activity_frequency    
+    return activity_frequency
 
 def count_common_purpose():
     engine = create_engine('sqlite:///justice.db', echo=True)
@@ -595,7 +592,6 @@ def count_common_ubo():
         qry = Fyzicka_Osoba.query
         qry = qry.filter(Fyzicka_Osoba.id == elem[0])
         selected_ubo = qry.all()
-        # ubo_frequency.append((selected_ubo[0].jmeno + " " + selected_ubo[0].prijmeni, elem[1], elem[0]))
         ubo_frequency.append((selected_ubo[0], elem[1], elem[0]))
     conn.close()
     return ubo_frequency
@@ -623,13 +619,13 @@ def count_oldest_companies():
         qry = Company.query
         qry = qry.filter(Company.id == elem[0])
         selected_company = qry.all()
-        oldest_companies.append((selected_company[0].nazev, selected_company[0].zapis, selected_company[0].ico)) 
+        oldest_companies.append((selected_company[0].nazev, selected_company[0].zapis, selected_company[0].ico))
     return oldest_companies
-    
+
 def count_oldest_shareholders():
     engine = create_engine('sqlite:///justice.db', echo=True)
     conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '2099-10-10' ELSE datum_naroz END ASC LIMIT 100;")
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
     result = conn.execute(text_instruction).fetchall()
     oldest_shareholders = []
     for elem in result:
@@ -639,13 +635,79 @@ def count_oldest_shareholders():
         qry = Adresy_v2.query
         qry = qry.filter(Adresy_v2.id == elem[5])
         selected_address = qry.all()
-        oldest_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3]))
+        oldest_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "společník"))
     return oldest_shareholders
+
+def count_oldest_executieves():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    oldest_executives = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.join(Statutarni_Organ_Association, Company.statutarni_organ_text)
+        qry = qry.filter(Statutarni_Organ_Association.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        oldest_executives.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "člen statutárního orgánu"))
+    return oldest_executives
+
+def count_oldest_prokurists():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    oldest_prokurists = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        oldest_prokurists.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "prokurista"))
+    return oldest_prokurists
+
+def count_oldest_sole_shareholders():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    oldest_sole_shareholders = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        oldest_sole_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "jediný akcionář"))
+    return oldest_sole_shareholders
+
+def count_oldest_supervisory_members():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    oldest_supervisory_members = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.join(Dozorci_Rada_Association, Company.dozorci_rada_text)
+        qry = qry.filter(Dozorci_Rada_Association.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        oldest_supervisory_members.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "člen dozorčí rady"))
+    return oldest_supervisory_members
 
 def count_longest_registered_shareholders():
     engine = create_engine('sqlite:///justice.db', echo=True)
     conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '2099-10-10' ELSE zapis_datum END ASC LIMIT 100;")
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
     result = conn.execute(text_instruction).fetchall()
     longest_registered_shareholders = []
     for elem in result:
@@ -655,7 +717,7 @@ def count_longest_registered_shareholders():
         qry = Adresy_v2.query
         qry = qry.filter(Adresy_v2.id == elem[5])
         selected_address = qry.all()
-        longest_registered_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3]))
+        longest_registered_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "společník"))
     return longest_registered_shareholders
 
 def count_longest_registered_executives():
@@ -663,7 +725,7 @@ def count_longest_registered_executives():
     conn = engine.connect()
     text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '2099-10-10' ELSE zapis_datum END ASC LIMIT 100;")
     result = conn.execute(text_instruction).fetchall()
-    longest_registered_shareholders = []
+    longest_registered_executives = []
     for elem in result:
         qry = Company.query
         qry = qry.join(Statutarni_Organ_Association, Company.statutarni_organ_text)
@@ -672,8 +734,57 @@ def count_longest_registered_executives():
         qry = Adresy_v2.query
         qry = qry.filter(Adresy_v2.id == elem[5])
         selected_address = qry.all()
-        longest_registered_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3]))
-    return longest_registered_shareholders
+        longest_registered_executives.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "člen statutárního orgánu"))
+    return longest_registered_executives
+
+def count_longest_registered_sole_shareholders():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    longest_registered_sole_shareholders = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        longest_registered_sole_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "jediný akcionář"))
+    return longest_registered_sole_shareholders
+
+def count_longest_registered_prokurists():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    longest_registered_prokurists = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        longest_registered_prokurists.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "prokurista"))
+    return longest_registered_prokurists
+
+def count_longest_registered_supervsiory_members():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    longest_registered_supervisory_members = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.join(Dozorci_Rada_Association, Company.dozorci_rada_text)
+        qry = qry.filter(Dozorci_Rada_Association.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        longest_registered_supervisory_members.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "člen dozorčí rady"))
+    return longest_registered_supervisory_members
 
 if __name__ == '__main__':
     app.run()

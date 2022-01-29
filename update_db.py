@@ -14,6 +14,9 @@ def update_DB(file, DB_name):
             continue
         else:
             ICO = get_ICO(element)
+            # Bugfix to skip the old companies that have no Identification No.
+            if ICO == None:
+                continue
             # Vlozit prazdny radek s ICO
             insert_new_ICO(c, ICO, element)
             primary_sql_key = get_primary_sql_key(c, ICO)
@@ -29,7 +32,7 @@ def get_ICO(element):
     try:
         return element.find('ico').text
     except:
-        return "00000000"
+        return None
 
 # Function to attempt to insert a placeholder for a new company based on ICO
 def insert_new_ICO(c, ICO, element):

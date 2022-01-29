@@ -1,0 +1,31 @@
+{% include 'header.html' %}
+
+<h1>Nejstarší osoby:</h1>
+<table class="table table-hover" style="width: auto">
+    <thead class="thead-dark">
+    <tr class="table-info">
+        <th scope="col">#</th>
+        <th scope="col">Jméno a příjmení</th>
+        <th scope="col">Datum narození</th>
+        <th scope="col">Adresa</th>
+        <th scope="col">Funkce</th>
+        <th scope="col">Ve společnosti</th>
+        <th scope="col">Datum zápisu</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range (oldest_persons_list|length) %}
+    <tr>
+        <th scope = "row">{{ i + 1 }}</th>
+        <td>{% if oldest_persons_list[i][0] != "0" %} {{ oldest_persons_list[i][0] }} {% endif %}{{ oldest_persons_list[i][1] }}</a></td>
+        <td>{{ oldest_persons_list[i][2] }}</td>
+        <td>{{ oldest_persons_list[i][5] }}</td>
+        <td>{{ oldest_persons_list[i][7] }}</td>
+        <td>{{ oldest_persons_list[i][3] }}, IČ: <a href="{{ oldest_persons_list[i][4] }}">{{ oldest_persons_list[i][4] }}</a></td>
+        <td>{{ oldest_persons_list[i][6] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% include 'footer.html' %}
