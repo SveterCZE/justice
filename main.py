@@ -518,6 +518,12 @@ def find_longest_registered_persons():
     sorted_list = sorted(connected_list, key=lambda elem: elem[6])
     return render_template("longest_registered_persons.html", longest_registered_persons_list=sorted_list[:100])
 
+@app.route("/youngest_persons",  methods=['GET', 'POST'])
+def find_younges_persons():
+    connected_list = count_youngest_shareholders() + count_youngest_executieves() + count_youngest_sole_shareholders() + count_youngest_prokurists() + count_youngest_supervisory_members()
+    sorted_list = sorted(connected_list, key=lambda elem: elem[2], reverse=True)
+    return render_template("youngest_persons.html", youngest_persons_list=sorted_list[:100])
+
 def count_number_entries():
     engine = create_engine('sqlite:///justice.db', echo=True)
     conn = engine.connect()
@@ -703,6 +709,88 @@ def count_oldest_supervisory_members():
         selected_address = qry.all()
         oldest_supervisory_members.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "člen dozorčí rady"))
     return oldest_supervisory_members
+
+def count_youngest_shareholders():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
+    result = conn.execute(text_instruction).fetchall()
+    youngest_shareholders = []
+    for elem in result:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        youngest_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "společník"))
+    return youngest_shareholders
+
+def count_youngest_executieves():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    youngest_executives = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.join(Statutarni_Organ_Association, Company.statutarni_organ_text)
+        qry = qry.filter(Statutarni_Organ_Association.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        youngest_executives.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "člen statutárního orgánu"))
+    return youngest_executives
+
+def count_youngest_prokurists():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    youngest_prokurists = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        youngest_prokurists.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "prokurista"))
+    return youngest_prokurists
+
+def count_youngest_sole_shareholders():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    youngest_sole_shareholders = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.filter(Company.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        youngest_sole_shareholders.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "jediný akcionář"))
+    return youngest_sole_shareholders
+
+def count_youngest_supervisory_members():
+    engine = create_engine('sqlite:///justice.db', echo=True)
+    conn = engine.connect()
+    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
+    results = conn.execute(text_instruction).fetchall()
+    youngest_supervisory_members = []
+    for elem in results:
+        qry = Company.query
+        qry = qry.join(Dozorci_Rada_Association, Company.dozorci_rada_text)
+        qry = qry.filter(Dozorci_Rada_Association.id == elem[4])
+        selected_company = qry.all()
+        qry = Adresy_v2.query
+        qry = qry.filter(Adresy_v2.id == elem[5])
+        selected_address = qry.all()
+        youngest_supervisory_members.append((elem[0], elem[1], elem[2], selected_company[0].nazev, selected_company[0].ico, selected_address[0], elem[3], "člen dozorčí rady"))
+    return youngest_supervisory_members
 
 def count_longest_registered_shareholders():
     engine = create_engine('sqlite:///justice.db', echo=True)
