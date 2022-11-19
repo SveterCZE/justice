@@ -18,3 +18,4 @@ __pycache__/download_files.cpython-38.pyc
 __pycache__/update_db.cpython-38.pyc
 key_gen.py
 __pycache__/*
+config_data.py
