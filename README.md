@@ -1,8 +1,17 @@
 <h1>Introduction</h1>
 My first larger project, an application using Pyhon, Flask and SQLite to download open commercial register data from the Czech Ministry of Justice (justice.cz) and convert them into an sqlite3 database. The applicaton also contains a front-end component to search in the database by various properties. The main goal of the application is to provide users with more advanced search options compared to the official search at the Ministry of Justice website. 
 
+<h1>On-line version</h1>
+You can view a deployed application at http://svetercze.pythonanywhere.com/. Note that since it uses SQLite, some queries are VERY SLOW in the on-line version due to the hosting limitations. They should be, however, reaasonably fast if you run the application locally. 
+
+Also note that the databse is currently not being updated on a daily basis, so the data might not be up-to-date.
+
 <h1>Installation</h1>
 Download a zip file containing the whole repository and store it into a folder on your PC. You should preferably use a virtual environment. 
+
+You will need to create a `config_data.py` file in main folder with the following variables:
+* `secret_key` - Your secret key, for example `secret_key = "my-secret-password"`
+* `db_address` - The local address of the database. I recommend using the following, if you want to run the application locally `db_address = 'sqlite:///justice.db'`
 
 See `requirements.txt` for required packages.
 
@@ -116,5 +125,3 @@ This is an early prototype not yet suitable for production deployment as there a
 * Not all information available in the open data sets are stored in the application database.
 * The underlying code should be refactored to remove excessive duplications.
 * I should unify the naming of functions and variables. Now, it is a mixtrue of Czech and English language, partly because it uses some Czech legal terms and the same variables that are used in the source open data.
-* I should somehow hide the secret keys before deploying the app. I am keeping it in to make it easier for people to test the app.
-* I do not know how to deploy such application :)
