@@ -1,12 +1,12 @@
 import sqlite3
 
-def create_DB(db_file):
-    create_DB_file(db_file)
-    conn = create_connection(db_file)
+def create_DB(conn):
+    # create_DB_file(db_file)
+    # conn = create_connection(db_file)
     create_tables(conn)
-    create_indices(conn)
+    # create_indices(conn)
     conn.commit()
-    conn.close()
+    # conn.close()
 
 def create_DB_file(db_file):
     conn = None
@@ -28,473 +28,473 @@ def create_connection(db_file):
     return conn
 
 def create_tables(conn):
-    companies = """ CREATE TABLE "companies" (
-	"id"	INTEGER,
-	"ico"	TEXT NOT NULL UNIQUE,
-	"nazev"	TEXT,
-	"zapis"	DATE,
-	"oddil"	TEXT,
-	"vlozka"	TEXT,
-	"soud"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT)
-    ); """
+    list_of_tables = []
+    companies = """CREATE TABLE companies (
+	    id SERIAL PRIMARY KEY, 
+	    ico	TEXT NOT NULL UNIQUE, 
+	    nazev TEXT, 
+	    zapis DATE, 
+	    oddil TEXT, 
+	    vlozka TEXT, 
+	    soud TEXT)"""
+    list_of_tables.append(companies)
     
-    adresy_v2 = """ CREATE TABLE "adresy_v2" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"stat"	TEXT,
-	"obec"	TEXT,
-	"ulice"	TEXT,
-	"castObce"	TEXT,
-	"cisloPo"	INTEGER,
-	"cisloOr"	INTEGER,
-	"psc"	TEXT,
-	"okres"	TEXT,
-	"komplet_adresa"	TEXT,
-	"cisloEv"	INTEGER,
-	"cisloText"	TEXT,
-	"company_id"	INTEGER,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	UNIQUE("stat","obec","ulice","castObce","cisloPo","cisloOr","psc","okres","komplet_adresa","cisloEv","cisloText")
-    ); """
-
-    akcie = """ CREATE TABLE "akcie" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"akcie_podoba"	TEXT,
-	"akcie_typ"	TEXT,
-	"akcie_pocet"	TEXT,
-	"akcie_hodnota_typ"	TEXT,
-	"akcie_hodnota_value"	TEXT,
-	"akcie_text"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-
-    criminal_records = """ CREATE TABLE "criminal_records" (
-	"id" 				INTEGER NOT NULL UNIQUE,
-	"company_id"		INTEGER NOT NULL,
-	"first_instance"	TEXT,
-	"second_instance"	TEXT,
-	"paragraphs"		TEXT,
-	"penalties"			TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-	) """
-
-    dr_relation = """ CREATE TABLE "dozorci_rada_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    dr_organ_clen_relation = """ CREATE TABLE "dr_organ_clen_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"dozorci_rada_id"	INTEGER NOT NULL,
-	"osoba_id"	INTEGER,
-	"pravnicka_osoba_id" INTEGER,
-	"adresa_id"	INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"funkce_od"	DATE,
-	"funkce_do"	DATE,
-	"clenstvi_od"	DATE,
-	"clenstvi_do"	DATE,
-	"funkce"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	FOREIGN KEY("dozorci_rada_id") REFERENCES "dozorci_rada_relation"("id"),
-	FOREIGN KEY("osoba_id") REFERENCES "fyzicke_osoby"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    druhy_podilu = """ CREATE TABLE "druhy_podilu" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"druh_podilu"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"titul_pred"	TEXT,
-	"jmeno"	TEXT,
-	"prijmeni"	TEXT,
-	"titul_za"	TEXT,
-	"datum_naroz"	TEXT,
-	"adresa_id" INTEGER,
-	UNIQUE("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    insolvency_events = """ CREATE TABLE "insolvency_events" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	TEXT NOT NULL,
-	"zapis_datum"	DATE NOT NULL,
-	"vymaz_datum"	DATE,
-	"insolvency_event"	TEXT UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-
-    jediny_akcionar = """ CREATE TABLE "jediny_akcionar" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"text_akcionar"	TEXT,
-	"akcionar_po_id"	INTEGER,
-	"akcionar_fo_id"	INTEGER,
-	"adresa_id"	INTEGER,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("akcionar_po_id") REFERENCES "pravnicke_osoby"("id"),
-	FOREIGN KEY("akcionar_fo_id") REFERENCES "fyzicke_osoby"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    konkurz_events = """ CREATE TABLE "konkurz_events" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	TEXT NOT NULL,
-	"zapis_datum"	DATE NOT NULL,
-	"vymaz_datum"	DATE,
-	"konkurz_event"	TEXT UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-
-    nazvy = """ CREATE TABLE "nazvy" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"nazev_text"	TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    ostatni_skutecnosti = """ CREATE TABLE "ostatni_skutecnosti" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE NOT NULL,
-	"vymaz_datum"	DATE,
-	"ostatni_skutecnost"	TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    pocty_clenu_DR = """ CREATE TABLE "pocty_clenu_DR" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"organ_id"	INTEGER NOT NULL,
-	"pocet_clenu_value"	INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	FOREIGN KEY("organ_id") REFERENCES "dozorci_rada_relation"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    pocty_clenu_organu = """ CREATE TABLE "pocty_clenu_organu" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"organ_id"	INTEGER NOT NULL,
-	"pocet_clenu_value"	INTEGER NOT NULL,
-	"zapis_datum"	DATE NOT NULL,
-	"vymaz_datum"	DATE,
-	FOREIGN KEY("organ_id") REFERENCES "statutarni_organ_relation"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    podilnici = """ CREATE TABLE "podilnici" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"podil_id"	INTEGER,
-	"podilnik_fo_id"	INTEGER,
-	"podilnik_po_id"	INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"adresa_id"	INTEGER,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("podilnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("podilnik_po_id") REFERENCES "pravnicke_osoby"("id"),	
-	FOREIGN KEY("podil_id") REFERENCES "spolecnici_spolecny_podil"("id")
-); """
-
-    podily = """ CREATE TABLE "podily" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"spolecnik_id"	INTEGER,
-	"uvolneny_podil_id" INTEGER,
-	"spolecny_podil_id" INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"druh_podilu_id"	INTEGER,
-	"vklad_typ"	TEXT,
-	"vklad_text"	TEXT,
-	"souhrn_typ"	TEXT,
-	"souhrn_text"	TEXT,
-	"splaceni_typ"	TEXT,
-	"splaceni_text"	TEXT,
-	FOREIGN KEY("druh_podilu_id") REFERENCES "druhy_podilu"("id"),
-	FOREIGN KEY("spolecnik_id") REFERENCES "spolecnici"("id"),
-	FOREIGN KEY("uvolneny_podil_id") REFERENCES "spolecnici_uvolneny_podil"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
+#     adresy_v2 = """ CREATE TABLE "adresy_v2" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"stat"	TEXT,
+# 	"obec"	TEXT,
+# 	"ulice"	TEXT,
+# 	"castObce"	TEXT,
+# 	"cisloPo"	INTEGER,
+# 	"cisloOr"	INTEGER,
+# 	"psc"	TEXT,
+# 	"okres"	TEXT,
+# 	"komplet_adresa"	TEXT,
+# 	"cisloEv"	INTEGER,
+# 	"cisloText"	TEXT,
+# 	"company_id"	INTEGER,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	UNIQUE("stat","obec","ulice","castObce","cisloPo","cisloOr","psc","okres","komplet_adresa","cisloEv","cisloText")
+#     ); """
+#
+#     akcie = """ CREATE TABLE "akcie" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"akcie_podoba"	TEXT,
+# 	"akcie_typ"	TEXT,
+# 	"akcie_pocet"	TEXT,
+# 	"akcie_hodnota_typ"	TEXT,
+# 	"akcie_hodnota_value"	TEXT,
+# 	"akcie_text"	TEXT,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+# ); """
+#
+#     criminal_records = """ CREATE TABLE "criminal_records" (
+# 	"id" 				INTEGER NOT NULL UNIQUE,
+# 	"company_id"		INTEGER NOT NULL,
+# 	"first_instance"	TEXT,
+# 	"second_instance"	TEXT,
+# 	"paragraphs"		TEXT,
+# 	"penalties"			TEXT,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# 	) """
+#
+#     dr_relation = """ CREATE TABLE "dozorci_rada_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     dr_organ_clen_relation = """ CREATE TABLE "dr_organ_clen_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"dozorci_rada_id"	INTEGER NOT NULL,
+# 	"osoba_id"	INTEGER,
+# 	"pravnicka_osoba_id" INTEGER,
+# 	"adresa_id"	INTEGER,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"funkce_od"	DATE,
+# 	"funkce_do"	DATE,
+# 	"clenstvi_od"	DATE,
+# 	"clenstvi_do"	DATE,
+# 	"funkce"	TEXT,
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	FOREIGN KEY("dozorci_rada_id") REFERENCES "dozorci_rada_relation"("id"),
+# 	FOREIGN KEY("osoba_id") REFERENCES "fyzicke_osoby"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     druhy_podilu = """ CREATE TABLE "druhy_podilu" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"druh_podilu"	TEXT NOT NULL UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"titul_pred"	TEXT,
+# 	"jmeno"	TEXT,
+# 	"prijmeni"	TEXT,
+# 	"titul_za"	TEXT,
+# 	"datum_naroz"	TEXT,
+# 	"adresa_id" INTEGER,
+# 	UNIQUE("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     insolvency_events = """ CREATE TABLE "insolvency_events" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	TEXT NOT NULL,
+# 	"zapis_datum"	DATE NOT NULL,
+# 	"vymaz_datum"	DATE,
+# 	"insolvency_event"	TEXT UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+# ); """
+#
+#     jediny_akcionar = """ CREATE TABLE "jediny_akcionar" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"text_akcionar"	TEXT,
+# 	"akcionar_po_id"	INTEGER,
+# 	"akcionar_fo_id"	INTEGER,
+# 	"adresa_id"	INTEGER,
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	FOREIGN KEY("akcionar_po_id") REFERENCES "pravnicke_osoby"("id"),
+# 	FOREIGN KEY("akcionar_fo_id") REFERENCES "fyzicke_osoby"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     konkurz_events = """ CREATE TABLE "konkurz_events" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	TEXT NOT NULL,
+# 	"zapis_datum"	DATE NOT NULL,
+# 	"vymaz_datum"	DATE,
+# 	"konkurz_event"	TEXT UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+# ); """
+#
+#     nazvy = """ CREATE TABLE "nazvy" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"nazev_text"	TEXT,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     ostatni_skutecnosti = """ CREATE TABLE "ostatni_skutecnosti" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE NOT NULL,
+# 	"vymaz_datum"	DATE,
+# 	"ostatni_skutecnost"	TEXT,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     pocty_clenu_DR = """ CREATE TABLE "pocty_clenu_DR" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"organ_id"	INTEGER NOT NULL,
+# 	"pocet_clenu_value"	INTEGER,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	FOREIGN KEY("organ_id") REFERENCES "dozorci_rada_relation"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     pocty_clenu_organu = """ CREATE TABLE "pocty_clenu_organu" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"organ_id"	INTEGER NOT NULL,
+# 	"pocet_clenu_value"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE NOT NULL,
+# 	"vymaz_datum"	DATE,
+# 	FOREIGN KEY("organ_id") REFERENCES "statutarni_organ_relation"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     podilnici = """ CREATE TABLE "podilnici" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"podil_id"	INTEGER,
+# 	"podilnik_fo_id"	INTEGER,
+# 	"podilnik_po_id"	INTEGER,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"adresa_id"	INTEGER,
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("podilnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
+# 	FOREIGN KEY("podilnik_po_id") REFERENCES "pravnicke_osoby"("id"),
+# 	FOREIGN KEY("podil_id") REFERENCES "spolecnici_spolecny_podil"("id")
+# ); """
+#
+#     podily = """ CREATE TABLE "podily" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"spolecnik_id"	INTEGER,
+# 	"uvolneny_podil_id" INTEGER,
+# 	"spolecny_podil_id" INTEGER,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"druh_podilu_id"	INTEGER,
+# 	"vklad_typ"	TEXT,
+# 	"vklad_text"	TEXT,
+# 	"souhrn_typ"	TEXT,
+# 	"souhrn_text"	TEXT,
+# 	"splaceni_typ"	TEXT,
+# 	"splaceni_text"	TEXT,
+# 	FOREIGN KEY("druh_podilu_id") REFERENCES "druhy_podilu"("id"),
+# 	FOREIGN KEY("spolecnik_id") REFERENCES "spolecnici"("id"),
+# 	FOREIGN KEY("uvolneny_podil_id") REFERENCES "spolecnici_uvolneny_podil"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
     pravni_formy = """ CREATE TABLE "pravni_formy" (
-	"id"	INTEGER NOT NULL,
-	"pravni_forma"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
+	"id"	SERIAL PRIMARY KEY,
+	"pravni_forma"	TEXT NOT NULL UNIQUE); """
+    list_of_tables.append(pravni_formy)
+#
     pravni_formy_relation = """ CREATE TABLE "pravni_formy_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
+	"id"	SERIAL PRIMARY KEY,
 	"company_id"	INTEGER NOT NULL,
 	"pravni_forma_id"	INTEGER NOT NULL,
 	"zapis_datum"	DATE NOT NULL,
 	"vymaz_datum"	DATE,
-	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("pravni_forma_id") REFERENCES "pravni_formy"("id"),
 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
 ); """
-
-    pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"ico"	INTEGER,
-	"reg_cislo"	INTEGER,
-	"nazev"	TEXT,
-	"adresa_id" INTEGER,
-	UNIQUE("ico","reg_cislo","nazev","adresa_id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    predmety_cinnosti = """ CREATE TABLE "predmety_cinnosti" (
-	"id"	INTEGER NOT NULL,
-	"predmet_cinnosti"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    predmety_cinnosti_relation = """ CREATE TABLE "predmety_cinnosti_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"predmet_cinnosti_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("predmet_cinnosti_id") REFERENCES "predmety_cinnosti"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    prdmety_podnikani = """ CREATE TABLE "predmety_podnikani" (
-	"id"	INTEGER NOT NULL,
-	"predmet_podnikani"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    predmety_podnikani_relation = """ CREATE TABLE "predmety_podnikani_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"predmet_podnikani_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("predmet_podnikani_id") REFERENCES "predmety_podnikani"("id")
-); """
-
-    prokura_common_texts = """ CREATE TABLE "prokura_common_texts" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"prokura_text"	TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    prokuriste = """ CREATE TABLE "prokuriste" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"prokurista_fo_id"	INTEGER,
-	"adresa_id"	INTEGER,
-	"text_prokurista"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	FOREIGN KEY("prokurista_fo_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    sidlo_relation = """ CREATE TABLE "sidlo_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"sidlo_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("sidlo_id") REFERENCES "adresy_v2"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    spolecnici = """ CREATE TABLE "spolecnici" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"spolecnik_fo_id"	INTEGER,
-	"spolecnik_po_id"	INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"adresa_id"	INTEGER,
-	"text_spolecnik"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("spolecnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-
-    spolecnici_uvolneny_podil = """ CREATE TABLE "spolecnici_uvolneny_podil" (
-	"id" INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"text_uvolneny_podil"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-	) """
-
-    spolecnici_spolecny_podil = """ CREATE TABLE "spolecnici_spolecny_podil" (
-	"id" INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"text_spolecny_podil"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-	) """
-
-    statutarni_organ_clen_relation = """ CREATE TABLE "statutarni_organ_clen_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"statutarni_organ_id"	INTEGER NOT NULL,
-	"osoba_id"	INTEGER,
-	"prav_osoba_id"	INTEGER,
-	"adresa_id"	INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"funkce_od"	DATE,
-	"funkce_do"	DATE,
-	"clenstvi_od"	DATE,
-	"clenstvi_do"	DATE,
-	"funkce"	TEXT,
-	FOREIGN KEY("osoba_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organ_relation"("id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    statutarni_organ_relation = """ CREATE TABLE "statutarni_organ_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"statutarni_organ_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organy"("id"),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    statutarni_organy = """ CREATE TABLE "statutarni_organy" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"statutarni_organ_text"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    ubo = """ CREATE TABLE "ubo" (
-	"id" INTEGER NOT NULL UNIQUE,
-	"company_id"  INTEGER NOT NULL, 
-	"UBO_id" INTEGER NOT NULL,
-	"adresa_id" INTEGER,
-	"zapis_datum"  DATE,
-	"vymaz_datum"  DATE,
-	"postaveni" TEXT,
-	"koncovyPrijemceText" TEXT,
-	"skutecnymMajitelemOd" TEXT,
-	"vlastniPodilNaProspechu" TEXT,
-	"vlastniPodilNaProspechu_typ" TEXT,
-	"vlastniPodilNaProspechu_textValue" TEXT,
-	"vlastniPodilNaHlasovani" TEXT,
-	"vlastniPodilNaHlasovani_typ" TEXT,
-	"vlastniPodilNaHlasovani_value" TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("UBO_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-	); """
-
-    ucel = """ CREATE TABLE "ucel" (
-	"id"	INTEGER NOT NULL,
-	"ucel"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
-
-    ucel_relation = """ CREATE TABLE "ucel_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"ucel_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("ucel_id") REFERENCES "ucel"("id")
-); """
-
-    zakladni_kapital = """ CREATE TABLE "zakladni_kapital" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE NOT NULL,
-	"vymaz_datum"	DATE,
-	"vklad_typ"	TEXT,
-	"vklad_hodnota"	TEXT,
-	"splaceni_typ"	TEXT,
-	"splaceni_hodnota"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-
+    list_of_tables.append(pravni_formy_relation)
+#
+#     pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"ico"	INTEGER,
+# 	"reg_cislo"	INTEGER,
+# 	"nazev"	TEXT,
+# 	"adresa_id" INTEGER,
+# 	UNIQUE("ico","reg_cislo","nazev","adresa_id"),
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     predmety_cinnosti = """ CREATE TABLE "predmety_cinnosti" (
+# 	"id"	INTEGER NOT NULL,
+# 	"predmet_cinnosti"	TEXT NOT NULL UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     predmety_cinnosti_relation = """ CREATE TABLE "predmety_cinnosti_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"predmet_cinnosti_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	FOREIGN KEY("predmet_cinnosti_id") REFERENCES "predmety_cinnosti"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     prdmety_podnikani = """ CREATE TABLE "predmety_podnikani" (
+# 	"id"	INTEGER NOT NULL,
+# 	"predmet_podnikani"	TEXT NOT NULL UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     predmety_podnikani_relation = """ CREATE TABLE "predmety_podnikani_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"predmet_podnikani_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	FOREIGN KEY("predmet_podnikani_id") REFERENCES "predmety_podnikani"("id")
+# ); """
+#
+#     prokura_common_texts = """ CREATE TABLE "prokura_common_texts" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"prokura_text"	TEXT,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     prokuriste = """ CREATE TABLE "prokuriste" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"prokurista_fo_id"	INTEGER,
+# 	"adresa_id"	INTEGER,
+# 	"text_prokurista"	TEXT,
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	FOREIGN KEY("prokurista_fo_id") REFERENCES "fyzicke_osoby"("id"),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     sidlo_relation = """ CREATE TABLE "sidlo_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"sidlo_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	FOREIGN KEY("sidlo_id") REFERENCES "adresy_v2"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     spolecnici = """ CREATE TABLE "spolecnici" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"spolecnik_fo_id"	INTEGER,
+# 	"spolecnik_po_id"	INTEGER,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"adresa_id"	INTEGER,
+# 	"text_spolecnik"	TEXT,
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("spolecnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+# ); """
+#
+#     spolecnici_uvolneny_podil = """ CREATE TABLE "spolecnici_uvolneny_podil" (
+# 	"id" INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"text_uvolneny_podil"	TEXT,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+# 	) """
+#
+#     spolecnici_spolecny_podil = """ CREATE TABLE "spolecnici_spolecny_podil" (
+# 	"id" INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"text_spolecny_podil"	TEXT,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+# 	) """
+#
+#     statutarni_organ_clen_relation = """ CREATE TABLE "statutarni_organ_clen_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"statutarni_organ_id"	INTEGER NOT NULL,
+# 	"osoba_id"	INTEGER,
+# 	"prav_osoba_id"	INTEGER,
+# 	"adresa_id"	INTEGER,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	"funkce_od"	DATE,
+# 	"funkce_do"	DATE,
+# 	"clenstvi_od"	DATE,
+# 	"clenstvi_do"	DATE,
+# 	"funkce"	TEXT,
+# 	FOREIGN KEY("osoba_id") REFERENCES "fyzicke_osoby"("id"),
+# 	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organ_relation"("id"),
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     statutarni_organ_relation = """ CREATE TABLE "statutarni_organ_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"statutarni_organ_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organy"("id"),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     statutarni_organy = """ CREATE TABLE "statutarni_organy" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"statutarni_organ_text"	TEXT NOT NULL UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     ubo = """ CREATE TABLE "ubo" (
+# 	"id" INTEGER NOT NULL UNIQUE,
+# 	"company_id"  INTEGER NOT NULL,
+# 	"UBO_id" INTEGER NOT NULL,
+# 	"adresa_id" INTEGER,
+# 	"zapis_datum"  DATE,
+# 	"vymaz_datum"  DATE,
+# 	"postaveni" TEXT,
+# 	"koncovyPrijemceText" TEXT,
+# 	"skutecnymMajitelemOd" TEXT,
+# 	"vlastniPodilNaProspechu" TEXT,
+# 	"vlastniPodilNaProspechu_typ" TEXT,
+# 	"vlastniPodilNaProspechu_textValue" TEXT,
+# 	"vlastniPodilNaHlasovani" TEXT,
+# 	"vlastniPodilNaHlasovani_typ" TEXT,
+# 	"vlastniPodilNaHlasovani_value" TEXT,
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	FOREIGN KEY("UBO_id") REFERENCES "fyzicke_osoby"("id"),
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# 	); """
+#
+#     ucel = """ CREATE TABLE "ucel" (
+# 	"id"	INTEGER NOT NULL,
+# 	"ucel"	TEXT NOT NULL UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     ucel_relation = """ CREATE TABLE "ucel_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"ucel_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE,
+# 	"vymaz_datum"	DATE,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+# 	FOREIGN KEY("ucel_id") REFERENCES "ucel"("id")
+# ); """
+#
+#     zakladni_kapital = """ CREATE TABLE "zakladni_kapital" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"company_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE NOT NULL,
+# 	"vymaz_datum"	DATE,
+# 	"vklad_typ"	TEXT,
+# 	"vklad_hodnota"	TEXT,
+# 	"splaceni_typ"	TEXT,
+# 	"splaceni_hodnota"	TEXT,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+# ); """
+#
     zapis_soudy = """ CREATE TABLE "zapis_soudy" (
-	"id"	INTEGER NOT NULL UNIQUE,
+	"id"	SERIAL PRIMARY KEY,
 	"company_id"	INTEGER NOT NULL,
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
 	"oddil"	TEXT,
 	"vlozka"	TEXT,
 	"soud"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
 ); """
+    list_of_tables.append(zapis_soudy)
 
-    zpusoby_jednani = """ CREATE TABLE "zpusoby_jednani" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"zpusob_jednani_text"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
-); """
+#
+#     zpusoby_jednani = """ CREATE TABLE "zpusoby_jednani" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"zpusob_jednani_text"	TEXT NOT NULL UNIQUE,
+# 	PRIMARY KEY("id" AUTOINCREMENT)
+# ); """
+#
+#     zpusoby_jednani_relation = """ CREATE TABLE "zpusoby_jednani_relation" (
+# 	"id"	INTEGER NOT NULL UNIQUE,
+# 	"statutarni_organ_id"	INTEGER NOT NULL,
+# 	"zpusob_jednani_id"	INTEGER NOT NULL,
+# 	"zapis_datum"	DATE NOT NULL,
+# 	"vymaz_datum"	DATE,
+# 	PRIMARY KEY("id" AUTOINCREMENT),
+# 	FOREIGN KEY("zpusob_jednani_id") REFERENCES "zpusoby_jednani"("id"),
+# 	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organ_relation"("id")
+# ); """
 
-    zpusoby_jednani_relation = """ CREATE TABLE "zpusoby_jednani_relation" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"statutarni_organ_id"	INTEGER NOT NULL,
-	"zpusob_jednani_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE NOT NULL,
-	"vymaz_datum"	DATE,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("zpusob_jednani_id") REFERENCES "zpusoby_jednani"("id"),
-	FOREIGN KEY("statutarni_organ_id") REFERENCES "statutarni_organ_relation"("id")
-); """
-
-    list_of_tables = [companies, adresy_v2, akcie, criminal_records, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events, 
-    jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, podilnici, pravni_formy, 
-    pravni_formy_relation, pravnicke_osoby, predmety_cinnosti, predmety_cinnosti_relation, prdmety_podnikani, predmety_podnikani_relation,
-    prokura_common_texts, prokuriste, sidlo_relation, spolecnici, spolecnici_uvolneny_podil, spolecnici_spolecny_podil, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, ubo, 
-    ucel, ucel_relation, zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
+    # list_of_tables = [companies, adresy_v2, akcie, criminal_records, dr_relation, dr_organ_clen_relation, druhy_podilu, fyzicke_osoby, insolvency_events,
+    # jediny_akcionar, konkurz_events, nazvy, ostatni_skutecnosti, pocty_clenu_DR, pocty_clenu_organu, podily, podilnici, pravni_formy,
+    # pravni_formy_relation, pravnicke_osoby, predmety_cinnosti, predmety_cinnosti_relation, prdmety_podnikani, predmety_podnikani_relation,
+    # prokura_common_texts, prokuriste, sidlo_relation, spolecnici, spolecnici_uvolneny_podil, spolecnici_spolecny_podil, statutarni_organ_clen_relation, statutarni_organ_relation, statutarni_organy, ubo,
+    # ucel, ucel_relation, zakladni_kapital, zapis_soudy, zpusoby_jednani, zpusoby_jednani_relation]
     for elem in list_of_tables:
         try:
             c = conn.cursor()

@@ -19,3 +19,10 @@ __pycache__/update_db.cpython-38.pyc
 key_gen.py
 __pycache__/*
 config_data.py
+/as-full-ostrava-2023.xml
+/.idea/justice.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/vcs.xml
+/.idea/*
