@@ -22,7 +22,6 @@ def update_DB(file, conn):
             insert_new_ICO(c, ICO, element)
             primary_sql_key = get_primary_sql_key(c, ICO)
             # Vlozit jednolive parametry
-            # insert_company_relations(c, element, primary_sql_key)
             find_other_properties(c, ICO, element, conn, primary_sql_key)
             element.clear()
     conn.commit()
