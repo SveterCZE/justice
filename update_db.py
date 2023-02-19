@@ -39,7 +39,6 @@ def insert_new_ICO(c, ICO, element):
     try:
         datum_zapis = str(get_prop(element, "zapisDatum"))
         nazev = str(get_prop(element, "nazev"))
-        # print(ICO, datum_zapis, nazev)
         c.execute("INSERT INTO companies (ico, zapis, nazev) VALUES (%s, %s, %s);", (ICO, datum_zapis, nazev,))
         return c.lastrowid
     except Exception as e:
