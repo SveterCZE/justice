@@ -6,7 +6,6 @@ from insert_criminal_records import insert_criminal_records
 from app import return_conn
 import os
 
-
 def main():
     # valid_files = []
     # DB_name = "justice.db"
@@ -21,10 +20,12 @@ def main():
         # modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
     conn = return_conn()
     cur = conn.cursor()
-    cur.execute('DROP TABLE companies CASCADE;')
-    cur.execute('DROP TABLE pravni_formy CASCADE;')
-    cur.execute('DROP TABLE pravni_formy_relation CASCADE;')
-    cur.execute('DROP TABLE zapis_soudy CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS companies CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS pravni_formy CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS pravni_formy_relation CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS zapis_soudy CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS adresy_v2 CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS sidlo_relation CASCADE;')
     # conn.commit()
     create_DB(conn)
     update_DB("as-full-ostrava-2023.xml", conn)

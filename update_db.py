@@ -83,8 +83,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
             my_iter2 = elem.findall("Udaj")
             for elem2 in my_iter2:
                 udajTyp_name = str(get_prop(elem2, ".//udajTyp/kod"))
-                # if udajTyp_name == "SIDLO":
-                #     find_registered_office(c, elem2, primary_sql_key)
+                if udajTyp_name == "SIDLO":
+                    find_registered_office(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "NAZEV":
                 #     find_nazev(c, elem2, primary_sql_key)
                 if udajTyp_name == "SPIS_ZN":
@@ -492,11 +492,17 @@ def find_sidlo(c, elem):
         adresaText = get_prop(elem, ".//adresaText")
         cisloEv = get_prop(elem, ".//cisloEv")
         cisloText = get_prop(elem, ".//cisloText")
-        c.execute("SELECT * FROM adresy_v2 WHERE stat = (?) and obec = (?) and ulice = (?) and castObce = (?) and cisloPo = (?) and cisloOr = (?) and psc = (?) and okres = (?) and komplet_adresa = (?) and cisloEv = (?) and cisloText = (?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
+        # c.execute("SELECT * FROM adresy_v2 WHERE stat = (?) and obec = (?) and ulice = (?) and castObce = (?) and cisloPo = (?) and cisloOr = (?) and psc = (?) and okres = (?) and komplet_adresa = (?) and cisloEv = (?) and cisloText = (?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
+        c.execute(
+            "SELECT * FROM adresy_v2 WHERE stat = %s and obec = %s and ulice = %s and castObce = %s and cisloPo = %s and cisloOr = %s and psc = %s and okres = %s and komplet_adresa = %s and cisloEv = %s and cisloText = %s",
+            (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
         sidlo_id = c.fetchone()
         if sidlo_id == None:
-            c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText))
-            address_key = c.lastrowid
+            # c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText))
+            c.execute(
+                "INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
+                (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText))
+            address_key = c.fetchone()[0]
         else:
             address_key = sidlo_id[0]
         return address_key
@@ -505,7 +511,7 @@ def find_sidlo(c, elem):
 
 def insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum):
     try:
-        c.execute("INSERT INTO " + elem[3] + " VALUES(NULL, %s, %s, %s, %s)", (primary_sql_key, ancillary_table_key,zapis_datum, vymaz_datum,))
+        c.execute("INSERT INTO " + elem[3] + " VALUES(DEFAULT, %s, %s, %s, NULLIF(%s,'None')::date)", (primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum,))
     except Exception as f:
         print(f)
     return 0

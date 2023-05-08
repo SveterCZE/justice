@@ -39,23 +39,23 @@ def create_tables(conn):
 	    soud TEXT)"""
     list_of_tables.append(companies)
     
-#     adresy_v2 = """ CREATE TABLE "adresy_v2" (
-# 	"id"	INTEGER NOT NULL UNIQUE,
-# 	"stat"	TEXT,
-# 	"obec"	TEXT,
-# 	"ulice"	TEXT,
-# 	"castObce"	TEXT,
-# 	"cisloPo"	INTEGER,
-# 	"cisloOr"	INTEGER,
-# 	"psc"	TEXT,
-# 	"okres"	TEXT,
-# 	"komplet_adresa"	TEXT,
-# 	"cisloEv"	INTEGER,
-# 	"cisloText"	TEXT,
-# 	"company_id"	INTEGER,
-# 	PRIMARY KEY("id" AUTOINCREMENT),
-# 	UNIQUE("stat","obec","ulice","castObce","cisloPo","cisloOr","psc","okres","komplet_adresa","cisloEv","cisloText")
-#     ); """
+    adresy_v2 = """ CREATE TABLE "adresy_v2" (
+	id              SERIAL PRIMARY KEY, 
+	stat	        TEXT,
+	obec	        TEXT,
+	ulice	        TEXT,
+	castObce	    TEXT,
+	cisloPo	        INTEGER,
+	cisloOr	        TEXT,
+	psc	            TEXT,
+	okres   	    TEXT,
+	komplet_adresa	TEXT,
+	cisloEv	        INTEGER,
+	cisloText	    TEXT,
+	company_id	    INTEGER,
+	UNIQUE(stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText)
+    ); """
+    list_of_tables.append(adresy_v2)
 #
 #     akcie = """ CREATE TABLE "akcie" (
 # 	"id"	INTEGER NOT NULL UNIQUE,
@@ -243,9 +243,11 @@ def create_tables(conn):
 #
     pravni_formy = """ CREATE TABLE "pravni_formy" (
 	"id"	SERIAL PRIMARY KEY,
-	"pravni_forma"	TEXT NOT NULL UNIQUE); """
+	"pravni_forma"	TEXT NOT NULL UNIQUE
+	); """
     list_of_tables.append(pravni_formy)
-#
+
+
     pravni_formy_relation = """ CREATE TABLE "pravni_formy_relation" (
 	"id"	SERIAL PRIMARY KEY,
 	"company_id"	INTEGER NOT NULL,
@@ -254,8 +256,24 @@ def create_tables(conn):
 	"vymaz_datum"	DATE,
 	FOREIGN KEY("pravni_forma_id") REFERENCES "pravni_formy"("id"),
 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
+    ); """
     list_of_tables.append(pravni_formy_relation)
+
+    sidlo_relation = """ CREATE TABLE "sidlo_relation" (
+    id	            SERIAL PRIMARY KEY,
+    company_id	    INTEGER NOT NULL,
+    sidlo_id	    INTEGER NOT NULL,
+    zapis_datum	    DATE,
+    vymaz_datum	    DATE,
+    CONSTRAINT fk_company
+        FOREIGN KEY(company_id)  
+            REFERENCES companies(id),
+    CONSTRAINT fk_sidlo       
+        FOREIGN KEY(sidlo_id) 
+            REFERENCES adresy_v2(id)
+    ); """
+    list_of_tables.append(sidlo_relation)
+
 #
 #     pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
 # 	"id"	INTEGER NOT NULL UNIQUE,
@@ -326,16 +344,8 @@ def create_tables(conn):
 # 	PRIMARY KEY("id" AUTOINCREMENT)
 # ); """
 #
-#     sidlo_relation = """ CREATE TABLE "sidlo_relation" (
-# 	"id"	INTEGER NOT NULL UNIQUE,
-# 	"company_id"	INTEGER NOT NULL,
-# 	"sidlo_id"	INTEGER NOT NULL,
-# 	"zapis_datum"	DATE,
-# 	"vymaz_datum"	DATE,
-# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-# 	FOREIGN KEY("sidlo_id") REFERENCES "adresy_v2"("id"),
-# 	PRIMARY KEY("id" AUTOINCREMENT)
-# ); """
+
+
 #
 #     spolecnici = """ CREATE TABLE "spolecnici" (
 # 	"id"	INTEGER NOT NULL UNIQUE,
