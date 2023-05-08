@@ -6,7 +6,6 @@
 
     <p><b>Počet nalezených subjektů: {{ results|length }}</b></p>
     {% for row in results %}
-    
         {% set insolvency_notes = [] %}
         {% for i in range (row.insolvence|length) %}
             {% if row.insolvence[i].vymaz_datum == 0 %}
@@ -44,7 +43,7 @@
         
         {% set current_seat = [] %}
         {% for i in range (row.sidlo_text|length) %}
-            {% if row.sidlo_text[i].vymaz_datum == 0 %}
+            {% if row.sidlo_text[i].vymaz_datum == None %}
                 {% set current_seat = current_seat.append(row.sidlo_text[i]) %}
             {% endif %}    
         {% endfor %}        

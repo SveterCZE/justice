@@ -149,21 +149,9 @@ def find_sp_zn(c, elem2, primary_sql_key):
         soud = str(get_prop(elem2, ".//spisZn/soud/kod"))
         oddil = str(get_prop(elem2, ".//spisZn/oddil"))
         vlozka = str(get_prop(elem2, ".//spisZn/vlozka"))
-
-        # stmt = (
-        #     insert('zapis_soudy').
-        #     values(zapis_datum=zapis_datum, vymaz_datum=vymaz_datum, oddil=oddil, soud=soud, vlozka=vlozka)
-        # )
-        # print(stmt)
         sql = """INSERT INTO zapis_soudy (company_id, zapis_datum, vymaz_datum, oddil, vlozka, soud) VALUES(%s, %s, NULLIF(%s,'None')::date, %s, %s, %s)"""
         c.execute(sql, (primary_sql_key, zapis_datum, vymaz_datum, oddil, vlozka, soud))
-
-        # c.execute("INSERT INTO zapis_soudy (company_id, zapis_datum, vymaz_datum, oddil, vlozka, soud) VALUES(%s, %s, %s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, oddil, vlozka, soud))
-        # if vymaz_datum != "0":
-        #     c.execute(
-        #         "UPDATE zapis_soudy SET vymaz_datum = (%s) WHERE id = (%s)",
-        #         (vymaz_datum, primary_sql_key,))
-        if vymaz_datum == None:
+        if vymaz_datum == "None":
              c.execute("UPDATE companies SET oddil = (%s), vlozka = (%s), soud = (%s) WHERE id = (%s)",(oddil,vlozka,soud,primary_sql_key,))
     except Exception as f:
         print(f)

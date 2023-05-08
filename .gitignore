@@ -27,3 +27,4 @@ config_data.py
 /.idea/vcs.xml
 /.idea/*
 .vscode/
+/db_config.py

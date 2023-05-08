@@ -7,7 +7,7 @@ Created on Sun Jan 17 10:05:34 2021
 """
 
 from wtforms import Form, StringField, SelectField, BooleanField
-from wtforms.fields.html5 import DateField
+from wtforms.fields import DateField
 
 # CREATE A GENERAL CLASS TO REMOVE DUPLICITIES?
 
