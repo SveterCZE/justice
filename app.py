@@ -10,15 +10,18 @@ from flask_sqlalchemy import SQLAlchemy
 from forms import JusticeSearchForm
 from tables import Results
 from db_config import DB_URI, key
+import sqlalchemy as sa
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.secret_key = key
+# app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
 
 from models import Company, Soudni_Zapisy, \
-    Sidlo_Association, Adresy_v2, Pravni_Forma_Association_v2, Pravni_Formy
+    Sidlo_Association, Adresy_v2, Pravni_Forma_Association_v2, Pravni_Formy, Nazvy
+
 
 def return_conn():
         return psycopg2.connect(
@@ -104,27 +107,27 @@ def search_results(search):
         elif ico_search_method == "text_exact":
             qry = qry.filter(Company.ico == ico)
 
-    # if nazev:
-    #     qry = qry.join(Nazvy, Company.obchodni_firma)
-    #     if nazev_actual_or_full == "actual_results":
-    #         qry = qry.filter(Nazvy.vymaz_datum == None)
-    #     if nazev_search_method == "text_anywhere":
-    #         qry = qry.filter(Nazvy.nazev_text.contains(nazev))
-    #     elif nazev_search_method == "text_beginning":
-    #         qry = qry.filter(Nazvy.nazev_text.like(f'{nazev}%'))
-    #     elif nazev_search_method == "text_exact":
-    #         qry = qry.filter(Nazvy.nazev_text == nazev)
+    if nazev:
+        qry = qry.join(Nazvy, Company.obchodni_firma)
+        if nazev_actual_or_full == "actual_results":
+            qry = qry.filter(Nazvy.vymaz_datum == None)
+        if nazev_search_method == "text_anywhere":
+            qry = qry.filter(sa.func.lower(Nazvy.nazev_text).contains(sa.func.lower(nazev)))
+        elif nazev_search_method == "text_beginning":
+            qry = qry.filter(Nazvy.nazev_text.ilike(f'{nazev}%'))
+        elif nazev_search_method == "text_exact":
+            qry = qry.filter(sa.func.lower(Nazvy.nazev_text) == sa.func.lower(nazev))
 
     if oddil:
         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
         if oddil_actual_or_full == "actual_results":
             qry = qry.filter(Soudni_Zapisy.vymaz_datum == None)
         if oddil_search_method == "text_anywhere":
-            qry = qry.filter(Company.oddil.contains(oddil))
+            qry = qry.filter(Soudni_Zapisy.oddil.contains(oddil))
         elif oddil_search_method == "text_beginning":
-            qry = qry.filter(Company.oddil.like(f'{oddil}%'))
+            qry = qry.filter(Soudni_Zapisy.oddil.like(f'{oddil}%'))
         elif oddil_search_method == "text_exact":
-            qry = qry.filter(Company.oddil == oddil)
+            qry = qry.filter(Soudni_Zapisy.oddil == oddil)
 
     if vlozka:
         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)

@@ -85,8 +85,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                 udajTyp_name = str(get_prop(elem2, ".//udajTyp/kod"))
                 if udajTyp_name == "SIDLO":
                     find_registered_office(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "NAZEV":
-                #     find_nazev(c, elem2, primary_sql_key)
+                elif udajTyp_name == "NAZEV":
+                    find_nazev(c, elem2, primary_sql_key)
                 if udajTyp_name == "SPIS_ZN":
                     find_sp_zn(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "PRAVNI_FORMA":
@@ -138,7 +138,8 @@ def find_nazev(c, elem2, primary_sql_key):
         zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
         vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
         nazev = str(get_prop(elem2, ".//hodnotaText"))
-        c.execute("INSERT INTO nazvy (company_id, zapis_datum, vymaz_datum, nazev_text) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, nazev,))
+        sql = """INSERT INTO nazvy (company_id, zapis_datum, vymaz_datum, nazev_text) VALUES(%s, %s, NULLIF(%s,'None')::date, %s)"""
+        c.execute(sql, (primary_sql_key, zapis_datum, vymaz_datum, nazev,))
     except Exception as f:
         print(f)
 

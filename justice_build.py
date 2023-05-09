@@ -26,6 +26,7 @@ def main():
     cur.execute('DROP TABLE IF EXISTS zapis_soudy CASCADE;')
     cur.execute('DROP TABLE IF EXISTS adresy_v2 CASCADE;')
     cur.execute('DROP TABLE IF EXISTS sidlo_relation CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS nazvy CASCADE;')
     # conn.commit()
     create_DB(conn)
     update_DB("as-full-ostrava-2023.xml", conn)

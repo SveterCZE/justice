@@ -442,7 +442,7 @@ class Company(db.Model):
     # zakladni_kapital =  db.relationship("Zakladni_Kapital")
     # ostatni_skutecnosti = db.relationship("Ostatni_Skutecnosti")
     # akcie = db.relationship("Akcie")
-    # obchodni_firma = db.relationship("Nazvy")
+    obchodni_firma = db.relationship("Nazvy")
     soudni_zapis = db.relationship("Soudni_Zapisy")
     pravni_forma_text = db.relationship("Pravni_Forma_Association_v2")
     # statutarni_organ_text = db.relationship("Statutarni_Organ_Association")
@@ -798,13 +798,13 @@ class Pravni_Formy(db.Model):
 #             joined_share_descr += "euro"
 #         return joined_share_descr
 #
-# class Nazvy(db.Model):
-#     __tablename__ = "nazvy"
-#     id = db.Column(db.Integer, primary_key=True)
-#     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
-#     zapis_datum = db.Column(MyType)
-#     vymaz_datum = db.Column(MyType)
-#     nazev_text = db.Column(db.String)
+class Nazvy(db.Model):
+    __tablename__ = "nazvy"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    nazev_text = db.Column(db.String)
 
 class Soudni_Zapisy(db.Model):
     __tablename__ = "zapis_soudy"

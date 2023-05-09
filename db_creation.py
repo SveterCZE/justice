@@ -166,15 +166,15 @@ def create_tables(conn):
 # 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
 # ); """
 #
-#     nazvy = """ CREATE TABLE "nazvy" (
-# 	"id"	INTEGER NOT NULL UNIQUE,
-# 	"company_id"	INTEGER NOT NULL,
-# 	"zapis_datum"	DATE,
-# 	"vymaz_datum"	DATE,
-# 	"nazev_text"	TEXT,
-# 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-# 	PRIMARY KEY("id" AUTOINCREMENT)
-# ); """
+    nazvy = """ CREATE TABLE "nazvy" (
+	"id"	        SERIAL PRIMARY KEY,
+	"company_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	"nazev_text"	TEXT,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+); """
+    list_of_tables.append(nazvy)
 #
 #     ostatni_skutecnosti = """ CREATE TABLE "ostatni_skutecnosti" (
 # 	"id"	INTEGER NOT NULL UNIQUE,
