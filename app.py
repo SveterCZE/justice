@@ -20,7 +20,7 @@ app.secret_key = key
 db = SQLAlchemy(app)
 
 from models import Company, Soudni_Zapisy, \
-    Sidlo_Association, Adresy_v2, Pravni_Forma_Association_v2, Pravni_Formy, Nazvy
+    Sidlo_Association, Adresy_v2, Pravni_Forma_Association_v2, Pravni_Formy, Nazvy, Insolvency_Events, Konkurz_Events
 
 
 def return_conn():
@@ -88,13 +88,13 @@ def search_results(search):
 
     qry = Company.query
 
-    # if insolvent_only:
-    #     qry = qry.join(Insolvency_Events, Company.insolvence)
-    #     qry = qry.filter(Insolvency_Events.vymaz_datum == None)
-    #     qry_konkurz = Company.query
-    #     qry_konkurz = qry_konkurz.join(Konkurz_Events, Company.konkurz)
-    #     qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == None)
-    #     qry = qry.union(qry_konkurz)
+    if insolvent_only:
+        qry = qry.join(Insolvency_Events, Company.insolvence)
+        qry = qry.filter(Insolvency_Events.vymaz_datum == None)
+        qry_konkurz = Company.query
+        qry_konkurz = qry_konkurz.join(Konkurz_Events, Company.konkurz)
+        qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == None)
+        qry = qry.union(qry_konkurz)
     #
     # if criminal_record_only:
     #     qry = qry.join(Criminal_Records, Company.criminal_record)

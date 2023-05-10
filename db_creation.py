@@ -130,15 +130,15 @@ def create_tables(conn):
 # 	PRIMARY KEY("id" AUTOINCREMENT)
 # ); """
 #
-#     insolvency_events = """ CREATE TABLE "insolvency_events" (
-# 	"id"	INTEGER NOT NULL UNIQUE,
-# 	"company_id"	TEXT NOT NULL,
-# 	"zapis_datum"	DATE NOT NULL,
-# 	"vymaz_datum"	DATE,
-# 	"insolvency_event"	TEXT UNIQUE,
-# 	PRIMARY KEY("id" AUTOINCREMENT),
-# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-# ); """
+    insolvency_events = """ CREATE TABLE "insolvency_events" (
+	"id"	        SERIAL PRIMARY KEY,
+	"company_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE NOT NULL,
+	"vymaz_datum"	DATE,
+	"insolvency_event"	TEXT,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+); """
+    list_of_tables.append(insolvency_events)
 #
 #     jediny_akcionar = """ CREATE TABLE "jediny_akcionar" (
 # 	"id"	INTEGER NOT NULL UNIQUE,
@@ -156,16 +156,16 @@ def create_tables(conn):
 # 	PRIMARY KEY("id" AUTOINCREMENT)
 # ); """
 #
-#     konkurz_events = """ CREATE TABLE "konkurz_events" (
-# 	"id"	INTEGER NOT NULL UNIQUE,
-# 	"company_id"	TEXT NOT NULL,
-# 	"zapis_datum"	DATE NOT NULL,
-# 	"vymaz_datum"	DATE,
-# 	"konkurz_event"	TEXT UNIQUE,
-# 	PRIMARY KEY("id" AUTOINCREMENT),
-# 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-# ); """
-#
+    konkurz_events = """ CREATE TABLE "konkurz_events" (
+	"id"	SERIAL PRIMARY KEY,
+	"company_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE NOT NULL,
+	"vymaz_datum"	DATE,
+	"konkurz_event"	TEXT,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+); """
+    list_of_tables.append(konkurz_events)
+
     nazvy = """ CREATE TABLE "nazvy" (
 	"id"	        SERIAL PRIMARY KEY,
 	"company_id"	INTEGER NOT NULL,

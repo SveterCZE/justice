@@ -113,8 +113,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                 #     find_prokura(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "AKCIONAR_SEKCE":
                 #     find_sole_shareholder(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "INSOLVENCE_SEKCE":
-                #     find_insolvency(c, elem2, primary_sql_key)
+                elif udajTyp_name == "INSOLVENCE_SEKCE":
+                    find_insolvency(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "KONKURS_SEKCE":
                 #     find_konkurz(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "SKUTECNY_MAJITEL_SEKCE":
@@ -443,13 +443,18 @@ def find_insolvency(c, insolvency_elem, primary_sql_key):
                     insolvency_text = str(get_prop(elem2, ".//text"))
                     zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
                     vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
-                    if insolvency_text != "0":
+                    if insolvency_text != "None":
                         try:
-                            c.execute("INSERT INTO insolvency_events (company_id, zapis_datum, vymaz_datum, insolvency_event) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, insolvency_text,))
-                        except:
-                            pass
-   except:
-       pass
+                            sql_search = "SELECT * FROM insolvency_events WHERE company_id = %s and insolvency_event = %s"
+                            c.execute(sql_search, (primary_sql_key, insolvency_text,))
+                            record_id = c.fetchone()
+                            if record_id == None:
+                                sql_insert = "INSERT INTO insolvency_events (company_id, zapis_datum, vymaz_datum, insolvency_event) VALUES(%s, %s, NULLIF(%s,'None')::date, %s)"
+                                c.execute(sql_insert, (primary_sql_key, zapis_datum, vymaz_datum, insolvency_text,))
+                        except Exception as f:
+                            print(f)
+   except Exception as f:
+       print(f)
 
 def find_konkurz(c, konkurz_elem, primary_sql_key):
    try:
@@ -460,9 +465,10 @@ def find_konkurz(c, konkurz_elem, primary_sql_key):
                     konkurz_text = str(get_prop(elem2, ".//text"))
                     zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
                     vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
-                    if konkurz_text != "0":
+                    if konkurz_text != "None":
                         try:
-                            c.execute("INSERT INTO konkurz_events (company_id, zapis_datum, vymaz_datum, konkurz_event) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, konkurz_text,))
+                            sql_insert = "INSERT INTO konkurz_events (company_id, zapis_datum, vymaz_datum, konkurz_event) VALUES(%s, %s, NULLIF(%s,'None')::date, %s)"
+                            c.execute(sql_insert, (primary_sql_key, zapis_datum, vymaz_datum, konkurz_text,))
                         except:
                             pass
    except:

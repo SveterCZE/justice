@@ -8,12 +8,12 @@
     {% for row in results %}
         {% set insolvency_notes = [] %}
         {% for i in range (row.insolvence|length) %}
-            {% if row.insolvence[i].vymaz_datum == 0 %}
+            {% if row.insolvence[i].vymaz_datum == None %}
                 {% set insolvency_notes = insolvency_notes.append(row.insolvence[i].insolvency_event) %}
             {% endif %}    
         {% endfor %}
         {% for i in range (row.konkurz|length) %}
-            {% if row.konkurz[i].vymaz_datum == 0 %}
+            {% if row.konkurz[i].vymaz_datum == None %}
                 {% set insolvency_notes = insolvency_notes.append(row.konkurz[i].konkurz_event) %}
             {% endif %}    
         {% endfor %}

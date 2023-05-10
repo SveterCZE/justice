@@ -433,9 +433,9 @@ class Company(db.Model):
     oddil = db.Column(db.String)
     vlozka = db.Column(db.String)
     soud = db.Column(MySoud)
-    # insolvence = db.relationship("Insolvency_Events")
+    insolvence = db.relationship("Insolvency_Events")
     # criminal_record = db.relationship("Criminal_Records")
-    # konkurz = db.relationship("Konkurz_Events")
+    konkurz = db.relationship("Konkurz_Events")
     # predmet_podnikani = db.relationship("Predmety_Podnikani_Association")
     # predmet_cinnosti = db.relationship("Predmety_Cinnosti_Association")
     # ucel = db.relationship("Ucel_Association")
@@ -515,13 +515,13 @@ class Adresy_v2(db.Model):
         address_text = self.__repr__()
         return len(address_text)
 
-# class Insolvency_Events(db.Model):
-#     __tablename__ = "insolvency_events"
-#     id = db.Column(db.Integer, primary_key=True)
-#     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
-#     zapis_datum = db.Column(MyType)
-#     vymaz_datum = db.Column(MyType)
-#     insolvency_event = db.Column(db.String)
+class Insolvency_Events(db.Model):
+    __tablename__ = "insolvency_events"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    insolvency_event = db.Column(db.String)
 #
 # class Criminal_Records(db.Model):
 #     __tablename__ = "criminal_records"
@@ -532,13 +532,13 @@ class Adresy_v2(db.Model):
 #     paragraphs = db.Column(db.String)
 #     penalties = db.Column(db.String)
 #
-# class Konkurz_Events(db.Model):
-#     __tablename__ = "konkurz_events"
-#     id = db.Column(db.Integer, primary_key=True)
-#     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
-#     zapis_datum = db.Column(MyType)
-#     vymaz_datum = db.Column(MyType)
-#     konkurz_event = db.Column(db.String)
+class Konkurz_Events(db.Model):
+    __tablename__ = "konkurz_events"
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
+    zapis_datum = db.Column(MyType)
+    vymaz_datum = db.Column(MyType)
+    konkurz_event = db.Column(db.String)
 #
 # class Zakladni_Kapital(db.Model):
 #     __tablename__ = "zakladni_kapital"
