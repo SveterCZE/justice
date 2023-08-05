@@ -1,4 +1,4 @@
-from db_creation import create_DB
+from db_creation import create_DB, create_indices
 from download_files import download_data, get_valid_filenames, download_criminal_records
 from update_db import update_DB
 from backup_DB import backup_DB
@@ -23,28 +23,13 @@ def main():
     cur.execute('select \'drop table "\' || tablename || \'" cascade;\' from pg_tables where schemaname = \'public\';')
     instructions = cur.fetchall()
     for elem in instructions:
-        print(elem)
+        # print(elem)s
         cur.execute(elem[0])
-    # cur.execute('DROP TABLE IF EXISTS companies CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS pravni_formy CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS pravni_formy_relation CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS zapis_soudy CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS adresy_v2 CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS sidlo_relation CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS nazvy CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS insolvency_events CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS konkurz_events CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS statutarni_organy CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS statutarni_organ_relation CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS pocty_clenu_organu CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS zpusoby_jednani CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS zpusoby_jednani_relation CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS statutarni_organ_clen_relation CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS fyzicke_osoby CASCADE;')
-    # cur.execute('DROP TABLE IF EXISTS pravnicke_osoby CASCADE;')
     conn.commit()
-    # create_DB(conn)
-    # update_DB("as-full-ostrava-2023.xml", conn)
+    create_DB(conn)
+    create_indices(conn)
+    conn.commit()
+    update_DB("as-full-ostrava-2023.xml", conn)
     # Download criminal records
     # download_criminal_records()
     # insert_criminal_records(DB_name)

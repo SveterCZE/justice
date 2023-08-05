@@ -57,6 +57,51 @@ def create_tables(conn):
     ); """
     list_of_tables.append(adresy_v2)
 
+
+    fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
+	"id"	SERIAL PRIMARY KEY,
+	"titul_pred"	TEXT,
+	"jmeno"	TEXT,
+	"prijmeni"	TEXT,
+	"titul_za"	TEXT,
+	"datum_naroz"	TEXT,
+	"adresa_id" INTEGER,
+	UNIQUE("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
+); """
+    list_of_tables.append(fyzicke_osoby)
+
+    pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
+	"id"	SERIAL PRIMARY KEY,
+	"ico"	INTEGER,
+	"reg_cislo"	INTEGER,
+	"nazev"	TEXT,
+	"adresa_id" INTEGER,
+	UNIQUE("ico","reg_cislo","nazev","adresa_id"),
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
+); """
+    list_of_tables.append(pravnicke_osoby)
+
+    spolecnici_uvolneny_podil = """ CREATE TABLE "spolecnici_uvolneny_podil" (
+	"id" SERIAL PRIMARY KEY,
+	"company_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	"text_uvolneny_podil"	TEXT,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+); """
+    list_of_tables.append(spolecnici_uvolneny_podil)
+
+    spolecnici_spolecny_podil = """ CREATE TABLE "spolecnici_spolecny_podil" (
+	"id" SERIAL PRIMARY KEY,
+	"company_id"	INTEGER NOT NULL,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	"text_spolecny_podil"	TEXT,
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+); """
+    list_of_tables.append(spolecnici_spolecny_podil)
+
     akcie = """ CREATE TABLE "akcie" (
 	"id"	        SERIAL PRIMARY KEY, 
 	"company_id"	INTEGER NOT NULL,
@@ -113,22 +158,9 @@ def create_tables(conn):
 
     druhy_podilu = """ CREATE TABLE "druhy_podilu" (
 	"id"	SERIAL PRIMARY KEY,
-	"druh_podilu"	TEXT NOT NULL UNIQUE,
+	"druh_podilu"	TEXT NOT NULL UNIQUE
 ); """
     list_of_tables.append(druhy_podilu)
-
-    fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
-	"id"	SERIAL PRIMARY KEY,
-	"titul_pred"	TEXT,
-	"jmeno"	TEXT,
-	"prijmeni"	TEXT,
-	"titul_za"	TEXT,
-	"datum_naroz"	TEXT,
-	"adresa_id" INTEGER,
-	UNIQUE("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
-); """
-    list_of_tables.append(fyzicke_osoby)
 
     insolvency_events = """ CREATE TABLE "insolvency_events" (
 	"id"	        SERIAL PRIMARY KEY,
@@ -192,10 +224,24 @@ def create_tables(conn):
 	"pocet_clenu_value"	INTEGER,
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
-	FOREIGN KEY("organ_id") REFERENCES "dozorci_rada_relation"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
+	FOREIGN KEY("organ_id") REFERENCES "dozorci_rada_relation"("id")
 ); """
     list_of_tables.append(pocty_clenu_DR)
+
+    spolecnici = """ CREATE TABLE "spolecnici" (
+	"id"	SERIAL PRIMARY KEY,
+	"company_id"	INTEGER NOT NULL,
+	"spolecnik_fo_id"	INTEGER,
+	"spolecnik_po_id"	INTEGER,
+	"zapis_datum"	DATE,
+	"vymaz_datum"	DATE,
+	"adresa_id"	INTEGER,
+	"text_spolecnik"	TEXT,
+	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
+	FOREIGN KEY("spolecnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+); """
+    list_of_tables.append(spolecnici)
 
     podilnici = """ CREATE TABLE "podilnici" (
 	"id"	SERIAL PRIMARY KEY,
@@ -228,14 +274,14 @@ def create_tables(conn):
 	"splaceni_text"	TEXT,
 	FOREIGN KEY("druh_podilu_id") REFERENCES "druhy_podilu"("id"),
 	FOREIGN KEY("spolecnik_id") REFERENCES "spolecnici"("id"),
-	FOREIGN KEY("uvolneny_podil_id") REFERENCES "spolecnici_uvolneny_podil"("id"),
+	FOREIGN KEY("uvolneny_podil_id") REFERENCES "spolecnici_uvolneny_podil"("id")
 ); """
     list_of_tables.append(podily)
 
     pravni_formy = """ CREATE TABLE "pravni_formy" (
 	"id"	SERIAL PRIMARY KEY,
 	"pravni_forma"	TEXT NOT NULL UNIQUE
-	); """
+); """
     list_of_tables.append(pravni_formy)
 
 
@@ -265,18 +311,6 @@ def create_tables(conn):
     ); """
     list_of_tables.append(sidlo_relation)
 
-
-    pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
-	"id"	SERIAL PRIMARY KEY,
-	"ico"	INTEGER,
-	"reg_cislo"	INTEGER,
-	"nazev"	TEXT,
-	"adresa_id" INTEGER,
-	UNIQUE("ico","reg_cislo","nazev","adresa_id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
-); """
-    list_of_tables.append(pravnicke_osoby)
-
     predmety_cinnosti = """ CREATE TABLE "predmety_cinnosti" (
 	"id"	SERIAL PRIMARY KEY,
 	"predmet_cinnosti"	TEXT NOT NULL UNIQUE
@@ -294,11 +328,11 @@ def create_tables(conn):
 ); """
     list_of_tables.append(predmety_cinnosti_relation)
 
-    prdmety_podnikani = """ CREATE TABLE "predmety_podnikani" (
+    predmety_podnikani = """ CREATE TABLE "predmety_podnikani" (
 	"id"	SERIAL PRIMARY KEY,
 	"predmet_podnikani"	TEXT NOT NULL UNIQUE
 ); """
-    list_of_tables.append(prdmety_podnikani)
+    list_of_tables.append(predmety_podnikani)
 
     predmety_podnikani_relation = """ CREATE TABLE "predmety_podnikani_relation" (
 	"id"	SERIAL PRIMARY KEY,
@@ -317,7 +351,7 @@ def create_tables(conn):
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
 	"prokura_text"	TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
+	FOREIGN KEY("company_id") REFERENCES "companies"("id")
 ); """
     list_of_tables.append(prokura_common_texts)
 
@@ -334,41 +368,6 @@ def create_tables(conn):
 	FOREIGN KEY("company_id") REFERENCES "companies"("id")
 ); """
     list_of_tables.append(prokuriste)
-
-    spolecnici = """ CREATE TABLE "spolecnici" (
-	"id"	SERIAL PRIMARY KEY,
-	"company_id"	INTEGER NOT NULL,
-	"spolecnik_fo_id"	INTEGER,
-	"spolecnik_po_id"	INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"adresa_id"	INTEGER,
-	"text_spolecnik"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	FOREIGN KEY("spolecnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-    list_of_tables.append(spolecnici)
-
-    spolecnici_uvolneny_podil = """ CREATE TABLE "spolecnici_uvolneny_podil" (
-	"id" SERIAL PRIMARY KEY,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"text_uvolneny_podil"	TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-    list_of_tables.append(spolecnici_uvolneny_podil)
-
-    spolecnici_spolecny_podil = """ CREATE TABLE "spolecnici_spolecny_podil" (
-	"id" SERIAL PRIMARY KEY,
-	"company_id"	INTEGER NOT NULL,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
-	"text_spolecny_podil"	TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
-); """
-    list_of_tables.append(spolecnici_spolecny_podil)
 
     statutarni_organy = """ CREATE TABLE "statutarni_organy" (
 	"id"	SERIAL PRIMARY KEY,
@@ -703,7 +702,7 @@ def create_indices(conn):
 ); """
 
     predmety_podnikani_relation3 = """ CREATE INDEX "index predmety podnikani relation3" ON "predmety_podnikani_relation" (
-	"prdemet_podnikani_id"
+	"predmet_podnikani_id"
 ); """
 
     predmety_cinnosti1 = """ CREATE INDEX "index predmety_cinnosti1" ON "predmety_cinnosti" (
@@ -826,7 +825,7 @@ def create_indices(conn):
 ); """
 
     ubo4 = """ CREATE INDEX "index ubo4" ON "ubo" (
-	"UBO_adresa_id"
+	"adresa_id"
 ); """
 
     ucel1 = """ CREATE INDEX "index ucel1" ON "ucel" (
