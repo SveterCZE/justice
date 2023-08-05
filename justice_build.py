@@ -29,6 +29,8 @@ def main():
     cur.execute('DROP TABLE IF EXISTS nazvy CASCADE;')
     cur.execute('DROP TABLE IF EXISTS insolvency_events CASCADE;')
     cur.execute('DROP TABLE IF EXISTS konkurz_events CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS pravni_formy CASCADE;')
+    cur.execute('DROP TABLE IF EXISTS pravni_formy_relation CASCADE;')
     # conn.commit()
     create_DB(conn)
     update_DB("as-full-ostrava-2023.xml", conn)

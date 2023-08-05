@@ -89,8 +89,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_nazev(c, elem2, primary_sql_key)
                 if udajTyp_name == "SPIS_ZN":
                     find_sp_zn(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "PRAVNI_FORMA":
-                #     find_pravni_forma(c, elem2, primary_sql_key)
+                elif udajTyp_name == "PRAVNI_FORMA":
+                    find_pravni_forma(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "STATUTARNI_ORGAN":
                 #     find_statutar(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "SPOLECNIK":
@@ -115,8 +115,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                 #     find_sole_shareholder(c, elem2, primary_sql_key)
                 elif udajTyp_name == "INSOLVENCE_SEKCE":
                     find_insolvency(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "KONKURS_SEKCE":
-                #     find_konkurz(c, elem2, primary_sql_key)
+                elif udajTyp_name == "KONKURS_SEKCE":
+                    find_konkurz(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "SKUTECNY_MAJITEL_SEKCE":
                 #     find_UBO(c, elem2, primary_sql_key)
 
@@ -164,11 +164,15 @@ def find_pravni_forma(c, elem2, primary_sql_key):
         pravni_forma = str(get_prop(elem2, ".//pravniForma/nazev"))
         insert_instructions = [(pravni_forma,"pravni_formy", "pravni_forma", "pravni_formy_relation")]
         for elem in insert_instructions:
-            insert_into_ancillary_table(c, elem, pravni_forma)
             ancillary_table_key = get_anciallary_table_key(c, elem, pravni_forma)
+            if ancillary_table_key == False:
+                insert_into_ancillary_table(c, elem, pravni_forma)
+                ancillary_table_key = get_anciallary_table_key(c, elem, pravni_forma)
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except:
         pass
+
+# def find_elem_id(c, searched_table, searched_)
 
 def find_statutar(c, elem2, primary_sql_key):
     try:
@@ -524,7 +528,7 @@ def get_anciallary_table_key(c, elem, inserted_figure):
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
     except Exception as f:
-        print(f)
+        return False
 
 def get_relationship_table_key(c, primary_sql_key, ancillary_table_key):
     c.execute("SELECT id FROM statutarni_organ_relation WHERE company_id = (%s) and statutarni_organ_id = (%s)", (primary_sql_key,ancillary_table_key,))
