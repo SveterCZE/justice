@@ -91,8 +91,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_sp_zn(c, elem2, primary_sql_key)
                 elif udajTyp_name == "PRAVNI_FORMA":
                     find_pravni_forma(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "STATUTARNI_ORGAN":
-                #     find_statutar(c, elem2, primary_sql_key)
+                elif udajTyp_name == "STATUTARNI_ORGAN":
+                    find_statutar(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "SPOLECNIK":
                 #     find_spolecnik(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "PREDMET_PODNIKANI_SEKCE":
@@ -181,7 +181,9 @@ def find_statutar(c, elem2, primary_sql_key):
         oznaceni_statutar_organu = str(get_prop(elem2, ".//hlavicka"))
         insert_instructions = [(oznaceni_statutar_organu,"statutarni_organy", "statutarni_organ_text", "statutarni_organ_relation")]
         for elem in insert_instructions:
-            insert_into_ancillary_table(c, elem, oznaceni_statutar_organu)
+            ancillary_table_key = get_anciallary_table_key(c, elem, oznaceni_statutar_organu)
+            if ancillary_table_key == False:
+                insert_into_ancillary_table(c, elem, oznaceni_statutar_organu)
             ancillary_table_key = get_anciallary_table_key(c, elem, oznaceni_statutar_organu)
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
             relationship_table_key = get_relationship_table_key(c, primary_sql_key, ancillary_table_key)
@@ -539,7 +541,7 @@ def find_pocet_clenu(c, elem, relationship_table_key):
         zapis_datum = str(get_prop(elem, "zapisDatum"))
         vymaz_datum = str(get_prop(elem, "vymazDatum"))
         pocet_clenu_number = str(get_prop(elem, "hodnotaText"))
-        c.execute("INSERT into pocty_clenu_organu (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (?,?,?,?)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum,))        
+        c.execute("INSERT into pocty_clenu_organu (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (%s,NULLIF(%s,'None')::integer,%s,NULLIF(%s,'None')::date)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum))        
     except Exception as f:
         print(f)
 
@@ -550,8 +552,10 @@ def find_zpusob_jednani(c, elem, relationship_table_key):
         zpusob_jednani = str(get_prop(elem, "hodnotaText"))
         insert_instructions = [(zpusob_jednani,"zpusoby_jednani", "zpusob_jednani_text", "zpusoby_jednani_relation")]
         for elem in insert_instructions:
-            insert_into_ancillary_table(c, elem, zpusob_jednani)
             ancillary_table_key = get_anciallary_table_key(c, elem, zpusob_jednani)
+            if ancillary_table_key == False:
+                insert_into_ancillary_table(c, elem, zpusob_jednani)
+                ancillary_table_key = get_anciallary_table_key(c, elem, zpusob_jednani)
             insert_relation_information_v2(c, elem, relationship_table_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
         print(f)
@@ -569,13 +573,14 @@ def find_clen_statut_org(c, elem, relationship_table_key):
         if typ_osoby == "AngazmaFyzicke":
             adresa_id = find_sidlo(c, elem)
             osoba_id = find_fyzicka_osoba(c, elem, adresa_id)
-            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
-        if typ_osoby == "AngazmaPravnicke":
-            spol_ico = str(get_prop(elem, "osoba/ico"))
-            regCislo = str(get_prop(elem, "osoba/regCislo"))
-            adresa_id = find_sidlo(c, elem)
-            prav_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
-            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (%s,%s,%s,%s,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,%s)", 
+                      (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+        # if typ_osoby == "AngazmaPravnicke":
+        #     spol_ico = str(get_prop(elem, "osoba/ico"))
+        #     regCislo = str(get_prop(elem, "osoba/regCislo"))
+        #     adresa_id = find_sidlo(c, elem)
+        #     prav_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
+        #     c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(f)
 
@@ -586,11 +591,13 @@ def find_fyzicka_osoba(c, elem, adresa_id):
         datum_narozeni = str(get_prop(elem, "osoba/narozDatum"))
         titulPred = str(get_prop(elem, "osoba/titulPred"))
         titulZa = str(get_prop(elem, "osoba/titulZa"))
-        insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
         osoba_id = find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
+        if osoba_id == False:
+            insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
+            osoba_id = find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
         return osoba_id
-    except:
-        pass
+    except Exception as f:
+        print(f)
 
 def lower_names_chars(string_name):
     updated_name = ""
@@ -608,17 +615,17 @@ def lower_names_chars(string_name):
 
 def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id):
     try:
-        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (?,?,?,?,?,?)", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni,adresa_id,))
-    except:
-        pass
+        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s)", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
+    except Exception as f:
+        print(f)
 
 def find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id):
     try:
-        anciallary_table_key = c.execute("SELECT id FROM fyzicke_osoby WHERE titul_pred = (?) and jmeno = (?) and prijmeni = (?) and titul_za = (?) and datum_naroz = (?) and adresa_id = (?)", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni,adresa_id,))
+        anciallary_table_key = c.execute("SELECT id FROM fyzicke_osoby WHERE titul_pred = %s and jmeno = %s and prijmeni = %s and titul_za = %s and datum_naroz = %s and adresa_id = %s", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni,adresa_id,))
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
     except Exception as f:
-        print(f) 
+        return False 
 
 def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
     try:
