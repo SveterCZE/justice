@@ -23,7 +23,7 @@ def update_DB(file, conn):
                 continue
             # Vlozit prazdny radek s ICO
             insert_new_ICO(c, ICO, element)
-            print(ICO)
+            # print(ICO)
             primary_sql_key = get_primary_sql_key(c, ICO)
             # Vlozit jednolive parametry
             find_other_properties(c, ICO, element, conn, primary_sql_key)
@@ -107,10 +107,10 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_zakladni_kapital(c, elem2, primary_sql_key)
                 elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
                     find_ostatni_skutecnosti(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "AKCIE_SEKCE":
-                #     find_akcie(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "DOZORCI_RADA":
-                #     find_dozorci_rada(c, elem2, primary_sql_key)
+                elif udajTyp_name == "AKCIE_SEKCE":
+                    find_akcie(c, elem2, primary_sql_key)
+                elif udajTyp_name == "DOZORCI_RADA":
+                    find_dozorci_rada(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "PROKURA":
                 #     find_prokura(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "AKCIONAR_SEKCE":
@@ -396,29 +396,30 @@ def find_akcie(c, ostatni_akcie_elem, primary_sql_key):
         for elem in my_iter:
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
-                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
-                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
-                akcie_podoba = str(get_prop(elem2, ".//hodnotaUdaje/podoba"))
-                akcie_typ = str(get_prop(elem2, ".//hodnotaUdaje/typ"))
-                akcie_pocet = str(get_prop(elem2, ".//hodnotaUdaje/pocet"))
-                akcie_hodnota_typ = str(get_prop(elem2, ".//hodnotaUdaje/hodnota/typ"))
-                akcie_hodnota_value = str(get_prop(elem2, ".//hodnotaUdaje/hodnota/textValue"))
-                akcie_text = str(get_prop(elem2, ".//hodnotaUdaje/text"))
-                c.execute("INSERT INTO akcie (company_id, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value, akcie_text) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value,akcie_text,))
+                zapis_datum = get_prop(elem2, ".//zapisDatum")
+                vymaz_datum = get_prop(elem2, ".//vymazDatum")
+                akcie_podoba = get_prop(elem2, ".//hodnotaUdaje/podoba")
+                akcie_typ = get_prop(elem2, ".//hodnotaUdaje/typ")
+                akcie_pocet = get_prop(elem2, ".//hodnotaUdaje/pocet")
+                akcie_hodnota_typ = get_prop(elem2, ".//hodnotaUdaje/hodnota/typ")
+                akcie_hodnota_value = get_prop(elem2, ".//hodnotaUdaje/hodnota/textValue")
+                akcie_text = get_prop(elem2, ".//hodnotaUdaje/text")
+                c.execute("INSERT INTO akcie (company_id, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value, akcie_text) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                          (primary_sql_key, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value,akcie_text,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)   
 
 def find_dozorci_rada(c, elem2, primary_sql_key):
     try:
-        zapis_datum = str(get_prop(elem2, "zapisDatum"))
-        vymaz_datum = str(get_prop(elem2, "vymazDatum"))
-        c.execute("INSERT into dozorci_rada_relation (company_id, zapis_datum, vymaz_datum) VALUES (?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum,))
-        c.execute("SELECT id FROM dozorci_rada_relation WHERE company_id = (?) and zapis_datum = (?)", (primary_sql_key,zapis_datum,))
+        zapis_datum = get_prop(elem2, "zapisDatum")
+        vymaz_datum = get_prop(elem2, "vymazDatum")
+        c.execute("INSERT into dozorci_rada_relation (company_id, zapis_datum, vymaz_datum) VALUES (%s, %s, %s) RETURNING id", (primary_sql_key, zapis_datum, vymaz_datum,))
+        # c.execute("SELECT id FROM dozorci_rada_relation WHERE company_id = (%s) and zapis_datum = (%s)", (primary_sql_key,zapis_datum,))
         relationship_table_key = c.fetchone()[0]
         my_iter = elem2.findall("podudaje/Udaj") 
         for elem in my_iter:
-            udajTyp_name = str(get_prop(elem, "udajTyp/kod"))
+            udajTyp_name = get_prop(elem, "udajTyp/kod")
             if udajTyp_name == "POCET_CLENU_DOZORCI_RADA":
                 find_pocet_clenu_dr(c, elem, relationship_table_key)
             elif udajTyp_name == "DOZORCI_RADA_CLEN":
@@ -652,6 +653,10 @@ def find_fyzicka_osoba(c, elem, adresa_id):
         prijmeni = lower_names_chars(get_prop(elem, "osoba/prijmeni"))
         if jmeno == None and prijmeni == None:
             prijmeni = lower_names_chars(get_prop(elem, "osoba/osobaText"))
+        if jmeno != None and ('\'' in jmeno or '"' in jmeno):
+            jmeno = jmeno.replace('\'', '').replace('"', '')
+        if prijmeni != None and ('\'' in prijmeni or '"' in prijmeni):
+            prijmeni = prijmeni.replace('\'', '').replace('"', '')  
         datum_narozeni = get_prop(elem, "osoba/narozDatum")
         titulPred = get_prop(elem, "osoba/titulPred")
         titulZa = get_prop(elem, "osoba/titulZa")
@@ -661,8 +666,8 @@ def find_fyzicka_osoba(c, elem, adresa_id):
             osoba_id = c.fetchone()[0]
         return osoba_id
     except Exception as f:
-        # print(inspect.stack()[0][3])
-        # print(f)
+        print(inspect.stack()[0][3])
+        print(f)
         pass
 
 def lower_names_chars(string_name):
@@ -721,34 +726,36 @@ def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
 
 def find_pocet_clenu_dr(c, elem, relationship_table_key):
     try:
-        zapis_datum = str(get_prop(elem, "zapisDatum"))
-        vymaz_datum = str(get_prop(elem, "vymazDatum"))
-        pocet_clenu_number = str(get_prop(elem, "hodnotaText"))
-        c.execute("INSERT into pocty_clenu_DR (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (?,?,?,?)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum,))        
+        zapis_datum = get_prop(elem, "zapisDatum")
+        vymaz_datum = get_prop(elem, "vymazDatum")
+        pocet_clenu_number = get_prop(elem, "hodnotaText")
+        c.execute("INSERT into pocty_clenu_DR (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (%s,%s,%s,%s)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum,))        
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
 
 def find_clen_dr(c, elem, relationship_table_key):
     try:
-        zapis_datum = str(get_prop(elem, "zapisDatum"))
-        vymaz_datum = str(get_prop(elem, "vymazDatum"))
-        funkce_statutar_organu = str(get_prop(elem, "funkce"))
-        typ_osoby = str(get_prop(elem, "hodnotaText"))
-        funkceOd = str(get_prop(elem, "funkceOd"))
-        clenstviOd = str(get_prop(elem, "clenstviOd")) 
-        funkceDo = str(get_prop(elem, "funkceDo"))
-        clenstviDo = str(get_prop(elem, "clenstviDo"))
+        zapis_datum = get_prop(elem, "zapisDatum")
+        vymaz_datum = get_prop(elem, "vymazDatum")
+        funkce_statutar_organu = get_prop(elem, "funkce")
+        typ_osoby = get_prop(elem, "hodnotaText")
+        funkceOd = get_prop(elem, "funkceOd")
+        clenstviOd = get_prop(elem, "clenstviOd")
+        funkceDo = get_prop(elem, "funkceDo")
+        clenstviDo = get_prop(elem, "clenstviDo")
         if typ_osoby == "AngazmaFyzicke":
             adresa_id = find_sidlo(c, elem)
             osoba_id = find_fyzicka_osoba(c, elem, adresa_id)
-            c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+            c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", 
+                      (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
         elif typ_osoby == "AngazmaPravnicke":
-            spol_ico = str(get_prop(elem, "osoba/ico"))
-            regCislo = str(get_prop(elem, "osoba/regCislo"))
+            spol_ico = get_prop(elem, "osoba/ico")
+            regCislo = get_prop(elem, "osoba/regCislo")
             adresa_id = find_sidlo(c, elem)
             pravnicka_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
-            c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+            c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", 
+                      (relationship_table_key, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)

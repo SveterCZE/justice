@@ -25,10 +25,9 @@ def main():
     instructions = cur.fetchall()
     for elem in instructions:
         cur.execute(elem[0])
-    conn.commit()
+    # conn.commit()
     create_DB(conn)
-    # create_indices(conn)
-    conn.commit()
+    create_indices(conn)
     update_DB("as-full-ostrava-2023.xml", conn)
     # Download criminal records
     # download_criminal_records()

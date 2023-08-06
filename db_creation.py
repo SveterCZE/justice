@@ -217,7 +217,7 @@ def create_tables(conn):
 ); """
     list_of_tables.append(ostatni_skutecnosti)
 
-    pocty_clenu_DR = """ CREATE TABLE "pocty_clenu_DR" (
+    pocty_clenu_dr = """ CREATE TABLE "pocty_clenu_dr" (
 	"id"	SERIAL PRIMARY KEY,
 	"organ_id"	INTEGER NOT NULL,
 	"pocet_clenu_value"	INTEGER,
@@ -225,7 +225,7 @@ def create_tables(conn):
 	"vymaz_datum"	DATE,
 	FOREIGN KEY("organ_id") REFERENCES "dozorci_rada_relation"("id")
 ); """
-    list_of_tables.append(pocty_clenu_DR)
+    list_of_tables.append(pocty_clenu_dr)
 
     spolecnici = """ CREATE TABLE "spolecnici" (
 	"id"	SERIAL PRIMARY KEY,
