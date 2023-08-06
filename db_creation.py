@@ -56,7 +56,6 @@ def create_tables(conn):
     ); """
     list_of_tables.append(adresy_v2)
 
-
     fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
 	"id"	SERIAL PRIMARY KEY,
 	"titul_pred"	TEXT,
@@ -417,21 +416,21 @@ def create_tables(conn):
     ubo = """ CREATE TABLE "ubo" (
 	"id" SERIAL PRIMARY KEY,
 	"company_id"  INTEGER NOT NULL,
-	"UBO_id" INTEGER NOT NULL,
+	"ubo_id" INTEGER NOT NULL,
 	"adresa_id" INTEGER,
 	"zapis_datum"  DATE,
 	"vymaz_datum"  DATE,
 	"postaveni" TEXT,
-	"koncovyPrijemceText" TEXT,
-	"skutecnymMajitelemOd" TEXT,
-	"vlastniPodilNaProspechu" TEXT,
-	"vlastniPodilNaProspechu_typ" TEXT,
-	"vlastniPodilNaProspechu_textValue" TEXT,
-	"vlastniPodilNaHlasovani" TEXT,
-	"vlastniPodilNaHlasovani_typ" TEXT,
-	"vlastniPodilNaHlasovani_value" TEXT,
+	"koncovy_prijemce_text" TEXT,
+	"skutecnym_majitelem_od" TEXT,
+	"vlastni_podil_na_prospechu" TEXT,
+	"vlastni_podil_na_prospechu_typ" TEXT,
+	"vlastni_podil_na_prospechu_text_value" TEXT,
+	"vlastni_podil_na_hlasovani" TEXT,
+	"vlastni_podil_na_hlasovani_typ" TEXT,
+	"vlastni_podil_na_hlasovani_value" TEXT,
 	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("UBO_id") REFERENCES "fyzicke_osoby"("id"),
+	FOREIGN KEY("ubo_id") REFERENCES "fyzicke_osoby"("id"),
 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
 ); """
     list_of_tables.append(ubo)
@@ -820,7 +819,7 @@ def create_indices(conn):
 ); """
 
     ubo3 = """ CREATE INDEX "index ubo3" ON "ubo" (
-	"UBO_id"
+	"ubo_id"
 ); """
 
     ubo4 = """ CREATE INDEX "index ubo4" ON "ubo" (

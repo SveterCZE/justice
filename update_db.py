@@ -113,14 +113,14 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_dozorci_rada(c, elem2, primary_sql_key)
                 elif udajTyp_name == "PROKURA":
                     find_prokura(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "AKCIONAR_SEKCE":
-                #     find_sole_shareholder(c, elem2, primary_sql_key)
+                elif udajTyp_name == "AKCIONAR_SEKCE":
+                    find_sole_shareholder(c, elem2, primary_sql_key)
                 elif udajTyp_name == "INSOLVENCE_SEKCE":
                     find_insolvency(c, elem2, primary_sql_key)
                 elif udajTyp_name == "KONKURS_SEKCE":
                     find_konkurz(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "SKUTECNY_MAJITEL_SEKCE":
-                #     find_UBO(c, elem2, primary_sql_key)
+                elif udajTyp_name == "SKUTECNY_MAJITEL_SEKCE":
+                    find_UBO(c, elem2, primary_sql_key)
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)   
@@ -212,20 +212,21 @@ def find_UBO(c, elem2, primary_sql_key):
     try:
         my_iter = elem2.findall("podudaje/Udaj")
         for elem in my_iter:
-            zapis_datum = str(get_prop(elem, "zapisDatum"))
-            vymaz_datum = str(get_prop(elem, "vymazDatum"))
-            postaveni = str(get_prop(elem, "hodnotaUdaje/postaveni")).split(";")[0]
-            koncovyPrijemceText = str(get_prop(elem, "hodnotaUdaje/koncovyPrijemceText"))
-            skutecnymMajitelemOd = str(get_prop(elem, "hodnotaUdaje/skutecnymMajitelemOd"))
-            vlastniPodilNaProspechu = str(get_prop(elem, "hodnotaUdaje/vlastniPodilNaProspechu"))
-            vlastniPodilNaProspechu_typ = str(get_prop(elem, "hodnotaUdaje/podilNaProspechu/typ"))
-            vlastniPodilNaProspechu_textValue = str(get_prop(elem, "hodnotaUdaje/podilNaProspechu/textValue"))
-            vlastniPodilNaHlasovani = str(get_prop(elem, "hodnotaUdaje/podilNaHlasovani"))
-            vlastniPodilNaHlasovani_typ = str(get_prop(elem, "hodnotaUdaje/podilNaHlasovani/typ"))
-            vlastniPodilNaHlasovani_value = str(get_prop(elem, "hodnotaUdaje/podilNaHlasovani/textValue"))
+            zapis_datum = get_prop(elem, "zapisDatum")
+            vymaz_datum = get_prop(elem, "vymazDatum")
+            postaveni = get_prop(elem, "hodnotaUdaje/postaveni").split(";")[0]
+            koncovyPrijemceText = get_prop(elem, "hodnotaUdaje/koncovyPrijemceText")
+            skutecnymMajitelemOd = get_prop(elem, "hodnotaUdaje/skutecnymMajitelemOd")
+            vlastniPodilNaProspechu = get_prop(elem, "hodnotaUdaje/vlastniPodilNaProspechu")
+            vlastniPodilNaProspechu_typ = get_prop(elem, "hodnotaUdaje/podilNaProspechu/typ")
+            vlastniPodilNaProspechu_textValue = get_prop(elem, "hodnotaUdaje/podilNaProspechu/textValue")
+            vlastniPodilNaHlasovani = get_prop(elem, "hodnotaUdaje/podilNaHlasovani")
+            vlastniPodilNaHlasovani_typ = get_prop(elem, "hodnotaUdaje/podilNaHlasovani/typ")
+            vlastniPodilNaHlasovani_value = get_prop(elem, "hodnotaUdaje/podilNaHlasovani/textValue")
             adresa_id = find_sidlo(c, elem)
             UBO_id = find_fyzicka_osoba(c, elem, adresa_id)
-            c.execute("INSERT INTO ubo (company_id, UBO_id, adresa_id, zapis_datum, vymaz_datum, postaveni, koncovyPrijemceText, skutecnymMajitelemOd, vlastniPodilNaProspechu, vlastniPodilNaProspechu_typ, vlastniPodilNaProspechu_textValue, vlastniPodilNaHlasovani, vlastniPodilNaHlasovani_typ, vlastniPodilNaHlasovani_value) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, UBO_id, adresa_id, zapis_datum, vymaz_datum, postaveni, koncovyPrijemceText, skutecnymMajitelemOd, vlastniPodilNaProspechu, vlastniPodilNaProspechu_typ, vlastniPodilNaProspechu_textValue, vlastniPodilNaHlasovani, vlastniPodilNaHlasovani_typ, vlastniPodilNaHlasovani_value,))
+            c.execute("INSERT INTO ubo (company_id, ubo_id, adresa_id, zapis_datum, vymaz_datum, postaveni, koncovy_prijemce_text, skutecnym_majitelem_od, vlastni_podil_na_prospechu, vlastni_podil_na_prospechu_typ, vlastni_podil_na_prospechu_text_value, vlastni_podil_na_hlasovani, vlastni_podil_na_hlasovani_typ, vlastni_podil_na_hlasovani_value) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                      (primary_sql_key, UBO_id, adresa_id, zapis_datum, vymaz_datum, postaveni, koncovyPrijemceText, skutecnymMajitelemOd, vlastniPodilNaProspechu, vlastniPodilNaProspechu_typ, vlastniPodilNaProspechu_textValue, vlastniPodilNaHlasovani, vlastniPodilNaHlasovani_typ, vlastniPodilNaHlasovani_value,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -453,20 +454,20 @@ def find_sole_shareholder(c, elem2, primary_sql_key):
     try:
         my_iter = elem2.findall("podudaje/Udaj")
         for elem in my_iter:
-            zapis_datum = str(get_prop(elem, "zapisDatum"))
-            vymaz_datum = str(get_prop(elem, "vymazDatum"))
-            text_akcionar = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
-            typ_akcionar = str(get_prop(elem, "hodnotaUdaje/T"))
+            zapis_datum = get_prop(elem, "zapisDatum")
+            vymaz_datum = get_prop(elem, "vymazDatum")
+            text_akcionar = get_prop(elem, "hodnotaUdaje/textZaOsobu/value")
+            typ_akcionar = get_prop(elem, "hodnotaUdaje/T")
             if typ_akcionar == "P":
-                spol_ico = str(get_prop(elem, "osoba/ico"))
-                regCislo = str(get_prop(elem, "osoba/regCislo"))
+                spol_ico = get_prop(elem, "osoba/ico")
+                regCislo = get_prop(elem, "osoba/rgCislo")
                 adresa_id = find_sidlo(c, elem)
                 akcionar_po_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
-                c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id,))
+                c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id) VALUES (%s, %s, %s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id,))
             elif typ_akcionar == "F":
                 adresa_id = find_sidlo(c, elem)
                 akcionar_fo_id = find_fyzicka_osoba(c, elem, adresa_id)
-                c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id,))    
+                c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id) VALUES (%s, %s, %s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id,))    
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -715,6 +716,8 @@ def find_osoba_id(c, titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_
 def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
     try:
         nazev = get_prop(elem, "osoba/nazev")
+        if nazev != None and ('\'' in nazev or '"' in nazev):
+            nazev = nazev.replace('\'', '').replace('"', '')
         osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id)
         if osoba_id == False:
             insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
