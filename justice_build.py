@@ -5,6 +5,7 @@ from backup_DB import backup_DB
 from insert_criminal_records import insert_criminal_records
 from app import return_conn
 import os
+import cProfile
 
 def main():
     # valid_files = []
@@ -23,15 +24,14 @@ def main():
     cur.execute('select \'drop table "\' || tablename || \'" cascade;\' from pg_tables where schemaname = \'public\';')
     instructions = cur.fetchall()
     for elem in instructions:
-        # print(elem)s
-        cur.execute(elem[0])
+        cur.execute(elem[0])    
     conn.commit()
     create_DB(conn)
-    create_indices(conn)
+    # create_indices(conn)
     conn.commit()
     update_DB("as-full-ostrava-2023.xml", conn)
     # Download criminal records
     # download_criminal_records()
     # insert_criminal_records(DB_name)
 
-main()
+cProfile.run('main()')

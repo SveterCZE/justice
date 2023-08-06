@@ -872,8 +872,24 @@ def create_indices(conn):
 	"zpusob_jednani_id"
 ); """
 
-    fyzicke_osoby1 = """ CREATE INDEX "index fyzicke_osoby1" ON "fyzicke_osoby" (
-	"id"
+    fyzicke_osoby1 = """ CREATE INDEX fyzicke_osoby1 ON fyzicke_osoby (
+	datum_naroz 
+); """
+
+    fyzicke_osoby2 = """ CREATE INDEX fyzicke_osoby2 ON fyzicke_osoby (
+	jmeno
+); """
+
+    fyzicke_osoby3 = """ CREATE INDEX fyzicke_osoby3 ON fyzicke_osoby (
+	prijmeni
+); """
+
+    fyzicke_osoby4 = """ CREATE INDEX fyzicke_osoby4 ON fyzicke_osoby (
+	titul_pred
+); """
+
+    fyzicke_osoby5 = """ CREATE INDEX fyzicke_osoby5 ON fyzicke_osoby (
+	titul_za
 ); """
 
     statutarni_organy_relation_4 = """ CREATE INDEX "index statutarni organ relation 4" ON "statutarni_organ_clen_relation" (
@@ -906,7 +922,7 @@ def create_indices(conn):
 	prokuriste2, prokuriste3, prokuriste4, sidlo_relation1, sidlo_relation_2, sidlo_relation_3, soudni_zapis1, soudni_zapis2, spolecnici1, 
 	spolecnici2, spolecnici3, spolecnici4, spolecnici5, spolecnici_uvolneny_podil1, spolecnici_uvolneny_podil2, spolecnici_spolecny_podil1, spolecnici_spolecny_podil2, statutarni_organy, statutarni_organy_relation1, statutarni_organy_relation2, 
 	statutarni_organy_relation_3, statutarni_organy_relation_4, zakladni_kapital1, zakladni_kapital2, zpusob_jednani, zpusob_jednani_relation1, zpusob_jednani_relation2, 
-	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, statutarni_organy_relation_5, fyzicke_osoby1, ubo1, ubo2, ubo3, ubo4, ucel1, ucel2, ucel_relation1, ucel_relation2, ucel_relation3]
+	zpusob_jednani_relation3, pravnicke_osoby1, pravnicke_osoby2, pravnicke_osoby3, pravnicke_osoby4, statutarni_organy_relation_5, fyzicke_osoby1, fyzicke_osoby2, fyzicke_osoby3, fyzicke_osoby4, fyzicke_osoby5, ubo1, ubo2, ubo3, ubo4, ucel1, ucel2, ucel_relation1, ucel_relation2, ucel_relation3]
     i = 0
     for elem in list_of_indices:
         i += 1
