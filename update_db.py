@@ -111,8 +111,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_akcie(c, elem2, primary_sql_key)
                 elif udajTyp_name == "DOZORCI_RADA":
                     find_dozorci_rada(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "PROKURA":
-                #     find_prokura(c, elem2, primary_sql_key)
+                elif udajTyp_name == "PROKURA":
+                    find_prokura(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "AKCIONAR_SEKCE":
                 #     find_sole_shareholder(c, elem2, primary_sql_key)
                 elif udajTyp_name == "INSOLVENCE_SEKCE":
@@ -432,19 +432,19 @@ def find_prokura(c, elem2, primary_sql_key):
     try:
         my_iter = elem2.findall("podudaje/Udaj")
         for elem in my_iter:
-            typ_zapis = str(get_prop(elem, "udajTyp/kod"))
+            typ_zapis = get_prop(elem, "udajTyp/kod")
             if typ_zapis == "PROKURA_OSOBA":
-                zapis_datum = str(get_prop(elem, "zapisDatum"))
-                vymaz_datum = str(get_prop(elem, "vymazDatum"))
-                text_prokurista = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
+                zapis_datum = get_prop(elem, "zapisDatum")
+                vymaz_datum = get_prop(elem, "vymazDatum")
+                text_prokurista = get_prop(elem, "hodnotaUdaje/textZaOsobu/value")
                 adresa_id = find_sidlo(c, elem)
                 prokurista_fo_id = find_fyzicka_osoba(c, elem, adresa_id)
-                c.execute("INSERT INTO prokuriste (company_id, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista,))
+                c.execute("INSERT INTO prokuriste (company_id, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista) VALUES (%s, %s, %s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, prokurista_fo_id, adresa_id, text_prokurista,))
             else:
-                zapis_datum = str(get_prop(elem, "zapisDatum"))
-                vymaz_datum = str(get_prop(elem, "vymazDatum"))
-                prokura_text = str(get_prop(elem, "hodnotaText"))
-                c.execute("INSERT INTO prokura_common_texts (company_id, zapis_datum, vymaz_datum, prokura_text) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, prokura_text,)) 
+                zapis_datum = get_prop(elem, "zapisDatum")
+                vymaz_datum = get_prop(elem, "vymazDatum")
+                prokura_text = get_prop(elem, "hodnotaText")
+                c.execute("INSERT INTO prokura_common_texts (company_id, zapis_datum, vymaz_datum, prokura_text) VALUES (%s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, prokura_text,)) 
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
