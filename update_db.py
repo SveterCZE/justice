@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 from lxml import etree
 from sqlalchemy import insert
+import inspect
 
 # import sqlite3
 # from app import cur
@@ -98,10 +99,10 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                 #     find_spolecnik(c, elem2, primary_sql_key)
                 elif udajTyp_name == "PREDMET_PODNIKANI_SEKCE":
                     find_predmet_podnikani(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
-                #     find_predmet_cinnosti(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "UCEL_SUBJEKTU_SEKCE":
-                #     find_ucel(c, elem2, primary_sql_key)
+                elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
+                    find_predmet_cinnosti(c, elem2, primary_sql_key)
+                elif udajTyp_name == "UCEL_SUBJEKTU_SEKCE":
+                    find_ucel(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "ZAKLADNI_KAPITAL":
                 #     find_zakladni_kapital(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
@@ -120,9 +121,9 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_konkurz(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "SKUTECNY_MAJITEL_SEKCE":
                 #     find_UBO(c, elem2, primary_sql_key)
-
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f)   
 
 def find_registered_office(c, elem2, primary_sql_key):
     try:
@@ -132,6 +133,7 @@ def find_registered_office(c, elem2, primary_sql_key):
         insert_instructions = [None,"adresy", "adresa_text", "sidlo_relation"]
         insert_relation_information_v2(c, insert_instructions, primary_sql_key, sidlo_id, zapis_datum, vymaz_datum)
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)   
 
 def find_nazev(c, elem2, primary_sql_key):
@@ -142,6 +144,7 @@ def find_nazev(c, elem2, primary_sql_key):
         sql = """INSERT INTO nazvy (company_id, zapis_datum, vymaz_datum, nazev_text) VALUES(%s, %s, %s, %s)"""
         c.execute(sql, (primary_sql_key, zapis_datum, vymaz_datum, nazev,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_sp_zn(c, elem2, primary_sql_key):
@@ -156,6 +159,7 @@ def find_sp_zn(c, elem2, primary_sql_key):
         if vymaz_datum == "None":
              c.execute("UPDATE companies SET oddil = (%s), vlozka = (%s), soud = (%s) WHERE id = (%s)",(oddil,vlozka,soud,primary_sql_key,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_pravni_forma(c, elem2, primary_sql_key):
@@ -170,8 +174,9 @@ def find_pravni_forma(c, elem2, primary_sql_key):
                 insert_into_ancillary_table(c, elem, pravni_forma)
                 ancillary_table_key = get_anciallary_table_key(c, elem, pravni_forma)
             insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f)   
 
 # def find_elem_id(c, searched_table, searched_)
 
@@ -200,6 +205,7 @@ def find_statutar(c, elem2, primary_sql_key):
             else:
                 pass
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_UBO(c, elem2, primary_sql_key):
@@ -221,6 +227,7 @@ def find_UBO(c, elem2, primary_sql_key):
             UBO_id = find_fyzicka_osoba(c, elem, adresa_id)
             c.execute("INSERT INTO ubo (company_id, UBO_id, adresa_id, zapis_datum, vymaz_datum, postaveni, koncovyPrijemceText, skutecnymMajitelemOd, vlastniPodilNaProspechu, vlastniPodilNaProspechu_typ, vlastniPodilNaProspechu_textValue, vlastniPodilNaHlasovani, vlastniPodilNaHlasovani_typ, vlastniPodilNaHlasovani_value) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, UBO_id, adresa_id, zapis_datum, vymaz_datum, postaveni, koncovyPrijemceText, skutecnymMajitelemOd, vlastniPodilNaProspechu, vlastniPodilNaProspechu_typ, vlastniPodilNaProspechu_textValue, vlastniPodilNaHlasovani, vlastniPodilNaHlasovani_typ, vlastniPodilNaHlasovani_value,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_spolecnik(c, elem2, primary_sql_key):
@@ -265,6 +272,7 @@ def find_spolecnik(c, elem2, primary_sql_key):
                 uvolneny_op_id = c.fetchone()[0]
                 insert_vacant_podily(c, elem, uvolneny_op_id)
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def insert_common_shareholders(c, elem, spolecny_op_id):
@@ -286,6 +294,7 @@ def insert_common_shareholders(c, elem, spolecny_op_id):
                     spolecnik_po_id = find_pravnicka_osoba(c, podil_elem, spol_ico, regCislo, adresa_id)
                     c.execute("INSERT INTO podilnici (podil_id, podilnik_po_id, zapis_datum, vymaz_datum, adresa_id) VALUES (?, ?, ?, ?, ?)", (spolecny_op_id, spolecnik_po_id, zapisDatum, vymazDatum, adresa_id))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)   
 
 def find_predmet_podnikani(c, predmet_podnikani_elem, primary_sql_key):
@@ -307,8 +316,8 @@ def find_predmet_podnikani(c, predmet_podnikani_elem, primary_sql_key):
                         ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
-        pass
 
 def find_predmet_cinnosti(c, predmet_cinnosti_elem, primary_sql_key):
     try:
@@ -316,16 +325,21 @@ def find_predmet_cinnosti(c, predmet_cinnosti_elem, primary_sql_key):
         for elem in my_iter:
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
-                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
-                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                zapis_datum = get_prop(elem2, ".//zapisDatum")
+                vymaz_datum = get_prop(elem2, ".//vymazDatum")
                 insert_instructions = [(".//hodnotaText","predmety_cinnosti", "predmet_cinnosti", "predmety_cinnosti_relation")]
                 for elem in insert_instructions:
                     inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
-                    insert_into_ancillary_table(c, elem, inserted_figure)
+                    if len(inserted_figure) > 2700:
+                        inserted_figure = inserted_figure[:2700]
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                    if ancillary_table_key == False:
+                        insert_into_ancillary_table(c, elem, inserted_figure)
+                        ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f)   
 
 def find_ucel(c, ucel_elem, primary_sql_key):
     try:
@@ -333,17 +347,21 @@ def find_ucel(c, ucel_elem, primary_sql_key):
         for elem in my_iter:
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
-                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
-                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                zapis_datum = get_prop(elem2, ".//zapisDatum")
+                vymaz_datum = get_prop(elem2, ".//vymazDatum")
                 insert_instructions = [(".//hodnotaText", "ucel", "ucel", "ucel_relation")]
                 for elem in insert_instructions:
                     inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
-                    insert_into_ancillary_table(c, elem, inserted_figure)
+                    if len(inserted_figure) > 2700:
+                        inserted_figure = inserted_figure[:2700]
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                    if ancillary_table_key == False:
+                        insert_into_ancillary_table(c, elem, inserted_figure)
+                        ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
-
 
 def find_zakladni_kapital(c, elem2, primary_sql_key):
     try:
@@ -354,8 +372,9 @@ def find_zakladni_kapital(c, elem2, primary_sql_key):
         splaceni_typ = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/typ"))
         splaceni_hodnota = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/textValue"))
         c.execute("INSERT INTO zakladni_kapital (company_id, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota) VALUES(?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota,))
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f)   
 
 def find_ostatni_skutecnosti(c, ostatni_skutecnosti_elem, primary_sql_key):
     try:
@@ -367,8 +386,9 @@ def find_ostatni_skutecnosti(c, ostatni_skutecnosti_elem, primary_sql_key):
                 vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
                 inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
                 c.execute("INSERT INTO ostatni_skutecnosti (company_id, zapis_datum, vymaz_datum, ostatni_skutecnost) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, inserted_figure,))
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f)   
 
 def find_akcie(c, ostatni_akcie_elem, primary_sql_key):
     try:
@@ -385,8 +405,9 @@ def find_akcie(c, ostatni_akcie_elem, primary_sql_key):
                 akcie_hodnota_value = str(get_prop(elem2, ".//hodnotaUdaje/hodnota/textValue"))
                 akcie_text = str(get_prop(elem2, ".//hodnotaUdaje/text"))
                 c.execute("INSERT INTO akcie (company_id, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value, akcie_text) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, akcie_podoba, akcie_typ, akcie_pocet, akcie_hodnota_typ, akcie_hodnota_value,akcie_text,))
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f)   
 
 def find_dozorci_rada(c, elem2, primary_sql_key):
     try:
@@ -399,10 +420,11 @@ def find_dozorci_rada(c, elem2, primary_sql_key):
         for elem in my_iter:
             udajTyp_name = str(get_prop(elem, "udajTyp/kod"))
             if udajTyp_name == "POCET_CLENU_DOZORCI_RADA":
-                find_pocet_clenu_dr(c, elem, relationship_table_key)        
+                find_pocet_clenu_dr(c, elem, relationship_table_key)
             elif udajTyp_name == "DOZORCI_RADA_CLEN":
                 find_clen_dr(c, elem, relationship_table_key)
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)      
 
 def find_prokura(c, elem2, primary_sql_key):
@@ -423,6 +445,7 @@ def find_prokura(c, elem2, primary_sql_key):
                 prokura_text = str(get_prop(elem, "hodnotaText"))
                 c.execute("INSERT INTO prokura_common_texts (company_id, zapis_datum, vymaz_datum, prokura_text) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, prokura_text,)) 
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_sole_shareholder(c, elem2, primary_sql_key):
@@ -444,6 +467,7 @@ def find_sole_shareholder(c, elem2, primary_sql_key):
                 akcionar_fo_id = find_fyzicka_osoba(c, elem, adresa_id)
                 c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_fo_id, adresa_id,))    
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_insolvency(c, insolvency_elem, primary_sql_key):
@@ -464,12 +488,14 @@ def find_insolvency(c, insolvency_elem, primary_sql_key):
                                 sql_insert = "INSERT INTO insolvency_events (company_id, zapis_datum, vymaz_datum, insolvency_event) VALUES(%s, %s, %s, %s)"
                                 c.execute(sql_insert, (primary_sql_key, zapis_datum, vymaz_datum, insolvency_text,))
                         except Exception as f:
+                            print(inspect.stack()[0][3])
                             print(f)
-   except Exception as f:
-       print(f)
+   except Exception as x:
+       print(inspect.stack()[0][3])
+       print(x)
 
 def find_konkurz(c, konkurz_elem, primary_sql_key):
-   try:
+    try:
        my_iter = konkurz_elem.findall("podudaje")
        for elem in my_iter:
            my_iter2 = elem.iter("Udaj")
@@ -481,10 +507,12 @@ def find_konkurz(c, konkurz_elem, primary_sql_key):
                         try:
                             sql_insert = "INSERT INTO konkurz_events (company_id, zapis_datum, vymaz_datum, konkurz_event) VALUES(%s, %s, %s, %s)"
                             c.execute(sql_insert, (primary_sql_key, zapis_datum, vymaz_datum, konkurz_text,))
-                        except:
-                            pass
-   except:
-       pass
+                        except Exception as f:
+                            print(inspect.stack()[0][3])
+                            print(f)   
+    except Exception as x:
+        print(inspect.stack()[0][3])
+        print(x)   
 
 def find_sidlo(c, elem):
     try:
@@ -511,24 +539,8 @@ def find_sidlo(c, elem):
             #     print(statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
         return adresa_id
     except Exception as e:
+        print(inspect.stack()[0][3])
         print(e)
-        pass
-
-
-        # # c.execute("SELECT * FROM adresy_v2 WHERE stat = (?) and obec = (?) and ulice = (?) and castObce = (?) and cisloPo = (?) and cisloOr = (?) and psc = (?) and okres = (?) and komplet_adresa = (?) and cisloEv = (?) and cisloText = (?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
-        # # c.execute(
-        # #     "SELECT * FROM adresy_v2 WHERE stat = %s and obec = %s and ulice = %s and castObce = %s and cisloPo = %s and cisloOr = %s and psc = %s and okres = %s and komplet_adresa = %s and cisloEv = %s and cisloText = %s",
-        # #     (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
-        # c.execute(sql_query)
-        # sidlo_id = c.fetchone()
-        # if sidlo_id == None:
-        #     # c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText))
-
-        #     address_key = c.fetchone()[0]
-        # else:
-        #     address_key = sidlo_id[0]
-        # return address_key
-
 
 def find_address_id(c, stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText):
     try:
@@ -552,6 +564,7 @@ def insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, o
     try:
         c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 
@@ -559,13 +572,14 @@ def insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key
     try:
         c.execute("INSERT INTO " + elem[3] + " VALUES(DEFAULT, %s, %s, %s, %s)", (primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
-    return 0
 
 def insert_into_ancillary_table(c, elem, inserted_figure):
     try:
         c.execute("INSERT INTO " + elem[1] + "(" + elem[2] + ") VALUES(%s)", (inserted_figure,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 
@@ -588,6 +602,7 @@ def find_pocet_clenu(c, elem, relationship_table_key):
         pocet_clenu_number = get_prop(elem, "hodnotaText")
         c.execute("INSERT into pocty_clenu_organu (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (%s,%s,%s,%s)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum))        
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_zpusob_jednani(c, elem, relationship_table_key):
@@ -603,6 +618,7 @@ def find_zpusob_jednani(c, elem, relationship_table_key):
                 ancillary_table_key = get_anciallary_table_key(c, elem, zpusob_jednani)
             insert_relation_information_v2(c, elem, relationship_table_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_clen_statut_org(c, elem, relationship_table_key):
@@ -627,8 +643,8 @@ def find_clen_statut_org(c, elem, relationship_table_key):
         #     prav_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
         #     c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
-        pass
-        # print(f)
+        print(inspect.stack()[0][3])
+        print(f)
 
 def find_fyzicka_osoba(c, elem, adresa_id):
     try:
@@ -641,32 +657,34 @@ def find_fyzicka_osoba(c, elem, adresa_id):
         if osoba_id == False:
             insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
             osoba_id = c.fetchone()[0]
-            # osoba_id = find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
-            # if osoba_id == False:
-            #     print(titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
         return osoba_id
     except Exception as f:
+        # print(inspect.stack()[0][3])
         # print(f)
         pass
 
 def lower_names_chars(string_name):
-    updated_name = ""
-    previous_non_alpha = True
-    for elem in string_name:
-        if previous_non_alpha == True:
-            updated_name += elem
-        else:
-            updated_name += elem.lower()
-        if elem.isalpha() == True:
-            previous_non_alpha = False
-        else:
-            previous_non_alpha = True
-    return updated_name
+    if string_name == None:
+        return None
+    else:
+        updated_name = ""
+        previous_non_alpha = True
+        for elem in string_name:
+            if previous_non_alpha == True:
+                updated_name += elem
+            else:
+                updated_name += elem.lower()
+            if elem.isalpha() == True:
+                previous_non_alpha = False
+            else:
+                previous_non_alpha = True
+        return updated_name
 
 def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id):
     try:
         c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s) RETURNING id", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_osoba_id(c, titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id):
@@ -694,6 +712,7 @@ def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
         osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id)
         return osoba_id
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_pocet_clenu_dr(c, elem, relationship_table_key):
@@ -703,6 +722,7 @@ def find_pocet_clenu_dr(c, elem, relationship_table_key):
         pocet_clenu_number = str(get_prop(elem, "hodnotaText"))
         c.execute("INSERT into pocty_clenu_DR (organ_id, pocet_clenu_value, zapis_datum, vymaz_datum) VALUES (?,?,?,?)", (relationship_table_key, pocet_clenu_number, zapis_datum, vymaz_datum,))        
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def find_clen_dr(c, elem, relationship_table_key):
@@ -726,6 +746,7 @@ def find_clen_dr(c, elem, relationship_table_key):
             pravnicka_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
             c.execute("INSERT into dr_organ_clen_relation (dozorci_rada_id, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, pravnicka_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 # TODO MERGE THESE THREE FUNCTIONS INTO ONE
@@ -744,6 +765,7 @@ def insert_podily(c, elem, spolecnik_id):
             splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
             c.execute("INSERT INTO podily (spolecnik_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def insert_vacant_podily(c, elem, vacant_id):
@@ -761,6 +783,7 @@ def insert_vacant_podily(c, elem, vacant_id):
             splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
             c.execute("INSERT INTO podily (uvolneny_podil_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (vacant_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)    
 
 def insert_common_podily(c, elem, common_id):
@@ -779,6 +802,7 @@ def insert_common_podily(c, elem, common_id):
                 splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
                 c.execute("INSERT INTO podily (spolecny_podil_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (common_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)   
 
 
@@ -789,13 +813,15 @@ def get_druh_podilu_id(c, podil_elem):
         druh_podilu_id = find_druh_podilu_id(c, druhPodilu)
         return druh_podilu_id
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f)
 
 def insert_druh_podilu(c, druhPodilu):
     try:
         c.execute("INSERT INTO druhy_podilu (druh_podilu) VALUES (?)", (druhPodilu,))
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f) 
 
 def find_druh_podilu_id(c, druhPodilu):
     try:
@@ -803,6 +829,7 @@ def find_druh_podilu_id(c, druhPodilu):
         druh_podilu_id = c.fetchone()[0]
         return druh_podilu_id
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f) 
 
 def find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id):
@@ -811,13 +838,15 @@ def find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id):
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
     except Exception as f:
+        print(inspect.stack()[0][3])
         print(f) 
 
 def insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id):
     try:
         c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev, adresa_id) VALUES (?,?,?, ?)", (spol_ico, regCislo, nazev, adresa_id,))
-    except:
-        pass
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f) 
 
 def get_prop(element, prop):
     try:
