@@ -650,6 +650,8 @@ def find_fyzicka_osoba(c, elem, adresa_id):
     try:
         jmeno = lower_names_chars(get_prop(elem, "osoba/jmeno"))
         prijmeni = lower_names_chars(get_prop(elem, "osoba/prijmeni"))
+        if jmeno == None and prijmeni == None:
+            prijmeni = lower_names_chars(get_prop(elem, "osoba/osobaText"))
         datum_narozeni = get_prop(elem, "osoba/narozDatum")
         titulPred = get_prop(elem, "osoba/titulPred")
         titulZa = get_prop(elem, "osoba/titulZa")
