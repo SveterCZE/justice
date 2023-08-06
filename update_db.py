@@ -105,8 +105,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_ucel(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "ZAKLADNI_KAPITAL":
                 #     find_zakladni_kapital(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
-                #     find_ostatni_skutecnosti(c, elem2, primary_sql_key)
+                elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
+                    find_ostatni_skutecnosti(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "AKCIE_SEKCE":
                 #     find_akcie(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "DOZORCI_RADA":
@@ -382,10 +382,10 @@ def find_ostatni_skutecnosti(c, ostatni_skutecnosti_elem, primary_sql_key):
         for elem in my_iter:
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
-                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
-                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
-                inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
-                c.execute("INSERT INTO ostatni_skutecnosti (company_id, zapis_datum, vymaz_datum, ostatni_skutecnost) VALUES(?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, inserted_figure,))
+                zapis_datum = get_prop(elem2, ".//zapisDatum")
+                vymaz_datum = get_prop(elem2, ".//vymazDatum")
+                inserted_figure = get_prop(elem2, ".//hodnotaText")
+                c.execute("INSERT INTO ostatni_skutecnosti (company_id, zapis_datum, vymaz_datum, ostatni_skutecnost) VALUES(%s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, inserted_figure,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)   
