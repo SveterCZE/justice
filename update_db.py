@@ -22,6 +22,7 @@ def update_DB(file, conn):
                 continue
             # Vlozit prazdny radek s ICO
             insert_new_ICO(c, ICO, element)
+            # print(ICO)
             primary_sql_key = get_primary_sql_key(c, ICO)
             # Vlozit jednolive parametry
             find_other_properties(c, ICO, element, conn, primary_sql_key)
@@ -95,8 +96,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_statutar(c, elem2, primary_sql_key)
                 # # elif udajTyp_name == "SPOLECNIK":
                 #     find_spolecnik(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "PREDMET_PODNIKANI_SEKCE":
-                #     find_predmet_podnikani(c, elem2, primary_sql_key)
+                elif udajTyp_name == "PREDMET_PODNIKANI_SEKCE":
+                    find_predmet_podnikani(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
                 #     find_predmet_cinnosti(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "UCEL_SUBJEKTU_SEKCE":
@@ -293,15 +294,20 @@ def find_predmet_podnikani(c, predmet_podnikani_elem, primary_sql_key):
         for elem in my_iter:
             my_iter2 = elem.iter("Udaj")
             for elem2 in my_iter2:
-                zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
-                vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
+                zapis_datum = get_prop(elem2, ".//zapisDatum")
+                vymaz_datum = get_prop(elem2, ".//vymazDatum")
                 insert_instructions = [(".//hodnotaText","predmety_podnikani", "predmet_podnikani", "predmety_podnikani_relation")]
                 for elem in insert_instructions:
-                    inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
-                    insert_into_ancillary_table(c, elem, inserted_figure)
+                    inserted_figure = get_prop(elem2, ".//hodnotaText").capitalize()
+                    if len(inserted_figure) > 2700:
+                        inserted_figure = inserted_figure[:2700]
                     ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                    if ancillary_table_key == False:
+                        insert_into_ancillary_table(c, elem, inserted_figure)
+                        ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
                     insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
-    except:
+    except Exception as f:
+        print(f)
         pass
 
 def find_predmet_cinnosti(c, predmet_cinnosti_elem, primary_sql_key):
@@ -501,8 +507,8 @@ def find_sidlo(c, elem):
         if adresa_id == False:
             insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
             adresa_id = c.fetchone()[0]
-            if adresa_id == False:
-                print(statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+            # if adresa_id == False:
+            #     print(statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
         return adresa_id
     except Exception as e:
         print(e)
