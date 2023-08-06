@@ -52,7 +52,6 @@ def create_tables(conn):
 	komplet_adresa	TEXT,
 	cisloEv	        TEXT,
 	cisloText	    TEXT,
-	company_id	    INTEGER,
 	UNIQUE(stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText)
     ); """
     list_of_tables.append(adresy_v2)

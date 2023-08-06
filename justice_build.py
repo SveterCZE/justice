@@ -24,7 +24,7 @@ def main():
     cur.execute('select \'drop table "\' || tablename || \'" cascade;\' from pg_tables where schemaname = \'public\';')
     instructions = cur.fetchall()
     for elem in instructions:
-        cur.execute(elem[0])    
+        cur.execute(elem[0])
     conn.commit()
     create_DB(conn)
     # create_indices(conn)

@@ -87,7 +87,7 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_registered_office(c, elem2, primary_sql_key)
                 elif udajTyp_name == "NAZEV":
                     find_nazev(c, elem2, primary_sql_key)
-                if udajTyp_name == "SPIS_ZN":
+                elif udajTyp_name == "SPIS_ZN":
                     find_sp_zn(c, elem2, primary_sql_key)
                 elif udajTyp_name == "PRAVNI_FORMA":
                     find_pravni_forma(c, elem2, primary_sql_key)
@@ -485,30 +485,69 @@ def find_sidlo(c, elem):
         statNazev = get_prop(elem, ".//statNazev")
         obec = get_prop(elem, ".//obec")
         ulice = get_prop(elem, ".//ulice")
+        if ulice != None and ('\'' in ulice or '"' in ulice):
+            ulice = ulice.replace('\'', '').replace('"', '')
         castObce = get_prop(elem, ".//castObce")
         cisloPo = get_prop(elem, ".//cisloPo")
         cisloOr = get_prop(elem, ".//cisloOr")
         psc = get_prop(elem, ".//psc")
         okres = get_prop(elem, ".//okres")
         adresaText = get_prop(elem, ".//adresaText")
+        if adresaText != None and ('\'' in adresaText):
+            adresaText = adresaText.replace('\'', '')
         cisloEv = get_prop(elem, ".//cisloEv")
         cisloText = get_prop(elem, ".//cisloText")
-        # c.execute("SELECT * FROM adresy_v2 WHERE stat = (?) and obec = (?) and ulice = (?) and castObce = (?) and cisloPo = (?) and cisloOr = (?) and psc = (?) and okres = (?) and komplet_adresa = (?) and cisloEv = (?) and cisloText = (?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
-        c.execute(
-            "SELECT * FROM adresy_v2 WHERE stat = %s and obec = %s and ulice = %s and castObce = %s and cisloPo = %s and cisloOr = %s and psc = %s and okres = %s and komplet_adresa = %s and cisloEv = %s and cisloText = %s",
-            (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
-        sidlo_id = c.fetchone()
-        if sidlo_id == None:
-            # c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText))
-            c.execute(
-                "INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
-                (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText))
-            address_key = c.fetchone()[0]
-        else:
-            address_key = sidlo_id[0]
-        return address_key
+        adresa_id = find_address_id(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+        if adresa_id == False:
+            insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+            adresa_id = c.fetchone()[0]
+            if adresa_id == False:
+                print(statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+        return adresa_id
     except Exception as e:
         print(e)
+        pass
+
+
+        # # c.execute("SELECT * FROM adresy_v2 WHERE stat = (?) and obec = (?) and ulice = (?) and castObce = (?) and cisloPo = (?) and cisloOr = (?) and psc = (?) and okres = (?) and komplet_adresa = (?) and cisloEv = (?) and cisloText = (?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
+        # # c.execute(
+        # #     "SELECT * FROM adresy_v2 WHERE stat = %s and obec = %s and ulice = %s and castObce = %s and cisloPo = %s and cisloOr = %s and psc = %s and okres = %s and komplet_adresa = %s and cisloEv = %s and cisloText = %s",
+        # #     (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
+        # c.execute(sql_query)
+        # sidlo_id = c.fetchone()
+        # if sidlo_id == None:
+        #     # c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText))
+
+        #     address_key = c.fetchone()[0]
+        # else:
+        #     address_key = sidlo_id[0]
+        # return address_key
+
+
+def find_address_id(c, stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText):
+    try:
+        sql_query = "SELECT id FROM adresy_v2 WHERE ".split()
+        iterable_variables = [(k, v) for k, v in locals().items()]
+        for elem in iterable_variables:
+            if elem[0] == "c" or elem[0] == "sql_query" or elem[1] == None:
+                pass
+            else:
+                added_text = f"{elem[0]} = '{elem[1]}' and ".split()
+                for part in added_text:
+                    sql_query.append(part)
+        sql_query = " ".join(sql_query[:-1])
+        adresa_id = c.execute(sql_query)
+        adresa_id = c.fetchone()[0]
+        return adresa_id
+    except Exception as f:
+        return False 
+
+def insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText):
+    try:
+        c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
+    except Exception as f:
+        print(f)
+
 
 def insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum):
     try:
@@ -620,7 +659,7 @@ def lower_names_chars(string_name):
 
 def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id):
     try:
-        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s)", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
+        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s) RETURNING id", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
     except Exception as f:
         print(f)
 
@@ -636,9 +675,7 @@ def find_osoba_id(c, titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_
                 for part in added_text:
                     sql_query.append(part)
         sql_query = " ".join(sql_query[:-1])
-        # print(sql_query)
         anciallary_table_key = c.execute(sql_query)
-        # anciallary_table_key = c.execute("SELECT id FROM fyzicke_osoby WHERE titul_pred = %s and jmeno = %s and prijmeni = %s and titul_za = %s and datum_naroz = %s and adresa_id = %s", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni,adresa_id,))
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
     except Exception as f:
