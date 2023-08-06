@@ -103,8 +103,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_predmet_cinnosti(c, elem2, primary_sql_key)
                 elif udajTyp_name == "UCEL_SUBJEKTU_SEKCE":
                     find_ucel(c, elem2, primary_sql_key)
-                # elif udajTyp_name == "ZAKLADNI_KAPITAL":
-                #     find_zakladni_kapital(c, elem2, primary_sql_key)
+                elif udajTyp_name == "ZAKLADNI_KAPITAL":
+                    find_zakladni_kapital(c, elem2, primary_sql_key)
                 elif udajTyp_name == "OST_SKUTECNOSTI_SEKCE":
                     find_ostatni_skutecnosti(c, elem2, primary_sql_key)
                 # elif udajTyp_name == "AKCIE_SEKCE":
@@ -365,13 +365,13 @@ def find_ucel(c, ucel_elem, primary_sql_key):
 
 def find_zakladni_kapital(c, elem2, primary_sql_key):
     try:
-        zapis_datum = str(get_prop(elem2, ".//zapisDatum"))
-        vymaz_datum = str(get_prop(elem2, ".//vymazDatum"))
-        vklad_typ = str(get_prop(elem2, ".//hodnotaUdaje/vklad/typ"))
-        vklad_hodnota = str(get_prop(elem2, ".//hodnotaUdaje/vklad/textValue"))
-        splaceni_typ = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/typ"))
-        splaceni_hodnota = str(get_prop(elem2, ".//hodnotaUdaje/splaceni/textValue"))
-        c.execute("INSERT INTO zakladni_kapital (company_id, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota) VALUES(?, ?, ?, ?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota,))
+        zapis_datum = get_prop(elem2, ".//zapisDatum")
+        vymaz_datum = get_prop(elem2, ".//vymazDatum")
+        vklad_typ = get_prop(elem2, ".//hodnotaUdaje/vklad/typ")
+        vklad_hodnota = get_prop(elem2, ".//hodnotaUdaje/vklad/textValue")
+        splaceni_typ = get_prop(elem2, ".//hodnotaUdaje/splaceni/typ")
+        splaceni_hodnota = get_prop(elem2, ".//hodnotaUdaje/splaceni/textValue")
+        c.execute("INSERT INTO zakladni_kapital (company_id, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota) VALUES(%s, %s, %s, %s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, vklad_typ, vklad_hodnota, splaceni_typ, splaceni_hodnota,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)   
