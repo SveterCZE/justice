@@ -23,7 +23,7 @@ def update_DB(file, conn):
                 continue
             # Vlozit prazdny radek s ICO
             insert_new_ICO(c, ICO, element)
-            # print(ICO)
+            print(ICO)
             primary_sql_key = get_primary_sql_key(c, ICO)
             # Vlozit jednolive parametry
             find_other_properties(c, ICO, element, conn, primary_sql_key)
@@ -582,7 +582,6 @@ def insert_into_ancillary_table(c, elem, inserted_figure):
         print(inspect.stack()[0][3])
         print(f)
 
-
 def get_anciallary_table_key(c, elem, inserted_figure):
     try:
         anciallary_table_key = c.execute("SELECT id FROM " + elem[1] + " WHERE " + elem[2] + " = (%s)", (inserted_figure,))
@@ -634,14 +633,15 @@ def find_clen_statut_org(c, elem, relationship_table_key):
         if typ_osoby == "AngazmaFyzicke":
             adresa_id = find_sidlo(c, elem)
             osoba_id = find_fyzicka_osoba(c, elem, adresa_id)
-            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (%s,%s,%s,%s,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,NULLIF(%s,'None')::date,%s)", 
+            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", 
                       (relationship_table_key, osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
-        # if typ_osoby == "AngazmaPravnicke":
-        #     spol_ico = str(get_prop(elem, "osoba/ico"))
-        #     regCislo = str(get_prop(elem, "osoba/regCislo"))
-        #     adresa_id = find_sidlo(c, elem)
-        #     prav_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
-        #     c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (?,?,?,?,?,?,?,?,?,?)", (relationship_table_key, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
+        if typ_osoby == "AngazmaPravnicke":
+            spol_ico = get_prop(elem, "osoba/ico")
+            regCislo = get_prop(elem, "osoba/regCislo")
+            adresa_id = find_sidlo(c, elem)
+            prav_osoba_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
+            c.execute("INSERT into statutarni_organ_clen_relation (statutarni_organ_id, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkce_od, funkce_do, clenstvi_od, clenstvi_do, funkce) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", 
+                      (relationship_table_key, prav_osoba_id, adresa_id, zapis_datum, vymaz_datum, funkceOd, funkceDo, clenstviOd, clenstviDo, funkce_statutar_organu,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -709,9 +709,11 @@ def find_osoba_id(c, titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_
 
 def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
     try:
-        nazev = str(get_prop(elem, "osoba/nazev"))
-        insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
+        nazev = get_prop(elem, "osoba/nazev")
         osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id)
+        if osoba_id == False:
+            insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
+            osoba_id = c.fetchone()[0]
         return osoba_id
     except Exception as f:
         print(inspect.stack()[0][3])
@@ -834,18 +836,27 @@ def find_druh_podilu_id(c, druhPodilu):
         print(inspect.stack()[0][3])
         print(f) 
 
-def find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id):
+def find_pravnicka_osoba_id(c, ico, reg_cislo, nazev, adresa_id):
     try:
-        anciallary_table_key = c.execute("SELECT id FROM pravnicke_osoby WHERE ico = (?) and reg_cislo = (?) and nazev = (?) and adresa_id = (?)", (spol_ico, regCislo, nazev, adresa_id))
+        sql_query = "SELECT id FROM pravnicke_osoby WHERE ".split()
+        iterable_variables = [(k, v) for k, v in locals().items()]
+        for elem in iterable_variables:
+            if elem[0] == "c" or elem[0] == "sql_query" or elem[1] == None:
+                pass
+            else:
+                added_text = f"{elem[0]} = '{elem[1]}' and ".split()
+                for part in added_text:
+                    sql_query.append(part)
+        sql_query = " ".join(sql_query[:-1])
+        anciallary_table_key = c.execute(sql_query)
         anciallary_table_key = c.fetchone()[0]
         return anciallary_table_key
     except Exception as f:
-        print(inspect.stack()[0][3])
-        print(f) 
+        return False
 
 def insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id):
     try:
-        c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev, adresa_id) VALUES (?,?,?, ?)", (spol_ico, regCislo, nazev, adresa_id,))
+        c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev, adresa_id) VALUES (%s,%s,%s,%s) RETURNING id", (spol_ico, regCislo, nazev, adresa_id,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f) 

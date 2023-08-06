@@ -72,8 +72,8 @@ def create_tables(conn):
 
     pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
 	"id"	SERIAL PRIMARY KEY,
-	"ico"	INTEGER,
-	"reg_cislo"	INTEGER,
+	"ico"	TEXT,
+	"reg_cislo"	TEXT,
 	"nazev"	TEXT,
 	"adresa_id" INTEGER,
 	UNIQUE("ico","reg_cislo","nazev","adresa_id"),
