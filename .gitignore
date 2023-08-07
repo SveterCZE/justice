@@ -28,3 +28,4 @@ config_data.py
 /.idea/*
 .vscode/
 /db_config.py
+*.xml

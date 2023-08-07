@@ -33,4 +33,5 @@ def main():
     # download_criminal_records()
     # insert_criminal_records(DB_name)
 
+# main()
 cProfile.run('main()')
