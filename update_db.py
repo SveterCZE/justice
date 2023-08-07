@@ -533,10 +533,12 @@ def find_sidlo(c, elem):
             adresaText = adresaText.replace('\'', '')
         cisloEv = get_prop(elem, ".//cisloEv")
         cisloText = get_prop(elem, ".//cisloText")
-        adresa_id = find_address_id(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
-        if adresa_id == False:
-            insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
-            adresa_id = c.fetchone()[0]
+        insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+        adresa_id = c.fetchone()[0]
+        # adresa_id = find_address_id(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+        # if adresa_id == False:
+            # insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+            # adresa_id = c.fetchone()[0]
             # if adresa_id == False:
             #     print(statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
         return adresa_id
@@ -544,27 +546,34 @@ def find_sidlo(c, elem):
         print(inspect.stack()[0][3])
         print(e)
 
-def find_address_id(c, stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText):
-    try:
-        sql_query = "SELECT id FROM adresy_v2 WHERE ".split()
-        iterable_variables = [(k, v) for k, v in locals().items()]
-        for elem in iterable_variables:
-            if elem[0] == "c" or elem[0] == "sql_query" or elem[1] == None:
-                pass
-            else:
-                added_text = f"{elem[0]} = '{elem[1]}' and ".split()
-                for part in added_text:
-                    sql_query.append(part)
-        sql_query = " ".join(sql_query[:-1])
-        adresa_id = c.execute(sql_query)
-        adresa_id = c.fetchone()[0]
-        return adresa_id
-    except Exception as f:
-        return False 
+# def find_address_id(c, stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText):
+#     try:
+#         sql_query = ["SELECT id FROM adresy_v2 WHERE "]
+#         iterable_variables = [(k, v) for k, v in locals().items()]
+#         initial_element_inserted = False
+#         for elem in iterable_variables:
+#             if elem[0] == "c" or elem[0] == "sql_query":
+#                 pass
+#             elif elem[1] == None:
+#                 if initial_element_inserted == True:
+#                     sql_query.append(" and ")
+#                 sql_query.append(f"{elem[0]} IS NULL")
+#                 initial_element_inserted = True
+#             else:
+#                 if initial_element_inserted == True:
+#                     sql_query.append(" and ")
+#                 sql_query.append(f"{elem[0]} = '{elem[1]}'")
+#                 initial_element_inserted = True
+#         sql_query = " ".join(sql_query)
+#         adresa_id = c.execute(sql_query)
+#         adresa_id = c.fetchone()[0]
+#         return adresa_id
+#     except Exception as f:
+#         return False 
 
 def insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText):
     try:
-        c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
+        c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT ON CONSTRAINT unique_address DO UPDATE SET obec=EXCLUDED.obec RETURNING id", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -661,10 +670,12 @@ def find_fyzicka_osoba(c, elem, adresa_id):
         datum_narozeni = get_prop(elem, "osoba/narozDatum")
         titulPred = get_prop(elem, "osoba/titulPred")
         titulZa = get_prop(elem, "osoba/titulZa")
-        osoba_id = find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
-        if osoba_id == False:
-            insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
-            osoba_id = c.fetchone()[0]
+        insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
+        osoba_id = c.fetchone()[0]
+        # osoba_id = find_osoba_id(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
+        # if osoba_id == False:
+        #     insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id)
+        #     osoba_id = c.fetchone()[0]
         return osoba_id
     except Exception as f:
         print(inspect.stack()[0][3])
@@ -690,38 +701,40 @@ def lower_names_chars(string_name):
 
 def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id):
     try:
-        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s) RETURNING id", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
+        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s) ON CONFLICT ON CONSTRAINT unique_natural_person DO UPDATE SET adresa_id=EXCLUDED.adresa_id RETURNING id", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
 
-def find_osoba_id(c, titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id):
-    try:
-        sql_query = "SELECT id FROM fyzicke_osoby WHERE ".split()
-        iterable_variables = [(k, v) for k, v in locals().items()]
-        for elem in iterable_variables:
-            if elem[0] == "c" or elem[0] == "sql_query" or elem[1] == None:
-                pass
-            else:
-                added_text = f"{elem[0]} = '{elem[1]}' and ".split()
-                for part in added_text:
-                    sql_query.append(part)
-        sql_query = " ".join(sql_query[:-1])
-        anciallary_table_key = c.execute(sql_query)
-        anciallary_table_key = c.fetchone()[0]
-        return anciallary_table_key
-    except Exception as f:
-        return False 
+# def find_osoba_id(c, titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id):
+#     try:
+#         sql_query = "SELECT id FROM fyzicke_osoby WHERE ".split()
+#         iterable_variables = [(k, v) for k, v in locals().items()]
+#         for elem in iterable_variables:
+#             if elem[0] == "c" or elem[0] == "sql_query" or elem[1] == None:
+#                 pass
+#             else:
+#                 added_text = f"{elem[0]} = '{elem[1]}' and ".split()
+#                 for part in added_text:
+#                     sql_query.append(part)
+#         sql_query = " ".join(sql_query[:-1])
+#         anciallary_table_key = c.execute(sql_query)
+#         anciallary_table_key = c.fetchone()[0]
+#         return anciallary_table_key
+#     except Exception as f:
+#         return False 
 
 def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
     try:
         nazev = get_prop(elem, "osoba/nazev")
         if nazev != None and ('\'' in nazev or '"' in nazev):
             nazev = nazev.replace('\'', '').replace('"', '')
-        osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id)
-        if osoba_id == False:
-            insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
-            osoba_id = c.fetchone()[0]
+        insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
+        osoba_id = c.fetchone()[0]
+        # osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id)
+        # if osoba_id == False:
+        #     insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
+        #     osoba_id = c.fetchone()[0]
         return osoba_id
     except Exception as f:
         print(inspect.stack()[0][3])
@@ -846,33 +859,34 @@ def find_druh_podilu_id(c, druhPodilu):
         print(inspect.stack()[0][3])
         print(f) 
 
-def find_pravnicka_osoba_id(c, ico, reg_cislo, nazev, adresa_id):
-    try:
-        sql_query = "SELECT id FROM pravnicke_osoby WHERE ".split()
-        iterable_variables = [(k, v) for k, v in locals().items()]
-        for elem in iterable_variables:
-            if elem[0] == "c" or elem[0] == "sql_query" or elem[1] == None:
-                pass
-            else:
-                added_text = f"{elem[0]} = '{elem[1]}' and ".split()
-                for part in added_text:
-                    sql_query.append(part)
-        sql_query = " ".join(sql_query[:-1])
-        anciallary_table_key = c.execute(sql_query)
-        anciallary_table_key = c.fetchone()[0]
-        return anciallary_table_key
-    except Exception as f:
-        return False
+# def find_pravnicka_osoba_id(c, ico, reg_cislo, nazev, adresa_id):
+#     try:
+#         sql_query = "SELECT id FROM pravnicke_osoby WHERE ".split()
+#         iterable_variables = [(k, v) for k, v in locals().items()]
+#         for elem in iterable_variables:
+#             if elem[0] == "c" or elem[0] == "sql_query" or elem[1] == None:
+#                 pass
+#             else:
+#                 added_text = f"{elem[0]} = '{elem[1]}' and ".split()
+#                 for part in added_text:
+#                     sql_query.append(part)
+#         sql_query = " ".join(sql_query[:-1])
+#         anciallary_table_key = c.execute(sql_query)
+#         anciallary_table_key = c.fetchone()[0]
+#         return anciallary_table_key
+#     except Exception as f:
+#         return False
 
 def insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id):
     try:
-        c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev, adresa_id) VALUES (%s,%s,%s,%s) RETURNING id", (spol_ico, regCislo, nazev, adresa_id,))
+        c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev, adresa_id) VALUES (%s,%s,%s,%s)  ON CONFLICT ON CONSTRAINT unique_legal_person DO UPDATE SET adresa_id=EXCLUDED.adresa_id RETURNING id", (spol_ico, regCislo, nazev, adresa_id,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f) 
 
 def get_prop(element, prop):
-    try:
-        return str(element.find(prop).text)
-    except:
+    elem = element.find(prop)
+    if elem == None:
         return None
+    else:
+        return str(elem.text)
