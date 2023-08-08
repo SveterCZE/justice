@@ -178,8 +178,6 @@ def find_pravni_forma(c, elem2, primary_sql_key):
         print(inspect.stack()[0][3])
         print(f)   
 
-# def find_elem_id(c, searched_table, searched_)
-
 def find_statutar(c, elem2, primary_sql_key):
     try:
         zapis_datum = get_prop(elem2, "zapisDatum")
@@ -522,7 +520,7 @@ def find_sidlo(c, elem):
         obec = get_prop(elem, ".//obec")
         ulice = get_prop(elem, ".//ulice")
         if ulice != None and ('\'' in ulice or '"' in ulice):
-            ulice = ulice.replace('\'', '').replace('"', '')
+            ulice = ulice.replace('\'', '\'')
         castObce = get_prop(elem, ".//castObce")
         cisloPo = get_prop(elem, ".//cisloPo")
         cisloOr = get_prop(elem, ".//cisloOr")
@@ -530,7 +528,7 @@ def find_sidlo(c, elem):
         okres = get_prop(elem, ".//okres")
         adresaText = get_prop(elem, ".//adresaText")
         if adresaText != None and ('\'' in adresaText):
-            adresaText = adresaText.replace('\'', '')
+            adresaText = adresaText.replace('\\\'', '')
         cisloEv = get_prop(elem, ".//cisloEv")
         cisloText = get_prop(elem, ".//cisloText")
         insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
@@ -663,10 +661,10 @@ def find_fyzicka_osoba(c, elem, adresa_id):
         prijmeni = lower_names_chars(get_prop(elem, "osoba/prijmeni"))
         if jmeno == None and prijmeni == None:
             prijmeni = lower_names_chars(get_prop(elem, "osoba/osobaText"))
-        if jmeno != None and ('\'' in jmeno or '"' in jmeno):
-            jmeno = jmeno.replace('\'', '').replace('"', '')
-        if prijmeni != None and ('\'' in prijmeni or '"' in prijmeni):
-            prijmeni = prijmeni.replace('\'', '').replace('"', '')  
+        if jmeno != None and ('\'' in jmeno):
+            jmeno = jmeno.replace('\\\'', '')
+        if prijmeni != None and ('\'' in prijmeni):
+            prijmeni = prijmeni.replace('\\\'', '')  
         datum_narozeni = get_prop(elem, "osoba/narozDatum")
         titulPred = get_prop(elem, "osoba/titulPred")
         titulZa = get_prop(elem, "osoba/titulZa")
@@ -727,8 +725,8 @@ def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni,
 def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
     try:
         nazev = get_prop(elem, "osoba/nazev")
-        if nazev != None and ('\'' in nazev or '"' in nazev):
-            nazev = nazev.replace('\'', '').replace('"', '')
+        if nazev != None and ('\'' in nazev in nazev):
+            nazev = nazev.replace('\\\'', '')
         insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
         osoba_id = c.fetchone()[0]
         # osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id)
