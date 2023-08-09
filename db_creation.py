@@ -156,7 +156,8 @@ def create_tables(conn):
 
     druhy_podilu = """ CREATE TABLE "druhy_podilu" (
 	"id"	SERIAL PRIMARY KEY,
-	"druh_podilu"	TEXT NOT NULL UNIQUE
+	"druh_podilu"	TEXT NOT NULL,
+    CONSTRAINT unique_druh_podilu UNIQUE ("druh_podilu")
 ); """
     list_of_tables.append(druhy_podilu)
 

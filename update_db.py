@@ -95,8 +95,8 @@ def find_other_properties(c, ICO, element, conn, primary_sql_key):
                     find_pravni_forma(c, elem2, primary_sql_key)
                 elif udajTyp_name == "STATUTARNI_ORGAN":
                     find_statutar(c, elem2, primary_sql_key)
-                # # elif udajTyp_name == "SPOLECNIK":
-                #     find_spolecnik(c, elem2, primary_sql_key)
+                elif udajTyp_name == "SPOLECNIK":
+                    find_spolecnik(c, elem2, primary_sql_key)
                 elif udajTyp_name == "PREDMET_PODNIKANI_SEKCE":
                     find_predmet_podnikani(c, elem2, primary_sql_key)
                 elif udajTyp_name == "PREDMET_CINNOSTI_SEKCE":
@@ -233,41 +233,41 @@ def find_spolecnik(c, elem2, primary_sql_key):
     try:
         my_iter = elem2.findall("podudaje/Udaj")
         for elem in my_iter:
-            spolecnik_kod = str(get_prop(elem, "udajTyp/kod"))
-            zapis_datum = str(get_prop(elem, "zapisDatum"))
-            vymaz_datum = str(get_prop(elem, "vymazDatum"))
-            spolecnik_typ =  str(get_prop(elem, "hodnotaUdaje/typ"))
+            spolecnik_kod = get_prop(elem, "udajTyp/kod")
+            zapis_datum = get_prop(elem, "zapisDatum")
+            vymaz_datum = get_prop(elem, "vymazDatum")
+            spolecnik_typ =  get_prop(elem, "hodnotaUdaje/typ")
             if spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "OSOBA":
-                text_spolecnik = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
-                nazev = str(get_prop(elem, "osoba/nazev"))
+                text_spolecnik = get_prop(elem, "hodnotaUdaje/textZaOsobu/value")
+                nazev = get_prop(elem, "osoba/nazev")
                 if nazev == "0":
                     adresa_id = find_sidlo(c, elem)
                     spolecnik_fo_id = find_fyzicka_osoba(c, elem, adresa_id)
-                    c.execute("INSERT INTO spolecnici (company_id, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
-                    c.execute ("SELECT last_insert_rowid()")
+                    c.execute("INSERT INTO spolecnici (company_id, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id", (primary_sql_key, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
+                    # c.execute ("SELECT last_insert_rowid()")
                     spolecnik_id = c.fetchone()[0]
                 else:
-                    spol_ico = str(get_prop(elem, "osoba/ico"))
-                    regCislo = str(get_prop(elem, "osoba/regCislo"))
+                    spol_ico = get_prop(elem, "osoba/ico")
+                    regCislo = get_prop(elem, "osoba/regCislo")
                     adresa_id = find_sidlo(c, elem)
                     spolecnik_po_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
-                    c.execute("INSERT INTO spolecnici (company_id, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (?, ?, ?, ?, ?, ?)", (primary_sql_key, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
-                    c.execute ("SELECT last_insert_rowid()")
+                    c.execute("INSERT INTO spolecnici (company_id, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id", (primary_sql_key, spolecnik_po_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))
+                    # c.execute ("SELECT last_insert_rowid()")
                     spolecnik_id = c.fetchone()[0]
                 insert_podily(c, elem, spolecnik_id)
             
             elif spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "SPOLECNY_PODIL":
-                text_spolecny_podil = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
-                c.execute("INSERT INTO spolecnici_spolecny_podil (company_id, zapis_datum, vymaz_datum, text_spolecny_podil) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_spolecny_podil,))               
-                c.execute ("SELECT last_insert_rowid()")
+                text_spolecny_podil = get_prop(elem, "hodnotaUdaje/textZaOsobu/value")
+                c.execute("INSERT INTO spolecnici_spolecny_podil (company_id, zapis_datum, vymaz_datum, text_spolecny_podil) VALUES (%s, %s, %s, %s) RETURNING id", (primary_sql_key, zapis_datum, vymaz_datum, text_spolecny_podil,))               
+                # c.execute ("SELECT last_insert_rowid()")
                 spolecny_op_id = c.fetchone()[0]               
                 insert_common_podily(c, elem, spolecny_op_id)
                 insert_common_shareholders(c, elem, spolecny_op_id)
 
             elif spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "UVOLNENY_PODIL":
-                text_uvolneny_podil = str(get_prop(elem, "hodnotaUdaje/textZaOsobu/value"))
-                c.execute("INSERT INTO spolecnici_uvolneny_podil (company_id, zapis_datum, vymaz_datum, text_uvolneny_podil) VALUES (?, ?, ?, ?)", (primary_sql_key, zapis_datum, vymaz_datum, text_uvolneny_podil,))               
-                c.execute ("SELECT last_insert_rowid()")
+                text_uvolneny_podil = get_prop(elem, "hodnotaUdaje/textZaOsobu/value")
+                c.execute("INSERT INTO spolecnici_uvolneny_podil (company_id, zapis_datum, vymaz_datum, text_uvolneny_podil) VALUES (%s, %s, %s, %s) RETURNING id", (primary_sql_key, zapis_datum, vymaz_datum, text_uvolneny_podil,))               
+                # c.execute ("SELECT last_insert_rowid()")
                 uvolneny_op_id = c.fetchone()[0]
                 insert_vacant_podily(c, elem, uvolneny_op_id)
     except Exception as f:
@@ -279,19 +279,19 @@ def insert_common_shareholders(c, elem, spolecny_op_id):
         podil_iter = elem.findall("podudaje/Udaj")
         for podil_elem in podil_iter:
             if str(get_prop(podil_elem, "udajTyp/kod")) == "SPOLECNIK_PODILNIK":
-                zapisDatum = str(get_prop(podil_elem, "zapisDatum"))
-                vymazDatum = str(get_prop(podil_elem, "vymazDatum"))
-                typ_podilnika = str(get_prop(podil_elem, "hodnotaText"))
+                zapisDatum = get_prop(podil_elem, "zapisDatum")
+                vymazDatum = get_prop(podil_elem, "vymazDatum")
+                typ_podilnika = get_prop(podil_elem, "hodnotaText")
                 if typ_podilnika == "AngazmaFyzicke":
                     adresa_id = find_sidlo(c, podil_elem)
                     spolecnik_fo_id = find_fyzicka_osoba(c, podil_elem, adresa_id)
-                    c.execute("INSERT INTO podilnici (podil_id, podilnik_fo_id, zapis_datum, vymaz_datum, adresa_id) VALUES (?, ?, ?, ?, ?)", (spolecny_op_id, spolecnik_fo_id, zapisDatum, vymazDatum, adresa_id))
+                    c.execute("INSERT INTO podilnici (podil_id, podilnik_fo_id, zapis_datum, vymaz_datum, adresa_id) VALUES (%s, %s, %s, %s, %s)", (spolecny_op_id, spolecnik_fo_id, zapisDatum, vymazDatum, adresa_id))
                 if typ_podilnika == "AngazmaPravnicke":
-                    spol_ico = str(get_prop(podil_elem, "osoba/ico"))
-                    regCislo = str(get_prop(podil_elem, "osoba/regCislo"))
+                    spol_ico = get_prop(podil_elem, "osoba/ico")
+                    regCislo = get_prop(podil_elem, "osoba/regCislo")
                     adresa_id = find_sidlo(c, podil_elem)
                     spolecnik_po_id = find_pravnicka_osoba(c, podil_elem, spol_ico, regCislo, adresa_id)
-                    c.execute("INSERT INTO podilnici (podil_id, podilnik_po_id, zapis_datum, vymaz_datum, adresa_id) VALUES (?, ?, ?, ?, ?)", (spolecny_op_id, spolecnik_po_id, zapisDatum, vymazDatum, adresa_id))
+                    c.execute("INSERT INTO podilnici (podil_id, podilnik_po_id, zapis_datum, vymaz_datum, adresa_id) VALUES (%s, %s, %s, %s, %s)", (spolecny_op_id, spolecnik_po_id, zapisDatum, vymazDatum, adresa_id))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)   
@@ -779,16 +779,16 @@ def insert_podily(c, elem, spolecnik_id):
     try:
         podil_iter = elem.findall("podudaje/Udaj")
         for podil_elem in podil_iter:
-            zapisDatum = str(get_prop(podil_elem, "zapisDatum"))
-            vymazDatum = str(get_prop(podil_elem, "vymazDatum"))
+            zapisDatum = get_prop(podil_elem, "zapisDatum")
+            vymazDatum = get_prop(podil_elem, "vymazDatum")
             druh_podilu_id = get_druh_podilu_id(c, podil_elem)
-            vklad_typ = str(get_prop(podil_elem, "hodnotaUdaje/vklad/typ"))
-            vklad_text = str(get_prop(podil_elem, "hodnotaUdaje/vklad/textValue"))
-            souhrn_typ = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/typ"))
-            souhrn_text = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue"))
-            splaceni_typ = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/typ"))
-            splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
-            c.execute("INSERT INTO podily (spolecnik_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
+            vklad_typ = get_prop(podil_elem, "hodnotaUdaje/vklad/typ")
+            vklad_text = get_prop(podil_elem, "hodnotaUdaje/vklad/textValue")
+            souhrn_typ = get_prop(podil_elem, "hodnotaUdaje/souhrn/typ")
+            souhrn_text = get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue")
+            splaceni_typ = get_prop(podil_elem, "hodnotaUdaje/splaceni/typ")
+            splaceni_text = get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue")
+            c.execute("INSERT INTO podily (spolecnik_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -797,16 +797,16 @@ def insert_vacant_podily(c, elem, vacant_id):
     try:
         podil_iter = elem.findall("podudaje/Udaj")
         for podil_elem in podil_iter:
-            zapisDatum = str(get_prop(podil_elem, "zapisDatum"))
-            vymazDatum = str(get_prop(podil_elem, "vymazDatum"))
+            zapisDatum = get_prop(podil_elem, "zapisDatum")
+            vymazDatum = get_prop(podil_elem, "vymazDatum")
             druh_podilu_id = get_druh_podilu_id(c, podil_elem)
-            vklad_typ = str(get_prop(podil_elem, "hodnotaUdaje/vklad/typ"))
-            vklad_text = str(get_prop(podil_elem, "hodnotaUdaje/vklad/textValue"))
-            souhrn_typ = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/typ"))
-            souhrn_text = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue"))
-            splaceni_typ = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/typ"))
-            splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
-            c.execute("INSERT INTO podily (uvolneny_podil_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (vacant_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
+            vklad_typ = get_prop(podil_elem, "hodnotaUdaje/vklad/typ")
+            vklad_text = get_prop(podil_elem, "hodnotaUdaje/vklad/textValue")
+            souhrn_typ = get_prop(podil_elem, "hodnotaUdaje/souhrn/typ")
+            souhrn_text = get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue")
+            splaceni_typ = get_prop(podil_elem, "hodnotaUdaje/splaceni/typ")
+            splaceni_text = get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue")
+            c.execute("INSERT INTO podily (uvolneny_podil_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (vacant_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)    
@@ -816,16 +816,16 @@ def insert_common_podily(c, elem, common_id):
         podil_iter = elem.findall("podudaje/Udaj")
         for podil_elem in podil_iter:
             if str(get_prop(podil_elem, "udajTyp/kod")) == "SPOLECNIK_PODIL":
-                zapisDatum = str(get_prop(podil_elem, "zapisDatum"))
-                vymazDatum = str(get_prop(podil_elem, "vymazDatum"))
+                zapisDatum = get_prop(podil_elem, "zapisDatum")
+                vymazDatum = get_prop(podil_elem, "vymazDatum")
                 druh_podilu_id = get_druh_podilu_id(c, podil_elem)
-                vklad_typ = str(get_prop(podil_elem, "hodnotaUdaje/vklad/typ"))
-                vklad_text = str(get_prop(podil_elem, "hodnotaUdaje/vklad/textValue"))
-                souhrn_typ = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/typ"))
-                souhrn_text = str(get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue"))
-                splaceni_typ = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/typ"))
-                splaceni_text = str(get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue"))
-                c.execute("INSERT INTO podily (spolecny_podil_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (?,?,?,?,?,?,?,?,?,?)", (common_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
+                vklad_typ = get_prop(podil_elem, "hodnotaUdaje/vklad/typ")
+                vklad_text = get_prop(podil_elem, "hodnotaUdaje/vklad/textValue")
+                souhrn_typ = get_prop(podil_elem, "hodnotaUdaje/souhrn/typ")
+                souhrn_text = get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue")
+                splaceni_typ = get_prop(podil_elem, "hodnotaUdaje/splaceni/typ")
+                splaceni_text = get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue")
+                c.execute("INSERT INTO podily (spolecny_podil_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (common_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)   
@@ -833,9 +833,10 @@ def insert_common_podily(c, elem, common_id):
 
 def get_druh_podilu_id(c, podil_elem):
     try:
-        druhPodilu = str(get_prop(podil_elem, "hodnotaUdaje/druhPodilu"))
+        druhPodilu = get_prop(podil_elem, "hodnotaUdaje/druhPodilu")
         insert_druh_podilu(c, druhPodilu)
-        druh_podilu_id = find_druh_podilu_id(c, druhPodilu)
+        druh_podilu_id = c.fetchone()[0]
+        # druh_podilu_id = find_druh_podilu_id(c, druhPodilu)
         return druh_podilu_id
     except Exception as f:
         print(inspect.stack()[0][3])
@@ -843,19 +844,21 @@ def get_druh_podilu_id(c, podil_elem):
 
 def insert_druh_podilu(c, druhPodilu):
     try:
-        c.execute("INSERT INTO druhy_podilu (druh_podilu) VALUES (?)", (druhPodilu,))
+        if druhPodilu == None:
+            druhPodilu = "N/A"
+        c.execute("INSERT INTO druhy_podilu (druh_podilu) VALUES (%s) ON CONFLICT ON CONSTRAINT unique_druh_podilu DO UPDATE SET druh_podilu=EXCLUDED.druh_podilu RETURNING id", (druhPodilu,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f) 
 
-def find_druh_podilu_id(c, druhPodilu):
-    try:
-        druh_podilu_id = c.execute("SELECT id FROM druhy_podilu WHERE druh_podilu = (?)", (druhPodilu,))
-        druh_podilu_id = c.fetchone()[0]
-        return druh_podilu_id
-    except Exception as f:
-        print(inspect.stack()[0][3])
-        print(f) 
+# def find_druh_podilu_id(c, druhPodilu):
+#     try:
+#         druh_podilu_id = c.execute("SELECT id FROM druhy_podilu WHERE druh_podilu = (?)", (druhPodilu,))
+#         druh_podilu_id = c.fetchone()[0]
+#         return druh_podilu_id
+#     except Exception as f:
+#         print(inspect.stack()[0][3])
+#         print(f) 
 
 # def find_pravnicka_osoba_id(c, ico, reg_cislo, nazev, adresa_id):
 #     try:
