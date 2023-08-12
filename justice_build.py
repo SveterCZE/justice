@@ -13,12 +13,12 @@ def main():
     # backup_DB()
     # create_DB(DB_name)
     # Download commercial register data
-    # valid_files = get_valid_filenames()
+    valid_files = get_valid_filenames()
     # os.makedirs("data", exist_ok=True)
+
     # for valid_file in valid_files:
-        # download_data(valid_file)
-    # for valid_file in valid_files:
-        # modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
+    #     download_data(valid_file)
+    
     conn = return_conn()
     cur = conn.cursor()
     cur.execute('select \'drop table "\' || tablename || \'" cascade;\' from pg_tables where schemaname = \'public\';')
@@ -28,7 +28,13 @@ def main():
     # conn.commit()
     create_DB(conn)
     create_indices(conn)
-    update_DB("as-full-ostrava-2023.xml", conn)
+
+    for valid_file in valid_files:
+        if "sf-" in valid_file:
+            modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
+            update_DB(modified_file_name, conn)
+    
+    # update_DB("data/as-full-ostrava-2023.xml", conn)
     # Download criminal records
     # download_criminal_records()
     # insert_criminal_records(DB_name)

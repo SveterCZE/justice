@@ -19,7 +19,7 @@ def update_DB(file, conn):
         else:
             ICO = get_ICO(element)
             # Bugfix to skip the old companies that have no Identification No.
-            if ICO == None:
+            if ICO == False:
                 continue
             # Vlozit prazdny radek s ICO
             insert_new_ICO(c, ICO, element)
@@ -29,14 +29,15 @@ def update_DB(file, conn):
             find_other_properties(c, ICO, element, conn, primary_sql_key)
             element.clear()
     conn.commit()
-    conn.close()
+    # conn.close()
     return 0
 
 def get_ICO(element):
-    try:
+    ico = element.find('ico')
+    if ico == None:
+        return False
+    else:
         return element.find('ico').text
-    except:
-        return None
 
 # Function to attempt to insert a placeholder for a new company based on ICO
 def insert_new_ICO(c, ICO, element):
@@ -306,14 +307,16 @@ def find_predmet_podnikani(c, predmet_podnikani_elem, primary_sql_key):
                 vymaz_datum = get_prop(elem2, ".//vymazDatum")
                 insert_instructions = [(".//hodnotaText","predmety_podnikani", "predmet_podnikani", "predmety_podnikani_relation")]
                 for elem in insert_instructions:
-                    inserted_figure = get_prop(elem2, ".//hodnotaText").capitalize()
-                    if len(inserted_figure) > 2700:
-                        inserted_figure = inserted_figure[:2700]
-                    ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    if ancillary_table_key == False:
-                        insert_into_ancillary_table(c, elem, inserted_figure)
+                    inserted_figure = get_prop(elem2, ".//hodnotaText")
+                    if inserted_figure != None:
+                        inserted_figure = inserted_figure.capitalize()
+                        if len(inserted_figure) > 2700:
+                            inserted_figure = inserted_figure[:2700]
                         ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+                        if ancillary_table_key == False:
+                            insert_into_ancillary_table(c, elem, inserted_figure)
+                            ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                        insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -328,14 +331,16 @@ def find_predmet_cinnosti(c, predmet_cinnosti_elem, primary_sql_key):
                 vymaz_datum = get_prop(elem2, ".//vymazDatum")
                 insert_instructions = [(".//hodnotaText","predmety_cinnosti", "predmet_cinnosti", "predmety_cinnosti_relation")]
                 for elem in insert_instructions:
-                    inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
-                    if len(inserted_figure) > 2700:
-                        inserted_figure = inserted_figure[:2700]
-                    ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    if ancillary_table_key == False:
-                        insert_into_ancillary_table(c, elem, inserted_figure)
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    if inserted_figure != None:
+                        inserted_figure = inserted_figure.capitalize()
+                        if len(inserted_figure) > 2700:
+                            inserted_figure = inserted_figure[:2700]
                         ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+                        if ancillary_table_key == False:
+                            insert_into_ancillary_table(c, elem, inserted_figure)
+                            ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                        insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)   
@@ -350,14 +355,16 @@ def find_ucel(c, ucel_elem, primary_sql_key):
                 vymaz_datum = get_prop(elem2, ".//vymazDatum")
                 insert_instructions = [(".//hodnotaText", "ucel", "ucel", "ucel_relation")]
                 for elem in insert_instructions:
-                    inserted_figure = str(get_prop(elem2, ".//hodnotaText")).capitalize()
-                    if len(inserted_figure) > 2700:
-                        inserted_figure = inserted_figure[:2700]
-                    ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    if ancillary_table_key == False:
-                        insert_into_ancillary_table(c, elem, inserted_figure)
+                    inserted_figure = str(get_prop(elem2, ".//hodnotaText"))
+                    if inserted_figure != None:
+                        inserted_figure = inserted_figure.capitalize()
+                        if len(inserted_figure) > 2700:
+                            inserted_figure = inserted_figure[:2700]
                         ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
-                    insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
+                        if ancillary_table_key == False:
+                            insert_into_ancillary_table(c, elem, inserted_figure)
+                            ancillary_table_key = get_anciallary_table_key(c, elem, inserted_figure)
+                        insert_relation_information_v2(c, elem, primary_sql_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -593,11 +600,15 @@ def insert_into_ancillary_table(c, elem, inserted_figure):
 
 def get_anciallary_table_key(c, elem, inserted_figure):
     try:
-        anciallary_table_key = c.execute("SELECT id FROM " + elem[1] + " WHERE " + elem[2] + " = (%s)", (inserted_figure,))
-        anciallary_table_key = c.fetchone()[0]
-        return anciallary_table_key
+        c.execute("SELECT id FROM " + elem[1] + " WHERE " + elem[2] + " = (%s)", (inserted_figure,))
+        anciallary_table_key = c.fetchone()
+        if anciallary_table_key == None:
+            return False
+        else:
+            return anciallary_table_key[0]
     except Exception as f:
-        return False
+        print(inspect.stack()[0][3])
+        print(f)
 
 def get_relationship_table_key(c, primary_sql_key, ancillary_table_key):
     c.execute("SELECT id FROM statutarni_organ_relation WHERE company_id = (%s) and statutarni_organ_id = (%s)", (primary_sql_key,ancillary_table_key,))
@@ -624,7 +635,8 @@ def find_zpusob_jednani(c, elem, relationship_table_key):
             if ancillary_table_key == False:
                 insert_into_ancillary_table(c, elem, zpusob_jednani)
                 ancillary_table_key = get_anciallary_table_key(c, elem, zpusob_jednani)
-            insert_relation_information_v2(c, elem, relationship_table_key, ancillary_table_key, zapis_datum, vymaz_datum)
+            if ancillary_table_key != False:
+                insert_relation_information_v2(c, elem, relationship_table_key, ancillary_table_key, zapis_datum, vymaz_datum)
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -834,9 +846,10 @@ def insert_common_podily(c, elem, common_id):
 def get_druh_podilu_id(c, podil_elem):
     try:
         druhPodilu = get_prop(podil_elem, "hodnotaUdaje/druhPodilu")
-        insert_druh_podilu(c, druhPodilu)
-        druh_podilu_id = c.fetchone()[0]
-        # druh_podilu_id = find_druh_podilu_id(c, druhPodilu)
+        druh_podilu_id = find_druh_podilu_id(c, druhPodilu)
+        if druh_podilu_id == False:
+            insert_druh_podilu(c, druhPodilu)
+            druh_podilu_id = c.fetchone()[0]
         return druh_podilu_id
     except Exception as f:
         print(inspect.stack()[0][3])
@@ -846,19 +859,22 @@ def insert_druh_podilu(c, druhPodilu):
     try:
         if druhPodilu == None:
             druhPodilu = "N/A"
-        c.execute("INSERT INTO druhy_podilu (druh_podilu) VALUES (%s) ON CONFLICT ON CONSTRAINT unique_druh_podilu DO UPDATE SET druh_podilu=EXCLUDED.druh_podilu RETURNING id", (druhPodilu,))
+        c.execute("INSERT INTO druhy_podilu (druh_podilu) VALUES (%s) RETURNING id", (druhPodilu,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f) 
 
-# def find_druh_podilu_id(c, druhPodilu):
-#     try:
-#         druh_podilu_id = c.execute("SELECT id FROM druhy_podilu WHERE druh_podilu = (?)", (druhPodilu,))
-#         druh_podilu_id = c.fetchone()[0]
-#         return druh_podilu_id
-#     except Exception as f:
-#         print(inspect.stack()[0][3])
-#         print(f) 
+def find_druh_podilu_id(c, druhPodilu):
+    try:
+        druh_podilu_id = c.execute("SELECT id FROM druhy_podilu WHERE druh_podilu = (%s)", (druhPodilu,))
+        if druh_podilu_id == None:
+            return False
+        else:
+            druh_podilu_id = c.fetchone()[0]
+            return druh_podilu_id
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f) 
 
 # def find_pravnicka_osoba_id(c, ico, reg_cislo, nazev, adresa_id):
 #     try:

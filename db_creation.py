@@ -155,9 +155,8 @@ def create_tables(conn):
     list_of_tables.append(dr_organ_clen_relation)
 
     druhy_podilu = """ CREATE TABLE "druhy_podilu" (
-	"id"	SERIAL PRIMARY KEY,
-	"druh_podilu"	TEXT NOT NULL,
-    CONSTRAINT unique_druh_podilu UNIQUE ("druh_podilu")
+	"id"			SERIAL PRIMARY KEY,
+	"druh_podilu"	TEXT NOT NULL
 ); """
     list_of_tables.append(druhy_podilu)
 
@@ -235,10 +234,7 @@ def create_tables(conn):
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
 	"adresa_id"	INTEGER,
-	"text_spolecnik"	TEXT,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	FOREIGN KEY("spolecnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("company_id") REFERENCES "companies"("id")
+	"text_spolecnik"	TEXT
 ); """
     list_of_tables.append(spolecnici)
 
@@ -249,31 +245,24 @@ def create_tables(conn):
 	"podilnik_po_id"	INTEGER,
 	"zapis_datum"	DATE,
 	"vymaz_datum"	DATE,
-	"adresa_id"	INTEGER,
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id"),
-	FOREIGN KEY("podilnik_fo_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("podilnik_po_id") REFERENCES "pravnicke_osoby"("id"),
-	FOREIGN KEY("podil_id") REFERENCES "spolecnici_spolecny_podil"("id")
+	"adresa_id"	INTEGER
 ); """
     list_of_tables.append(podilnici)
 
     podily = """ CREATE TABLE "podily" (
-	"id"	SERIAL PRIMARY KEY,
-	"spolecnik_id"	INTEGER,
+	"id"				SERIAL PRIMARY KEY,
+	"spolecnik_id"		INTEGER,
 	"uvolneny_podil_id" INTEGER,
 	"spolecny_podil_id" INTEGER,
-	"zapis_datum"	DATE,
-	"vymaz_datum"	DATE,
+	"zapis_datum"		DATE,
+	"vymaz_datum"		DATE,
 	"druh_podilu_id"	INTEGER,
-	"vklad_typ"	TEXT,
-	"vklad_text"	TEXT,
-	"souhrn_typ"	TEXT,
-	"souhrn_text"	TEXT,
-	"splaceni_typ"	TEXT,
-	"splaceni_text"	TEXT,
-	FOREIGN KEY("druh_podilu_id") REFERENCES "druhy_podilu"("id"),
-	FOREIGN KEY("spolecnik_id") REFERENCES "spolecnici"("id"),
-	FOREIGN KEY("uvolneny_podil_id") REFERENCES "spolecnici_uvolneny_podil"("id")
+	"vklad_typ"			TEXT,
+	"vklad_text"		TEXT,
+	"souhrn_typ"		TEXT,
+	"souhrn_text"		TEXT,
+	"splaceni_typ"		TEXT,
+	"splaceni_text"		TEXT
 ); """
     list_of_tables.append(podily)
 
@@ -282,7 +271,6 @@ def create_tables(conn):
 	"pravni_forma"	TEXT NOT NULL UNIQUE
 ); """
     list_of_tables.append(pravni_formy)
-
 
     pravni_formy_relation = """ CREATE TABLE "pravni_formy_relation" (
 	"id"	SERIAL PRIMARY KEY,
@@ -510,6 +498,10 @@ def create_tables(conn):
 def create_indices(conn):
     relevant_indices = []
 
+    druhy_podilu = """ CREATE INDEX "index druh_podilu" ON "druhy_podilu" (
+	"druh_podilu"
+); """
+    relevant_indices.append(druhy_podilu)
 
 #     companies1 = """ CREATE INDEX "index companies1" ON "companies" (
 # 	"id"
@@ -656,41 +648,50 @@ def create_indices(conn):
 # 	"id"
 # ); """
 
-#     podily1 = """ CREATE INDEX "index podily1" ON "podily" (
-# 	"id"
-# ); """
+    podily1 = """ CREATE INDEX "index podily1" ON "podily" (
+	"id"
+); """
+    relevant_indices.append(podily1)
 
-#     podily2 = """ CREATE INDEX "index podily2" ON "podily" (
-# 	"spolecnik_id"
-# ); """
+    podily2 = """ CREATE INDEX "index podily2" ON "podily" (
+	"spolecnik_id"
+); """
+    relevant_indices.append(podily2)
 
-#     podily3 = """ CREATE INDEX "index podily3" ON "podily" (
-# 	"uvolneny_podil_id"
-# ); """
+    podily3 = """ CREATE INDEX "index podily3" ON "podily" (
+	"uvolneny_podil_id"
+); """
+    relevant_indices.append(podily3)
 
-#     podily4 = """ CREATE INDEX "index podily4" ON "podily" (
-# 	"spolecny_podil_id"
-# ); """
+    podily4 = """ CREATE INDEX "index podily4" ON "podily" (
+	"spolecny_podil_id"
+); """
+    relevant_indices.append(podily4)
 
-#     podilnici1 = """ CREATE INDEX "index podilnici1" ON "podilnici" (
-# 	"id"
-# ); """
+    podilnici1 = """ CREATE INDEX "index podilnici1" ON "podilnici" (
+	"id"
+); """
+    relevant_indices.append(podilnici1)
 
-#     podilnici2 = """ CREATE INDEX "index podilnici2" ON "podilnici" (
-# 	"podil_id"
-# ); """
+    podilnici2 = """ CREATE INDEX "index podilnici2" ON "podilnici" (
+	"podil_id"
+); """
+    relevant_indices.append(podilnici2)
 
-#     podilnici3 = """ CREATE INDEX "index podilnici3" ON "podilnici" (
-# 	"podilnik_fo_id"
-# ); """
+    podilnici3 = """ CREATE INDEX "index podilnici3" ON "podilnici" (
+	"podilnik_fo_id"
+); """
+    relevant_indices.append(podilnici3)
 
-#     podilnici4 = """ CREATE INDEX "index podilnici4" ON "podilnici" (
-# 	"podilnik_po_id"
-# ); """
+    podilnici4 = """ CREATE INDEX "index podilnici4" ON "podilnici" (
+	"podilnik_po_id"
+); """
+    relevant_indices.append(podilnici4)
 
-#     podilnici5 = """ CREATE INDEX "index podilnici5" ON "podilnici" (
-# 	"adresa_id"
-# ); """
+    podilnici5 = """ CREATE INDEX "index podilnici5" ON "podilnici" (
+	"adresa_id"
+); """
+    relevant_indices.append(podilnici5)
 
     pravni_formy = """ CREATE INDEX "index pravni_formy" ON "pravni_formy" (
 	"pravni_forma"
@@ -800,37 +801,44 @@ def create_indices(conn):
 # 	"id"
 # ); """
 
-#     spolecnici2 = """ CREATE INDEX "index spolecnici2" ON "spolecnici" (
-# 	"company_id"
-# ); """
+    spolecnici2 = """ CREATE INDEX "index spolecnici2" ON "spolecnici" (
+	"company_id"
+); """
+    relevant_indices.append(spolecnici2)
 
-#     spolecnici3 = """ CREATE INDEX "index spolecnici3" ON "spolecnici" (
-# 	"spolecnik_fo_id"
-# ); """
+    spolecnici3 = """ CREATE INDEX "index spolecnici3" ON "spolecnici" (
+	"spolecnik_fo_id"
+); """
+    relevant_indices.append(spolecnici3)
 
-#     spolecnici4 = """ CREATE INDEX "index spolecnici4" ON "spolecnici" (
-# 	"spolecnik_po_id"
-# ); """
+    spolecnici4 = """ CREATE INDEX "index spolecnici4" ON "spolecnici" (
+	"spolecnik_po_id"
+); """
+    relevant_indices.append(spolecnici4)
 
-#     spolecnici5 = """ CREATE INDEX "index spolecnici5" ON "spolecnici" (
-# 	"adresa_id"
-# ); """
+    spolecnici5 = """ CREATE INDEX "index spolecnici5" ON "spolecnici" (
+	"adresa_id"
+); """
+    relevant_indices.append(spolecnici5)
 
 #     spolecnici_uvolneny_podil1 = """ CREATE INDEX "index uvolneny_podil1" on "spolecnici_uvolneny_podil" (
 # 	"id"
 # ); """
 
-#     spolecnici_uvolneny_podil2 = """ CREATE INDEX "index uvolneny_podil2" on "spolecnici_uvolneny_podil" (
-# 	"company_id"
-# ); """
+    spolecnici_uvolneny_podil2 = """ CREATE INDEX "index uvolneny_podil2" on "spolecnici_uvolneny_podil" (
+	"company_id"
+); """
+    relevant_indices.append(spolecnici_uvolneny_podil2)
 
-#     spolecnici_spolecny_podil1 = """ CREATE INDEX "index spolecny_podil1" on "spolecnici_spolecny_podil" (
-# 	"id"
-# ); """
+    spolecnici_spolecny_podil1 = """ CREATE INDEX "index spolecny_podil1" on "spolecnici_spolecny_podil" (
+	"id"
+); """
+    relevant_indices.append(spolecnici_spolecny_podil1)
 
-#     spolecnici_spolecny_podil2 = """ CREATE INDEX "index spolecny_podil2" on "spolecnici_spolecny_podil" (
-# 	"company_id"
-# ); """
+    spolecnici_spolecny_podil2 = """ CREATE INDEX "index spolecny_podil2" on "spolecnici_spolecny_podil" (
+	"company_id"
+); """
+    relevant_indices.append(spolecnici_spolecny_podil2)
 
     statutarni_organy = """ CREATE INDEX "index statutarn_organy" ON "statutarni_organy" (
 	"id",
