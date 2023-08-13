@@ -9,8 +9,8 @@ from lxml import etree
 
 def get_valid_filenames():
     FILENAME = "justice_files.txt"
-    # my_file = download_list_filenames()
-    # save_file(my_file, FILENAME)
+    my_file = download_list_filenames()
+    save_file(my_file, FILENAME)
     valid_files = get_files_list(FILENAME)
     return valid_files   
 

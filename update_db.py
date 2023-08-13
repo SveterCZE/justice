@@ -629,6 +629,8 @@ def find_zpusob_jednani(c, elem, relationship_table_key):
         zapis_datum = get_prop(elem, "zapisDatum")
         vymaz_datum = get_prop(elem, "vymazDatum")
         zpusob_jednani = get_prop(elem, "hodnotaText")
+        if zpusob_jednani != None and len(zpusob_jednani) > 2700:
+            zpusob_jednani = zpusob_jednani[:2700]
         insert_instructions = [(zpusob_jednani,"zpusoby_jednani", "zpusob_jednani_text", "zpusoby_jednani_relation")]
         for elem in insert_instructions:
             ancillary_table_key = get_anciallary_table_key(c, elem, zpusob_jednani)

@@ -30,9 +30,8 @@ def main():
     create_indices(conn)
 
     for valid_file in valid_files:
-        if "sf-" in valid_file:
-            modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
-            update_DB(modified_file_name, conn)
+        modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
+        update_DB(modified_file_name, conn)
     
     # update_DB("data/as-full-ostrava-2023.xml", conn)
     # Download criminal records
