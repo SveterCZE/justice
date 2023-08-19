@@ -578,7 +578,7 @@ def find_sidlo(c, elem):
 
 def insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText):
     try:
-        c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT ON CONSTRAINT unique_address DO UPDATE SET obec=EXCLUDED.obec RETURNING id", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
+        c.execute("INSERT INTO adresy_v2 (stat, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, komplet_adresa, cisloEv, cisloText) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT ON CONSTRAINT not_distinct_address DO UPDATE SET obec=EXCLUDED.obec RETURNING id", (statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -713,7 +713,7 @@ def lower_names_chars(string_name):
 
 def insert_fyzicka_osoba(c, titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id):
     try:
-        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s) ON CONFLICT ON CONSTRAINT unique_natural_person DO UPDATE SET adresa_id=EXCLUDED.adresa_id RETURNING id", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
+        c.execute("INSERT into fyzicke_osoby (titul_pred, jmeno, prijmeni, titul_za, datum_naroz, adresa_id) VALUES (%s,%s,%s,%s,%s,%s) ON CONFLICT ON CONSTRAINT not_distinct_natural_person DO UPDATE SET adresa_id=EXCLUDED.adresa_id RETURNING id", (titulPred, jmeno, prijmeni, titulZa, datum_narozeni, adresa_id,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
@@ -848,6 +848,8 @@ def insert_common_podily(c, elem, common_id):
 def get_druh_podilu_id(c, podil_elem):
     try:
         druhPodilu = get_prop(podil_elem, "hodnotaUdaje/druhPodilu")
+        if druhPodilu == None:
+            druhPodilu = "N/A"
         druh_podilu_id = find_druh_podilu_id(c, druhPodilu)
         if druh_podilu_id == False:
             insert_druh_podilu(c, druhPodilu)
@@ -859,8 +861,6 @@ def get_druh_podilu_id(c, podil_elem):
 
 def insert_druh_podilu(c, druhPodilu):
     try:
-        if druhPodilu == None:
-            druhPodilu = "N/A"
         c.execute("INSERT INTO druhy_podilu (druh_podilu) VALUES (%s) RETURNING id", (druhPodilu,))
     except Exception as f:
         print(inspect.stack()[0][3])
@@ -868,12 +868,12 @@ def insert_druh_podilu(c, druhPodilu):
 
 def find_druh_podilu_id(c, druhPodilu):
     try:
-        druh_podilu_id = c.execute("SELECT id FROM druhy_podilu WHERE druh_podilu = (%s)", (druhPodilu,))
+        c.execute("SELECT id FROM druhy_podilu WHERE druh_podilu = (%s)", (druhPodilu,))
+        druh_podilu_id = c.fetchone()
         if druh_podilu_id == None:
             return False
         else:
-            druh_podilu_id = c.fetchone()[0]
-            return druh_podilu_id
+            return druh_podilu_id[0]
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f) 
@@ -898,7 +898,7 @@ def find_druh_podilu_id(c, druhPodilu):
 
 def insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id):
     try:
-        c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev, adresa_id) VALUES (%s,%s,%s,%s)  ON CONFLICT ON CONSTRAINT unique_legal_person DO UPDATE SET adresa_id=EXCLUDED.adresa_id RETURNING id", (spol_ico, regCislo, nazev, adresa_id,))
+        c.execute("INSERT into pravnicke_osoby (ico, reg_cislo, nazev, adresa_id) VALUES (%s,%s,%s,%s) ON CONFLICT ON CONSTRAINT not_distinct_legal_person DO UPDATE SET adresa_id=EXCLUDED.adresa_id RETURNING id", (spol_ico, regCislo, nazev, adresa_id,))
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f) 

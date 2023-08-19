@@ -39,6 +39,25 @@ def create_tables(conn):
 	    soud TEXT)"""
     list_of_tables.append(companies)
     
+#     adresy_v2 = """ CREATE TABLE "adresy_v2" (
+# 	id              SERIAL PRIMARY KEY, 
+# 	stat	        TEXT,
+# 	obec	        TEXT,
+# 	ulice	        TEXT,
+# 	castObce	    TEXT,
+# 	cisloPo	        TEXT,
+# 	cisloOr	        TEXT,
+# 	psc	            TEXT,
+# 	okres   	    TEXT,
+# 	komplet_adresa	TEXT,
+# 	cisloEv	        TEXT,
+# 	cisloText	    TEXT,
+#     CONSTRAINT not_distinct_address UNIQUE NULLS NOT DISTINCT ("stat","obec","ulice","castobce","cislopo","cisloor","psc","okres","komplet_adresa","cisloev","cislotext"),
+# 	CONSTRAINT unique_address UNIQUE("stat","obec","ulice","castobce","cislopo","cisloor","psc","okres","komplet_adresa","cisloev","cislotext")
+# ); """
+#     list_of_tables.append(adresy_v2)
+
+
     adresy_v2 = """ CREATE TABLE "adresy_v2" (
 	id              SERIAL PRIMARY KEY, 
 	stat	        TEXT,
@@ -52,9 +71,25 @@ def create_tables(conn):
 	komplet_adresa	TEXT,
 	cisloEv	        TEXT,
 	cisloText	    TEXT,
-	CONSTRAINT unique_address UNIQUE("stat","obec","ulice","castobce","cislopo","cisloor","psc","okres","komplet_adresa","cisloev","cislotext")
+    CONSTRAINT not_distinct_address UNIQUE NULLS NOT DISTINCT ("stat","obec","ulice","castobce","cislopo","cisloor","psc","okres","komplet_adresa","cisloev","cislotext")
 ); """
     list_of_tables.append(adresy_v2)
+    
+
+#     fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
+# 	"id"	SERIAL PRIMARY KEY,
+# 	"titul_pred"	TEXT,
+# 	"jmeno"	TEXT,
+# 	"prijmeni"	TEXT,
+# 	"titul_za"	TEXT,
+# 	"datum_naroz"	TEXT,
+# 	"adresa_id" INTEGER,
+# 	CONSTRAINT not_distinct_natural_person UNIQUE NULLS NOT DISTINCT ("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
+# 	CONSTRAINT unique_natural_person UNIQUE ("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
+# ); """
+#     list_of_tables.append(fyzicke_osoby)
+
 
     fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
 	"id"	SERIAL PRIMARY KEY,
@@ -64,10 +99,24 @@ def create_tables(conn):
 	"titul_za"	TEXT,
 	"datum_naroz"	TEXT,
 	"adresa_id" INTEGER,
-	CONSTRAINT unique_natural_person UNIQUE ("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
+	CONSTRAINT not_distinct_natural_person UNIQUE NULLS NOT DISTINCT ("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
 ); """
     list_of_tables.append(fyzicke_osoby)
+
+
+#     pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
+# 	"id"	SERIAL PRIMARY KEY,
+# 	"ico"	TEXT,
+# 	"reg_cislo"	TEXT,
+# 	"nazev"	TEXT,
+# 	"adresa_id" INTEGER,
+# 	CONSTRAINT not_distinct_legal_person UNIQUE NULLS NOT DISTINCT ("ico","reg_cislo","nazev","adresa_id"),
+# 	CONSTRAINT unique_legal_person UNIQUE("ico","reg_cislo","nazev","adresa_id"),
+# 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
+# ); """
+#     list_of_tables.append(pravnicke_osoby)
+
 
     pravnicke_osoby = """ CREATE TABLE "pravnicke_osoby" (
 	"id"	SERIAL PRIMARY KEY,
@@ -75,10 +124,12 @@ def create_tables(conn):
 	"reg_cislo"	TEXT,
 	"nazev"	TEXT,
 	"adresa_id" INTEGER,
-	CONSTRAINT unique_legal_person UNIQUE("ico","reg_cislo","nazev","adresa_id"),
+	CONSTRAINT not_distinct_legal_person UNIQUE NULLS NOT DISTINCT ("ico","reg_cislo","nazev","adresa_id"),
 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
 ); """
     list_of_tables.append(pravnicke_osoby)
+    
+
 
     spolecnici_uvolneny_podil = """ CREATE TABLE "spolecnici_uvolneny_podil" (
 	"id" SERIAL PRIMARY KEY,
@@ -417,10 +468,7 @@ def create_tables(conn):
 	"vlastni_podil_na_prospechu_text_value" TEXT,
 	"vlastni_podil_na_hlasovani" TEXT,
 	"vlastni_podil_na_hlasovani_typ" TEXT,
-	"vlastni_podil_na_hlasovani_value" TEXT,
-	FOREIGN KEY("company_id") REFERENCES "companies"("id"),
-	FOREIGN KEY("ubo_id") REFERENCES "fyzicke_osoby"("id"),
-	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
+	"vlastni_podil_na_hlasovani_value" TEXT
 ); """
     list_of_tables.append(ubo)
 
@@ -498,7 +546,7 @@ def create_tables(conn):
 def create_indices(conn):
     relevant_indices = []
 
-    druhy_podilu = """ CREATE INDEX "index druh_podilu" ON "druhy_podilu" (
+    druhy_podilu = """ CREATE INDEX "index druh_podilu" ON "druhy_podilu" using HASH (
 	"druh_podilu"
 ); """
     relevant_indices.append(druhy_podilu)
@@ -531,47 +579,57 @@ def create_indices(conn):
 #     adresy2 = """ CREATE INDEX "index adresy2" ON "adresy_v2" (
 # 	"obec"
 # ); """
+#     relevant_indices.append(adresy2)
 
 #     adresy3 = """ CREATE INDEX "index adresy3" ON "adresy_v2" (
 # 	"ulice"
 # ); """
-
+#     relevant_indices.append(adresy3)
+    
 #     adresy4 = """ CREATE INDEX "index adresy4" ON "adresy_v2" (
 # 	"stat"
 # ); """
-
+#     relevant_indices.append(adresy4)
+    
 #     adresy5 = """ CREATE INDEX "index adresy5" ON "adresy_v2" (
 # 	"castobce"
 # ); """
-
+#     relevant_indices.append(adresy5)
+    
 #     adresy6 = """ CREATE INDEX "index adresy12" ON "adresy_v2" (
 # 	"cislopo"
 # ); """
+#     relevant_indices.append(adresy6)
 
 #     adresy7 = """ CREATE INDEX "index adresy6" ON "adresy_v2" (
 # 	"cisloor"
 # ); """
-
+#     relevant_indices.append(adresy7)
+    
 #     adresy8 = """ CREATE INDEX "index adresy7" ON "adresy_v2" (
 # 	"psc"
 # ); """
-
+#     relevant_indices.append(adresy8)
+    
 #     adresy9 = """ CREATE INDEX "index adresy8" ON "adresy_v2" (
 # 	"okres"
 # ); """
-
+#     relevant_indices.append(adresy9)
+    
 #     adresy10 = """ CREATE INDEX "index adresy9" ON "adresy_v2" (
 # 	"komplet_adresa"
 # ); """
-
+#     relevant_indices.append(adresy10)
+    
 #     adresy11 = """ CREATE INDEX "index adresy10" ON "adresy_v2" (
 # 	"cisloev"
 # ); """
-
+#     relevant_indices.append(adresy11)
+    
 #     adresy12 = """ CREATE INDEX "index adresy11" ON "adresy_v2" (
 # 	"cislotext"
 # ); """
-
+#     relevant_indices.append(adresy12)
 #     akcie = """ CREATE INDEX "index akcie1" ON "akcie" (
 # 	"id"
 # ); """
