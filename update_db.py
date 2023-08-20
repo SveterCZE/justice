@@ -157,7 +157,7 @@ def find_sp_zn(c, elem2, primary_sql_key):
         vlozka = get_prop(elem2, ".//spisZn/vlozka")
         sql = """INSERT INTO zapis_soudy (company_id, zapis_datum, vymaz_datum, oddil, vlozka, soud) VALUES(%s, %s, %s, %s, %s, %s)"""
         c.execute(sql, (primary_sql_key, zapis_datum, vymaz_datum, oddil, vlozka, soud))
-        if vymaz_datum == "None":
+        if vymaz_datum == None:
              c.execute("UPDATE companies SET oddil = (%s), vlozka = (%s), soud = (%s) WHERE id = (%s)",(oddil,vlozka,soud,primary_sql_key,))
     except Exception as f:
         print(inspect.stack()[0][3])

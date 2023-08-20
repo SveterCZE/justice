@@ -28,7 +28,8 @@ def return_conn():
         host="localhost",
         database="justice2023",
         user=os.environ['DB_USERNAME'],
-        password=os.environ['DB_PASSWORD'])
+        password=os.environ['DB_PASSWORD']
+        )
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
