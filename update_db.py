@@ -241,7 +241,7 @@ def find_spolecnik(c, elem2, primary_sql_key):
             if spolecnik_kod == "SPOLECNIK_OSOBA" and spolecnik_typ == "OSOBA":
                 text_spolecnik = get_prop(elem, "hodnotaUdaje/textZaOsobu/value")
                 nazev = get_prop(elem, "osoba/nazev")
-                if nazev == "0":
+                if nazev == None:
                     adresa_id = find_sidlo(c, elem)
                     spolecnik_fo_id = find_fyzicka_osoba(c, elem, adresa_id)
                     c.execute("INSERT INTO spolecnici (company_id, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id", (primary_sql_key, spolecnik_fo_id, zapis_datum, vymaz_datum, adresa_id, text_spolecnik,))

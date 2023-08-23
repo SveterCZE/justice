@@ -451,14 +451,14 @@ def search_results_ubo(ubo_id):
         return render_template("results2.html", results=results, form=search, show_form = False)
 
 
-@app.route("/<int:ico>", methods=['GET', 'POST'])
+@app.route("/<string:ico>", methods=['GET', 'POST'])
 def extract(ico):
     qry = Company.query
     qry = qry.filter(Company.ico == ico)
     results = qry.all()
     return render_template("extract.html", ico = ico, results = results)
 
-@app.route("/<int:ico>-actual", methods=['GET', 'POST'])
+@app.route("/<string:ico>-actual", methods=['GET', 'POST'])
 def extract_actual(ico):
     qry = Company.query
     qry = qry.filter(Company.ico == ico)

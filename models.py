@@ -250,13 +250,13 @@ class Fyzicka_Osoba(db.Model):
 
     def get_name(self):
         joined_name = ""
-        if self.titul_pred != "0" and self.titul_pred != None:
+        if self.titul_pred != None and self.titul_pred != None:
             joined_name += self.titul_pred + " "
-        if self.jmeno != "0" and self.jmeno != None:
+        if self.jmeno != None and self.jmeno != None:
             joined_name += self.jmeno + " "
-        if self.prijmeni != "0" and self.prijmeni != None:
+        if self.prijmeni != None and self.prijmeni != None:
             joined_name += self.prijmeni
-        if self.titul_za != "0" and self.titul_za != None:
+        if self.titul_za != None and self.titul_za != None:
             joined_name += ", " +  self.titul_za
         return joined_name
 
@@ -343,12 +343,12 @@ class Ubo(db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
-    UBO_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
+    ubo_id = db.Column(db.Integer, db.ForeignKey('fyzicke_osoby.id'))
     adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
     adresa = db.relationship("Adresy_v2")
     postaveni = db.Column(db.String)
-    koncovyPrijemceText = db.Column(db.String)
-    skutecnymMajitelemOd = db.Column(MyType)
+    koncovy_prijemce_text = db.Column(db.String)
+    skutecnym_majitelem_od = db.Column(MyType)
     jmeno = db.relationship("Fyzicka_Osoba")
     company = db.relationship("Company")
 
@@ -408,9 +408,9 @@ class Podily_Association(db.Model):
     def my_rep(self):
         podil_descr = "Vklad: " + self.vklad_text + " " + self.vklad_typ + "\n"
         podil_descr += "Splaceno: " + self.splaceni_text + " " + self.splaceni_typ
-        if self.souhrn_text != "0":
+        if self.souhrn_text != None:
             podil_descr += "\n" + "Podíl: " + self.souhrn_text + self.souhrn_typ
-        if self.druh_podilu.druh_podilu != "0":
+        if self.druh_podilu.druh_podilu != None:
             podil_descr += "\n" + "Druh podílu: " + self.druh_podilu.druh_podilu
         return podil_descr.split("\n")
 
@@ -560,7 +560,7 @@ class Zakladni_Kapital(db.Model):
         elif self.vklad_typ == "EURA":
             joined_zk += "euro "
 
-        if self.splaceni_hodnota != "0":
+        if self.splaceni_hodnota != None:
             joined_zk +=  "\n"
             joined_zk += "Splaceno: " + self.splaceni_hodnota + " "
             if self.splaceni_typ == "KORUNY":
@@ -789,7 +789,7 @@ class Akcie(db.Model):
         elif self.akcie_podoba == "IMOBILIZOVANA":
             joined_share_descr += "v imobilizované podobě "
 
-        if self.akcie_hodnota_value != "0":
+        if self.akcie_hodnota_value != None:
             joined_share_descr += "ve jmenovité hodnotě " + self.akcie_hodnota_value
 
         if self.akcie_hodnota_typ == "KORUNY":
@@ -825,7 +825,7 @@ class Pocty_Clenu_Organu(db.Model):
     pocet_clenu_value = db.Column(db.String)
 
 class Pocty_Clenu_DR(db.Model):
-    __tablename__ = "pocty_clenu_DR"
+    __tablename__ = "pocty_clenu_dr"
     id = db.Column(db.Integer, primary_key=True)
     organ_id = db.Column(db.String, db.ForeignKey("dozorci_rada_relation.id"))
     zapis_datum = db.Column(MyType)
