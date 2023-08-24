@@ -429,9 +429,6 @@
         <td></td>
     </tr>
     {% for i in range (row.spolecnici|length) %}
-    
-    <tr>{{ row.spolecnici[0].spolecnik_po_id }}</tr>
-    
     <tr>
         <td style = padding-left:2em>Společník:</td>
         {% if row.spolecnici[i].vymaz_datum != None %}

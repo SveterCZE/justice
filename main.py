@@ -101,20 +101,20 @@ def search_results_person(search):
     if cp:
         qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
         if cp_search_method == "text_anywhere":
-            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+            qry = qry.filter(Adresy_v2.cislopo.contains(cp))
         elif cp_search_method == "text_beginning":
-            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+            qry = qry.filter(Adresy_v2.cislopo.like(f'{cp}%'))
         elif cp_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloPo == cp)
+            qry = qry.filter(Adresy_v2.cislopo == cp)
 
     if co:
         qry = qry.join(Adresy_v2, Fyzicka_Osoba.adresa)
         if co_search_method == "text_anywhere":
-            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+            qry = qry.filter(Adresy_v2.cisloor.contains(co))
         elif co_search_method == "text_beginning":
-            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+            qry = qry.filter(Adresy_v2.cisloor.like(f'{co}%'))
         elif co_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloOr == co)
+            qry = qry.filter(Adresy_v2.cisloor == co)
 
     if birthday:
         qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
@@ -197,20 +197,20 @@ def search_results_entity(search):
     if cp:
         qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
         if cp_search_method == "text_anywhere":
-            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+            qry = qry.filter(Adresy_v2.cislopo.contains(cp))
         elif cp_search_method == "text_beginning":
-            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+            qry = qry.filter(Adresy_v2.cislopo.like(f'{cp}%'))
         elif cp_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloPo == cp)
+            qry = qry.filter(Adresy_v2.cislopo == cp)
 
     if co:
         qry = qry.join(Adresy_v2, Pravnicka_Osoba.adresa)
         if co_search_method == "text_anywhere":
-            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+            qry = qry.filter(Adresy_v2.cisloor.contains(co))
         elif co_search_method == "text_beginning":
-            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+            qry = qry.filter(Adresy_v2.cisloor.like(f'{co}%'))
         elif co_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloOr == co)
+            qry = qry.filter(Adresy_v2.cisloor == co)
 
     results = qry.all()
     print(results)
