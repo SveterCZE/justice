@@ -1,4 +1,5 @@
 from app import app
+from app import return_conn
 from forms import GeneralSearchForm, JusticeSearchForm, CompanyForm, PersonSearchForm, EntitySearchForm
 from flask import flash, render_template, request, redirect
 from models import Company, Insolvency_Events, Konkurz_Events, Predmet_Podnikani, Predmety_Podnikani_Association, Predmet_Cinnosti, Predmety_Cinnosti_Association, Ubo
@@ -11,13 +12,13 @@ from sqlalchemy.sql import select
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 
-# @app.route('/', methods=['GET', 'POST'])
-# def index():
-#     search = JusticeSearchForm(request.form)
-#     if request.method == 'POST':
-#         return search_results(search)
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    search = JusticeSearchForm(request.form)
+    if request.method == 'POST':
+        return search_results(search)
 
-    # return render_template('search_form.html', form=search)
+    return render_template('search_form.html', form=search)
 
 @app.route('/osoby', methods=['GET', 'POST'])
 def search_person():
@@ -120,7 +121,7 @@ def search_results_person(search):
         qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
 
     results = qry.all()
-    print(results)
+    # print(results)
 
     if not results:
         flash('No results found!')
@@ -213,7 +214,7 @@ def search_results_entity(search):
             qry = qry.filter(Adresy_v2.cisloor == co)
 
     results = qry.all()
-    print(results)
+    # print(results)
 
     if not results:
         flash('No results found!')
@@ -225,184 +226,184 @@ def search_results_entity(search):
         return render_template("results_entities.html", results=results, form=search, show_form = True, selection_method = actual_selection)
 
 
-# @app.route('/results')
-# def search_results(search):
-#     results = []
+@app.route('/results')
+def search_results(search):
+    results = []
 
-#     ico = search.ico_search.data
-#     ico_search_method = search.ico_search_selection.data
+    ico = search.ico_search.data
+    ico_search_method = search.ico_search_selection.data
 
-#     nazev = search.nazev_subjektu.data
-#     nazev_search_method = search.nazev_subjektu_selection.data
-#     nazev_actual_or_full = search.nazev_search_actual.data
+    nazev = search.nazev_subjektu.data
+    nazev_search_method = search.nazev_subjektu_selection.data
+    nazev_actual_or_full = search.nazev_search_actual.data
 
-#     oddil = search.oddil_search.data
-#     oddil_search_method = search.oddil_search_selection.data
-#     oddil_actual_or_full = search.oddil_search_actual.data
+    oddil = search.oddil_search.data
+    oddil_search_method = search.oddil_search_selection.data
+    oddil_actual_or_full = search.oddil_search_actual.data
 
-#     vlozka = search.vlozka_search.data
-#     vlozka_search_method = search.vlozka_search_selection.data
-#     vlozka_actual_or_full = search.vlozka_search_actual.data
+    vlozka = search.vlozka_search.data
+    vlozka_search_method = search.vlozka_search_selection.data
+    vlozka_actual_or_full = search.vlozka_search_actual.data
 
-#     obec = search.obec_search.data
-#     obec_search_method = search.obec_search_selection.data
-#     obec_actual_or_full = search.obec_search_actual.data
+    obec = search.obec_search.data
+    obec_search_method = search.obec_search_selection.data
+    obec_actual_or_full = search.obec_search_actual.data
 
-#     ulice = search.ulice_search.data
-#     ulice_search_method = search.ulice_search_selection.data
-#     ulice_actual_or_full = search.ulice_search_actual.data
+    ulice = search.ulice_search.data
+    ulice_search_method = search.ulice_search_selection.data
+    ulice_actual_or_full = search.ulice_search_actual.data
 
-#     co = search.co_search.data
-#     co_search_method = search.co_search_selection.data
-#     co_actual_or_full = search.co_search_actual.data
+    co = search.co_search.data
+    co_search_method = search.co_search_selection.data
+    co_actual_or_full = search.co_search_actual.data
 
-#     cp = search.cp_search.data
-#     cp_search_method = search.cp_search_selection.data
-#     cp_actual_or_full = search.cp_search_actual.data
+    cp = search.cp_search.data
+    cp_search_method = search.cp_search_selection.data
+    cp_actual_or_full = search.cp_search_actual.data
 
-#     pravni_forma = search.pravni_forma_search.data
-#     pravni_forma_actual_or_full = search.pravni_forma_actual.data
+    pravni_forma = search.pravni_forma_search.data
+    pravni_forma_actual_or_full = search.pravni_forma_actual.data
 
-#     soud = search.soud_search.data
-#     soud_actual_or_full = search.soud_search_actual.data
+    soud = search.soud_search.data
+    soud_actual_or_full = search.soud_search_actual.data
 
-#     insolvent_only = search.insolvent_only_search.data
+    insolvent_only = search.insolvent_only_search.data
 
-#     criminal_record_only = search.criminal_record_only_search.data
+    criminal_record_only = search.criminal_record_only_search.data
 
-#     zapsano_od = search.zapis_od.data
-#     zapsano_do = search.zapis_do.data
+    zapsano_od = search.zapis_od.data
+    zapsano_do = search.zapis_do.data
 
-#     qry = Company.query
+    qry = Company.query
 
-#     if insolvent_only:
-#         qry = qry.join(Insolvency_Events, Company.insolvence)
-#         qry = qry.filter(Insolvency_Events.vymaz_datum == 0)
-#         qry_konkurz = Company.query
-#         qry_konkurz = qry_konkurz.join(Konkurz_Events, Company.konkurz)
-#         qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == 0)
-#         qry = qry.union(qry_konkurz)
+    if insolvent_only:
+        qry = qry.join(Insolvency_Events, Company.insolvence)
+        qry = qry.filter(Insolvency_Events.vymaz_datum == 0)
+        qry_konkurz = Company.query
+        qry_konkurz = qry_konkurz.join(Konkurz_Events, Company.konkurz)
+        qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == 0)
+        qry = qry.union(qry_konkurz)
 
-#     if criminal_record_only:
-#         qry = qry.join(Criminal_Records, Company.criminal_record)
+    if criminal_record_only:
+        qry = qry.join(Criminal_Records, Company.criminal_record)
 
-#     if ico:
-#         if ico_search_method == "text_anywhere":
-#             qry = qry.filter(Company.ico.contains(ico))
-#         elif ico_search_method == "text_beginning":
-#             qry = qry.filter(Company.ico.like(f'{ico}%'))
-#         elif ico_search_method == "text_exact":
-#             qry = qry.filter(Company.ico == ico)
+    if ico:
+        if ico_search_method == "text_anywhere":
+            qry = qry.filter(Company.ico.contains(ico))
+        elif ico_search_method == "text_beginning":
+            qry = qry.filter(Company.ico.like(f'{ico}%'))
+        elif ico_search_method == "text_exact":
+            qry = qry.filter(Company.ico == ico)
 
-#     if nazev:
-#         qry = qry.join(Nazvy, Company.obchodni_firma)
-#         if nazev_actual_or_full == "actual_results":
-#             qry = qry.filter(Nazvy.vymaz_datum == 0)
-#         if nazev_search_method == "text_anywhere":
-#             qry = qry.filter(Nazvy.nazev_text.contains(nazev))
-#         elif nazev_search_method == "text_beginning":
-#             qry = qry.filter(Nazvy.nazev_text.like(f'{nazev}%'))
-#         elif nazev_search_method == "text_exact":
-#             qry = qry.filter(Nazvy.nazev_text == nazev)
+    if nazev:
+        qry = qry.join(Nazvy, Company.obchodni_firma)
+        if nazev_actual_or_full == "actual_results":
+            qry = qry.filter(Nazvy.vymaz_datum == 0)
+        if nazev_search_method == "text_anywhere":
+            qry = qry.filter(Nazvy.nazev_text.contains(nazev))
+        elif nazev_search_method == "text_beginning":
+            qry = qry.filter(Nazvy.nazev_text.like(f'{nazev}%'))
+        elif nazev_search_method == "text_exact":
+            qry = qry.filter(Nazvy.nazev_text == nazev)
 
-#     if oddil:
-#         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
-#         if oddil_actual_or_full == "actual_results":
-#             qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
-#         if oddil_search_method == "text_anywhere":
-#             qry = qry.filter(Company.oddil.contains(oddil))
-#         elif oddil_search_method == "text_beginning":
-#             qry = qry.filter(Company.oddil.like(f'{oddil}%'))
-#         elif oddil_search_method == "text_exact":
-#             qry = qry.filter(Company.oddil == oddil)
+    if oddil:
+        qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
+        if oddil_actual_or_full == "actual_results":
+            qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
+        if oddil_search_method == "text_anywhere":
+            qry = qry.filter(Company.oddil.contains(oddil))
+        elif oddil_search_method == "text_beginning":
+            qry = qry.filter(Company.oddil.like(f'{oddil}%'))
+        elif oddil_search_method == "text_exact":
+            qry = qry.filter(Company.oddil == oddil)
 
-#     if vlozka:
-#         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
-#         if vlozka_actual_or_full == "actual_results":
-#             qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
-#         if vlozka_search_method == "text_anywhere":
-#             qry = qry.filter(Soudni_Zapisy.vlozka.contains(vlozka))
-#         elif vlozka_search_method == "text_beginning":
-#             qry = qry.filter(Soudni_Zapisy.vlozka.like(f'{vlozka}%'))
-#         elif vlozka_search_method == "text_exact":
-#             qry = qry.filter(Soudni_Zapisy.vlozka == vlozka)
+    if vlozka:
+        qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
+        if vlozka_actual_or_full == "actual_results":
+            qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
+        if vlozka_search_method == "text_anywhere":
+            qry = qry.filter(Soudni_Zapisy.vlozka.contains(vlozka))
+        elif vlozka_search_method == "text_beginning":
+            qry = qry.filter(Soudni_Zapisy.vlozka.like(f'{vlozka}%'))
+        elif vlozka_search_method == "text_exact":
+            qry = qry.filter(Soudni_Zapisy.vlozka == vlozka)
 
-#     if obec:
-#         qry = qry.join(Sidlo_Association, Company.sidlo_text)
-#         if obec_actual_or_full == "actual_results":
-#             qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
-#         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
-#         if obec_search_method == "text_anywhere":
-#             qry = qry.filter(Adresy_v2.obec.contains(obec))
-#         elif obec_search_method == "text_beginning":
-#             qry = qry.filter(Adresy_v2.obec.like(f'{obec}%'))
-#         elif obec_search_method == "text_exact":
-#             qry = qry.filter(Adresy_v2.obec == obec)
+    if obec:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if obec_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if obec_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.obec.contains(obec))
+        elif obec_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.obec.like(f'{obec}%'))
+        elif obec_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.obec == obec)
 
-#     if ulice:
-#         qry = qry.join(Sidlo_Association, Company.sidlo_text)
-#         if ulice_actual_or_full == "actual_results":
-#             qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
-#         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
-#         if ulice_search_method == "text_anywhere":
-#             qry = qry.filter(Adresy_v2.ulice.contains(ulice))
-#         elif ulice_search_method == "text_beginning":
-#             qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
-#         elif ulice_search_method == "text_exact":
-#             qry = qry.filter(Adresy_v2.ulice == ulice)
+    if ulice:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if ulice_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if ulice_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.ulice.contains(ulice))
+        elif ulice_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.ulice.like(f'{ulice}%'))
+        elif ulice_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.ulice == ulice)
 
-#     if cp:
-#         qry = qry.join(Sidlo_Association, Company.sidlo_text)
-#         if cp_actual_or_full == "actual_results":
-#             qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
-#         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
-#         if cp_search_method == "text_anywhere":
-#             qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
-#         elif cp_search_method == "text_beginning":
-#             qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
-#         elif cp_search_method == "text_exact":
-#             qry = qry.filter(Adresy_v2.cisloPo == cp)
+    if cp:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if cp_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if cp_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+        elif cp_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+        elif cp_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloPo == cp)
 
-#     if co:
-#         qry = qry.join(Sidlo_Association, Company.sidlo_text)
-#         if co_actual_or_full == "actual_results":
-#             qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
-#         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
-#         if co_search_method == "text_anywhere":
-#             qry = qry.filter(Adresy_v2.cisloOr.contains(co))
-#         elif co_search_method == "text_beginning":
-#             qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
-#         elif co_search_method == "text_exact":
-#             qry = qry.filter(Adresy_v2.cisloOr == co)
+    if co:
+        qry = qry.join(Sidlo_Association, Company.sidlo_text)
+        if co_actual_or_full == "actual_results":
+            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+        qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
+        if co_search_method == "text_anywhere":
+            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+        elif co_search_method == "text_beginning":
+            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+        elif co_search_method == "text_exact":
+            qry = qry.filter(Adresy_v2.cisloOr == co)
 
-#     if pravni_forma:
-#         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
-#         if pravni_forma_actual_or_full == "actual_results":
-#             qry = qry.filter(Pravni_Forma_Association_v2.vymaz_datum == 0)
-#         qry = qry.join(Pravni_Formy, Pravni_Forma_Association_v2.pravni_forma_text)
-#         qry = qry.filter(Pravni_Formy.pravni_forma == pravni_forma)
+    if pravni_forma:
+        qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
+        if pravni_forma_actual_or_full == "actual_results":
+            qry = qry.filter(Pravni_Forma_Association_v2.vymaz_datum == 0)
+        qry = qry.join(Pravni_Formy, Pravni_Forma_Association_v2.pravni_forma_text)
+        qry = qry.filter(Pravni_Formy.pravni_forma == pravni_forma)
 
-#     if soud:
-#         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
-#         if soud_actual_or_full == "actual_results":
-#             qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
-#         qry = qry.filter(Soudni_Zapisy.soud == soud)
+    if soud:
+        qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
+        if soud_actual_or_full == "actual_results":
+            qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
+        qry = qry.filter(Soudni_Zapisy.soud == soud)
 
-#     if zapsano_od:
-#         qry = qry.filter(Company.zapis >= zapsano_od)
-#     if zapsano_do:
-#         qry = qry.filter(Company.zapis <= zapsano_do)
+    if zapsano_od:
+        qry = qry.filter(Company.zapis >= zapsano_od)
+    if zapsano_do:
+        qry = qry.filter(Company.zapis <= zapsano_do)
 
-#     results = qry.all()
+    results = qry.all()
 
-#     if not results:
-#         flash('No results found!')
-#         return redirect('/')
+    if not results:
+        flash('No results found!')
+        return redirect('/')
 
-#     else:
-#         table = Results(results)
-#         table.border = True
-#         return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do, show_form = True)
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do, show_form = True)
 
 
 
@@ -525,32 +526,32 @@ def find_younges_persons():
     return render_template("youngest_persons.html", youngest_persons_list=sorted_list[:100])
 
 def count_number_entries():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT COUNT(id) FROM companies;")
-    entries_number = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    entries_number = c.execute("SELECT COUNT(id) FROM companies;")
+    entries_number = c.fetchone()
     conn.close()
-    return entries_number[0][0]
+    return entries_number[0]
 
 def count_common_addresses():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT sidlo_id, COUNT(`sidlo_id`) AS `value_occurrence` FROM sidlo_relation INNER JOIN adresy_v2 ON sidlo_relation.sidlo_id=adresy_v2.id WHERE vymaz_datum = 0 GROUP BY `sidlo_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    result = c.execute('''SELECT sidlo_id, COUNT(sidlo_id) AS value_occurrence FROM sidlo_relation INNER JOIN adresy_v2 ON sidlo_relation.sidlo_id=adresy_v2.id WHERE vymaz_datum is null GROUP BY sidlo_id ORDER BY value_occurrence DESC LIMIT 100;''')
+    result = c.fetchall()
     addresses_frequency = []
     for elem in result:
         qry = Adresy_v2.query
-        qry = qry.filter(Adresy_v2.id == elem[0])
+        qry = qry.filter(Adresy_v2.id == int(elem[0]))
         selected_address = qry.all()
         addresses_frequency.append((selected_address[0], elem[1], elem[0]))
     conn.close()
     return addresses_frequency
 
 def count_common_business():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT predmet_podnikani_id, COUNT(`predmet_podnikani_id`) AS `value_occurrence` FROM predmety_podnikani_relation INNER JOIN predmety_podnikani ON predmety_podnikani_relation.predmet_podnikani_id=predmety_podnikani.id WHERE vymaz_datum = 0 GROUP BY `predmet_podnikani_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    result = c.execute('''SELECT predmet_podnikani_id, COUNT(predmet_podnikani_id) AS value_occurrence FROM predmety_podnikani_relation INNER JOIN predmety_podnikani ON predmety_podnikani_relation.predmet_podnikani_id=predmety_podnikani.id WHERE vymaz_datum is null GROUP BY predmet_podnikani_id ORDER BY value_occurrence DESC LIMIT 100;''')
+    result = c.fetchall()
     business_frequency = []
     for elem in result:
         qry = Predmet_Podnikani.query
@@ -561,10 +562,10 @@ def count_common_business():
     return business_frequency
 
 def count_common_activity():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT predmet_cinnosti_id, COUNT(`predmet_cinnosti_id`) AS `value_occurrence` FROM predmety_cinnosti_relation INNER JOIN predmety_cinnosti ON predmety_cinnosti_relation.predmet_cinnosti_id=predmety_cinnosti.id WHERE vymaz_datum = 0 GROUP BY `predmet_cinnosti_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    result = c.execute('''SELECT predmet_cinnosti_id, COUNT(predmet_cinnosti_id) AS value_occurrence FROM predmety_cinnosti_relation INNER JOIN predmety_cinnosti ON predmety_cinnosti_relation.predmet_cinnosti_id=predmety_cinnosti.id WHERE vymaz_datum is null GROUP BY predmet_cinnosti_id ORDER BY value_occurrence DESC LIMIT 100;''')
+    result = c.fetchall()
     activity_frequency = []
     for elem in result:
         qry = Predmet_Cinnosti.query
@@ -575,10 +576,10 @@ def count_common_activity():
     return activity_frequency
 
 def count_common_purpose():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT ucel_id, COUNT(`ucel_id`) AS `value_occurrence` FROM ucel_relation INNER JOIN ucel ON ucel_relation.ucel_id=ucel.id WHERE vymaz_datum = 0 GROUP BY `ucel_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    result = c.execute('''SELECT ucel_id, COUNT(ucel_id) AS value_occurrence FROM ucel_relation INNER JOIN ucel ON ucel_relation.ucel_id=ucel.id WHERE vymaz_datum is null GROUP BY ucel_id ORDER BY value_occurrence DESC LIMIT 100;''')
+    result = c.fetchall()
     addresses_frequency = []
     for elem in result:
         qry = Ucel.query

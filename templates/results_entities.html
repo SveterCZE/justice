@@ -9,7 +9,7 @@
     {% set test_list = [] %}
 
     {% for elem in row.spolecnik_association %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}        
             {% set my_dict = {} %}
@@ -27,7 +27,7 @@
     {% endfor %}    
 
     {% for elem in row.sole_shareholder_association %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}            
             {% set my_dict = {} %}
@@ -45,7 +45,7 @@
     {% endfor %}
 
     {% for elem in row.statut_org_association %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}
             {% set my_dict = {} %}
@@ -63,7 +63,7 @@
     {% endfor %}
 
     {% for elem in row.supervisory_board_member_association %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}    
             {% set my_dict = {} %}
@@ -92,7 +92,7 @@
             <tr>
                 <td style="width:20%">Název:</td>
                 <td style="width:40%"><b>{{ row.nazev }}</b></td>
-                {% if row.ico != 0 %}
+                {% if row.ico != None %}
                 <td style="width:15%">IČO:</td>
                 <td style="width:25%"><a href="/{{ row.ico }}"><b>{{ row.ico }}</b></a></td>
                 {% else %}

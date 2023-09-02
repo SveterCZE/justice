@@ -9,7 +9,7 @@
     {% set test_list = [] %}
     {% for elem in row.statut_org_association %}
         {% set my_dict = {} %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
@@ -27,7 +27,7 @@
 
     {% for elem in row.supervisory_board_member_association %}
         {% set my_dict = {} %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}    
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
@@ -45,7 +45,7 @@
 
     {% for elem in row.spolecnik_association %}
         {% set my_dict = {} %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}        
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
@@ -63,7 +63,7 @@
 
     {% for elem in row.sole_shareholder_association %}
         {% set my_dict = {} %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}            
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
@@ -81,7 +81,7 @@
     
     {% for elem in row.prokurista_association %}
         {% set my_dict = {} %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}     
             {% set x = my_dict.__setitem__("adresa", elem.adresa) %}
@@ -98,7 +98,7 @@
     {% endfor %}
 
     {% for elem in row.ubo_association %}
-        {% if selection_method == "actual_results" and elem.vymaz_datum != 0 %}
+        {% if selection_method == "actual_results" and elem.vymaz_datum != None %}
             {% set xxx = [] %}
         {% else %}     
             {% set my_dict = {} %}
