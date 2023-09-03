@@ -482,12 +482,12 @@ class Adresy_v2(db.Model):
         joined_address = ""
         if self.komplet_adresa != None:
             return self.komplet_adresa
-        if self.ulice != None and self.ulice != None:
+        if self.ulice != None:
             joined_address += self.ulice + " "
         if self.cislotext != None and self.cislotext != None:
             joined_address += self.cislotext + ", "
         if self.cislopo != None:
-            if self.ulice == None and self.ulice != None:
+            if self.ulice == None:
                 joined_address += "č.p. "
             joined_address += str(self.cislopo)
             if self.cisloor != None:

@@ -121,7 +121,6 @@ def search_results_person(search):
         qry = qry.filter(Fyzicka_Osoba.datum_naroz == birthday)
 
     results = qry.all()
-    # print(results)
 
     if not results:
         flash('No results found!')
@@ -214,7 +213,6 @@ def search_results_entity(search):
             qry = qry.filter(Adresy_v2.cisloor == co)
 
     results = qry.all()
-    # print(results)
 
     if not results:
         flash('No results found!')
@@ -405,16 +403,14 @@ def search_results(search):
         table.border = True
         return render_template("results2.html", results=results, form=search, zapsano_od=zapsano_od, zapsano_do=zapsano_do, show_form = True)
 
-
-
-@app.route('/results-sidlo-<int:adresa_id>', methods=['GET', 'POST'])
+@app.route('/results-sidlo-<string:adresa_id>', methods=['GET', 'POST'])
 def search_results_sidlo(adresa_id):
     search = JusticeSearchForm(request.form)
 
     results = []
     qry = Company.query
     qry = qry.join(Sidlo_Association, Company.sidlo_text)
-    qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+    qry = qry.filter(Sidlo_Association.vymaz_datum == None)
     qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
     qry = qry.filter(Adresy_v2.id == adresa_id)
     results = qry.all()
@@ -428,16 +424,15 @@ def search_results_sidlo(adresa_id):
         table.border = True
         return render_template("results2.html", results=results, form=search, show_form = False)
 
-
 # UBO reults
-@app.route('/results-ubo-<int:ubo_id>', methods=['GET', 'POST'])
+@app.route('/results-ubo-<string:ubo_id>', methods=['GET', 'POST'])
 def search_results_ubo(ubo_id):
     search = JusticeSearchForm(request.form)
 
     results = []
     qry = Company.query
     qry = qry.join(Ubo, Company.ubo)
-    qry = qry.filter(Ubo.vymaz_datum == 0)
+    qry = qry.filter(Ubo.vymaz_datum == None)
     qry = qry.join(Fyzicka_Osoba, Ubo.jmeno)
     qry = qry.filter(Fyzicka_Osoba.id == ubo_id)
     results = qry.all()
@@ -528,7 +523,7 @@ def find_younges_persons():
 def count_number_entries():
     conn = return_conn()
     c = conn.cursor()
-    entries_number = c.execute("SELECT COUNT(id) FROM companies;")
+    entries_number = c.execute('''SELECT COUNT(id) FROM companies;''')
     entries_number = c.fetchone()
     conn.close()
     return entries_number[0]
@@ -590,10 +585,10 @@ def count_common_purpose():
     return addresses_frequency
 
 def count_common_ubo():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT UBO_id, COUNT(`UBO_id`) AS `value_occurrence` FROM ubo INNER JOIN fyzicke_osoby ON ubo.UBO_id=fyzicke_osoby.id WHERE vymaz_datum = 0 GROUP BY `UBO_id` ORDER BY `value_occurrence` DESC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    result = c.execute('''SELECT UBO_id, COUNT(UBO_id) AS value_occurrence FROM ubo INNER JOIN fyzicke_osoby ON ubo.UBO_id=fyzicke_osoby.id WHERE vymaz_datum is null GROUP BY UBO_id ORDER BY value_occurrence DESC LIMIT 100;''')
+    result = c.fetchall()
     ubo_frequency = []
     for elem in result:
         qry = Fyzicka_Osoba.query
@@ -604,23 +599,23 @@ def count_common_ubo():
     return ubo_frequency
 
 def count_common_degrees(method):
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
+    conn = return_conn()
+    c = conn.cursor()
     if method == "before":
-        text_instruction = text("SELECT titul_pred, COUNT(`titul_pred`) AS `value_occurrence` FROM fyzicke_osoby GROUP BY `titul_pred` ORDER BY `value_occurrence` DESC LIMIT 100;")
+        result = c.execute('''SELECT titul_pred, COUNT(titul_pred) AS value_occurrence FROM fyzicke_osoby GROUP BY titul_pred ORDER BY value_occurrence DESC LIMIT 100;''')
     else:
-        text_instruction = text("SELECT titul_za, COUNT(`titul_za`) AS `value_occurrence` FROM fyzicke_osoby GROUP BY `titul_za` ORDER BY `value_occurrence` DESC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+        result = c.execute('''SELECT titul_za, COUNT(titul_za) AS value_occurrence FROM fyzicke_osoby GROUP BY titul_za ORDER BY value_occurrence DESC LIMIT 100;''')
+    result = c.fetchall()
     degree_frequency = []
     for elem in result:
         degree_frequency.append((elem[0], elem[1]))
-    return degree_frequency[1:]
+    return degree_frequency
 
 def count_oldest_companies():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT id from companies ORDER BY zapis ASC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT id from companies ORDER BY zapis ASC LIMIT 100;''')
+    result = c.fetchall()
     oldest_companies = []
     for elem in result:
         qry = Company.query
@@ -630,10 +625,10 @@ def count_oldest_companies():
     return oldest_companies
 
 def count_oldest_shareholders():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;''')
+    result = c.fetchall()
     oldest_shareholders = []
     for elem in result:
         qry = Company.query
@@ -646,10 +641,10 @@ def count_oldest_shareholders():
     return oldest_shareholders
 
 def count_oldest_executieves():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;''')
+    results = c.fetchall()
     oldest_executives = []
     for elem in results:
         qry = Company.query
@@ -663,10 +658,10 @@ def count_oldest_executieves():
     return oldest_executives
 
 def count_oldest_prokurists():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;''')
+    results = c.fetchall()
     oldest_prokurists = []
     for elem in results:
         qry = Company.query
@@ -679,10 +674,10 @@ def count_oldest_prokurists():
     return oldest_prokurists
 
 def count_oldest_sole_shareholders():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;''')
+    results = c.fetchall()
     oldest_sole_shareholders = []
     for elem in results:
         qry = Company.query
@@ -695,10 +690,10 @@ def count_oldest_sole_shareholders():
     return oldest_sole_shareholders
 
 def count_oldest_supervisory_members():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '9999-10-10' ELSE datum_naroz END ASC LIMIT 100;''')
+    results = c.fetchall()
     oldest_supervisory_members = []
     for elem in results:
         qry = Company.query
@@ -712,10 +707,10 @@ def count_oldest_supervisory_members():
     return oldest_supervisory_members
 
 def count_youngest_shareholders():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;''')
+    result = c.fetchall()
     youngest_shareholders = []
     for elem in result:
         qry = Company.query
@@ -728,10 +723,10 @@ def count_youngest_shareholders():
     return youngest_shareholders
 
 def count_youngest_executieves():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;''')
+    results = c.fetchall()
     youngest_executives = []
     for elem in results:
         qry = Company.query
@@ -745,10 +740,10 @@ def count_youngest_executieves():
     return youngest_executives
 
 def count_youngest_prokurists():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;''')
+    results = c.fetchall()
     youngest_prokurists = []
     for elem in results:
         qry = Company.query
@@ -761,10 +756,10 @@ def count_youngest_prokurists():
     return youngest_prokurists
 
 def count_youngest_sole_shareholders():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;''')
+    results = c.fetchall()
     youngest_sole_shareholders = []
     for elem in results:
         qry = Company.query
@@ -777,10 +772,10 @@ def count_youngest_sole_shareholders():
     return youngest_sole_shareholders
 
 def count_youngest_supervisory_members():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN datum_naroz = 0 THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum is null ORDER BY CASE WHEN datum_naroz is null THEN '1111-10-10' ELSE datum_naroz END DESC LIMIT 100;''')
+    results = c.fetchall()
     youngest_supervisory_members = []
     for elem in results:
         qry = Company.query
@@ -794,10 +789,10 @@ def count_youngest_supervisory_members():
     return youngest_supervisory_members
 
 def count_longest_registered_shareholders():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, spolecnici.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN spolecnici ON spolecnici.spolecnik_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN zapis_datum is null THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;''')
+    result = c.fetchall()
     longest_registered_shareholders = []
     for elem in result:
         qry = Company.query
@@ -810,10 +805,10 @@ def count_longest_registered_shareholders():
     return longest_registered_shareholders
 
 def count_longest_registered_executives():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '2099-10-10' ELSE zapis_datum END ASC LIMIT 100;")
-    result = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, statutarni_organ_clen_relation.zapis_datum, statutarni_organ_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN statutarni_organ_clen_relation ON statutarni_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum is null ORDER BY CASE WHEN zapis_datum is null THEN '2099-10-10' ELSE zapis_datum END ASC LIMIT 100;''')
+    result = c.fetchall()
     longest_registered_executives = []
     for elem in result:
         qry = Company.query
@@ -827,10 +822,10 @@ def count_longest_registered_executives():
     return longest_registered_executives
 
 def count_longest_registered_sole_shareholders():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, jediny_akcionar.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN jediny_akcionar ON jediny_akcionar.akcionar_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN zapis_datum is null THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;''')
+    results = c.fetchall()
     longest_registered_sole_shareholders = []
     for elem in results:
         qry = Company.query
@@ -843,10 +838,10 @@ def count_longest_registered_sole_shareholders():
     return longest_registered_sole_shareholders
 
 def count_longest_registered_prokurists():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, prokuriste.zapis_datum, company_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN prokuriste ON prokuriste.prokurista_fo_id=fyzicke_osoby.id WHERE vymaz_datum is null ORDER BY CASE WHEN zapis_datum is null THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;''')
+    results = c.fetchall()
     longest_registered_prokurists = []
     for elem in results:
         qry = Company.query
@@ -859,10 +854,10 @@ def count_longest_registered_prokurists():
     return longest_registered_prokurists
 
 def count_longest_registered_supervsiory_members():
-    engine = create_engine('sqlite:///justice.db', echo=True)
-    conn = engine.connect()
-    text_instruction = text("SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum = 0 ORDER BY CASE WHEN zapis_datum = 0 THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;")
-    results = conn.execute(text_instruction).fetchall()
+    conn = return_conn()
+    c = conn.cursor()
+    c.execute('''SELECT jmeno, prijmeni, datum_naroz, dr_organ_clen_relation.zapis_datum, dozorci_rada_id, fyzicke_osoby.adresa_id from fyzicke_osoby INNER JOIN dr_organ_clen_relation ON dr_organ_clen_relation.osoba_id=fyzicke_osoby.id  WHERE vymaz_datum is null ORDER BY CASE WHEN zapis_datum is null THEN '9999-10-10' ELSE zapis_datum END ASC LIMIT 100;''')
+    results = c.fetchall()
     longest_registered_supervisory_members = []
     for elem in results:
         qry = Company.query
