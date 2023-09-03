@@ -276,10 +276,10 @@ def search_results(search):
 
     if insolvent_only:
         qry = qry.join(Insolvency_Events, Company.insolvence)
-        qry = qry.filter(Insolvency_Events.vymaz_datum == 0)
+        qry = qry.filter(Insolvency_Events.vymaz_datum == None)
         qry_konkurz = Company.query
         qry_konkurz = qry_konkurz.join(Konkurz_Events, Company.konkurz)
-        qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == 0)
+        qry_konkurz = qry_konkurz.filter(Konkurz_Events.vymaz_datum == None)
         qry = qry.union(qry_konkurz)
 
     if criminal_record_only:
@@ -296,7 +296,7 @@ def search_results(search):
     if nazev:
         qry = qry.join(Nazvy, Company.obchodni_firma)
         if nazev_actual_or_full == "actual_results":
-            qry = qry.filter(Nazvy.vymaz_datum == 0)
+            qry = qry.filter(Nazvy.vymaz_datum == None)
         if nazev_search_method == "text_anywhere":
             qry = qry.filter(Nazvy.nazev_text.contains(nazev))
         elif nazev_search_method == "text_beginning":
@@ -307,7 +307,7 @@ def search_results(search):
     if oddil:
         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
         if oddil_actual_or_full == "actual_results":
-            qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
+            qry = qry.filter(Soudni_Zapisy.vymaz_datum == None)
         if oddil_search_method == "text_anywhere":
             qry = qry.filter(Company.oddil.contains(oddil))
         elif oddil_search_method == "text_beginning":
@@ -318,7 +318,7 @@ def search_results(search):
     if vlozka:
         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
         if vlozka_actual_or_full == "actual_results":
-            qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
+            qry = qry.filter(Soudni_Zapisy.vymaz_datum == None)
         if vlozka_search_method == "text_anywhere":
             qry = qry.filter(Soudni_Zapisy.vlozka.contains(vlozka))
         elif vlozka_search_method == "text_beginning":
@@ -329,7 +329,7 @@ def search_results(search):
     if obec:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
         if obec_actual_or_full == "actual_results":
-            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+            qry = qry.filter(Sidlo_Association.vymaz_datum == None)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
         if obec_search_method == "text_anywhere":
             qry = qry.filter(Adresy_v2.obec.contains(obec))
@@ -341,7 +341,7 @@ def search_results(search):
     if ulice:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
         if ulice_actual_or_full == "actual_results":
-            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+            qry = qry.filter(Sidlo_Association.vymaz_datum == None)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
         if ulice_search_method == "text_anywhere":
             qry = qry.filter(Adresy_v2.ulice.contains(ulice))
@@ -353,7 +353,7 @@ def search_results(search):
     if cp:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
         if cp_actual_or_full == "actual_results":
-            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+            qry = qry.filter(Sidlo_Association.vymaz_datum == None)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
         if cp_search_method == "text_anywhere":
             qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
@@ -365,7 +365,7 @@ def search_results(search):
     if co:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
         if co_actual_or_full == "actual_results":
-            qry = qry.filter(Sidlo_Association.vymaz_datum == 0)
+            qry = qry.filter(Sidlo_Association.vymaz_datum == None)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
         if co_search_method == "text_anywhere":
             qry = qry.filter(Adresy_v2.cisloOr.contains(co))
@@ -377,14 +377,14 @@ def search_results(search):
     if pravni_forma:
         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
         if pravni_forma_actual_or_full == "actual_results":
-            qry = qry.filter(Pravni_Forma_Association_v2.vymaz_datum == 0)
+            qry = qry.filter(Pravni_Forma_Association_v2.vymaz_datum == None)
         qry = qry.join(Pravni_Formy, Pravni_Forma_Association_v2.pravni_forma_text)
         qry = qry.filter(Pravni_Formy.pravni_forma == pravni_forma)
 
     if soud:
         qry = qry.join(Soudni_Zapisy, Company.soudni_zapis)
         if soud_actual_or_full == "actual_results":
-            qry = qry.filter(Soudni_Zapisy.vymaz_datum == 0)
+            qry = qry.filter(Soudni_Zapisy.vymaz_datum == None)
         qry = qry.filter(Soudni_Zapisy.soud == soud)
 
     if zapsano_od:
