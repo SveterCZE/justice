@@ -406,11 +406,16 @@ class Podily_Association(db.Model):
     druh_podilu = db.relationship("Druhy_Podilu")
 
     def my_rep(self):
-        podil_descr = "Vklad: " + self.vklad_text + " " + self.vklad_typ + "\n"
-        podil_descr += "Splaceno: " + self.splaceni_text + " " + self.splaceni_typ
+        podil_descr = ""
+        if self.vklad_text != None:
+            podil_descr += "Vklad: " + self.vklad_text + " " 
+        if self.vklad_typ != None:
+            podil_descr += self.vklad_typ + "\n"
+        if self.splaceni_text != None:
+            podil_descr += "Splaceno: "+ self.splaceni_text + " " + self.splaceni_typ
         if self.souhrn_text != None:
             podil_descr += "\n" + "Podíl: " + self.souhrn_text + self.souhrn_typ
-        if self.druh_podilu.druh_podilu != None:
+        if self.druh_podilu.druh_podilu != None and self.druh_podilu.druh_podilu != "N/A":
             podil_descr += "\n" + "Druh podílu: " + self.druh_podilu.druh_podilu
         return podil_descr.split("\n")
 

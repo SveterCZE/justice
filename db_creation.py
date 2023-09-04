@@ -63,18 +63,18 @@ def create_tables(conn):
 	stat	        TEXT,
 	obec	        TEXT,
 	ulice	        TEXT,
-	castObce	    TEXT,
-	cisloPo	        TEXT,
-	cisloOr	        TEXT,
+	castobce	    TEXT,
+	cislopo	        TEXT,
+	cisloor	        TEXT,
 	psc	            TEXT,
 	okres   	    TEXT,
 	komplet_adresa	TEXT,
-	cisloEv	        TEXT,
-	cisloText	    TEXT,
-    CONSTRAINT not_distinct_address UNIQUE NULLS NOT DISTINCT ("stat","obec","ulice","castobce","cislopo","cisloor","psc","okres","komplet_adresa","cisloev","cislotext")
+	cisloev	        TEXT,
+	cislotext	    TEXT,
+    CONSTRAINT not_distinct_address UNIQUE NULLS NOT DISTINCT (stat,obec,ulice,castobce,cislopo,cisloor,psc,okres,komplet_adresa,cisloev,cislotext)    
 ); """
     list_of_tables.append(adresy_v2)
-    
+
 
 #     fyzicke_osoby = """ CREATE TABLE "fyzicke_osoby" (
 # 	"id"	SERIAL PRIMARY KEY,
@@ -576,60 +576,62 @@ def create_indices(conn):
 # 	"id"
 # ); """
 
-#     adresy2 = """ CREATE INDEX "index adresy2" ON "adresy_v2" (
+#     adresy2 = """ CREATE INDEX "index adresy2" ON "adresy_v2" using HASH (
 # 	"obec"
 # ); """
 #     relevant_indices.append(adresy2)
 
-#     adresy3 = """ CREATE INDEX "index adresy3" ON "adresy_v2" (
+#     adresy3 = """ CREATE INDEX "index adresy3" ON "adresy_v2" using HASH (
 # 	"ulice"
 # ); """
 #     relevant_indices.append(adresy3)
     
-#     adresy4 = """ CREATE INDEX "index adresy4" ON "adresy_v2" (
+#     adresy4 = """ CREATE INDEX "index adresy4" ON "adresy_v2" using HASH (
 # 	"stat"
 # ); """
 #     relevant_indices.append(adresy4)
     
-#     adresy5 = """ CREATE INDEX "index adresy5" ON "adresy_v2" (
+#     adresy5 = """ CREATE INDEX "index adresy5" ON "adresy_v2" using HASH (
 # 	"castobce"
 # ); """
 #     relevant_indices.append(adresy5)
     
-#     adresy6 = """ CREATE INDEX "index adresy12" ON "adresy_v2" (
+#     adresy6 = """ CREATE INDEX "index adresy12" ON "adresy_v2" using HASH (
 # 	"cislopo"
 # ); """
 #     relevant_indices.append(adresy6)
 
-#     adresy7 = """ CREATE INDEX "index adresy6" ON "adresy_v2" (
+#     adresy7 = """ CREATE INDEX "index adresy6" ON "adresy_v2" using HASH (
 # 	"cisloor"
 # ); """
 #     relevant_indices.append(adresy7)
     
-#     adresy8 = """ CREATE INDEX "index adresy7" ON "adresy_v2" (
+#     adresy8 = """ CREATE INDEX "index adresy7" ON "adresy_v2" using HASH (
 # 	"psc"
 # ); """
 #     relevant_indices.append(adresy8)
     
-#     adresy9 = """ CREATE INDEX "index adresy8" ON "adresy_v2" (
+#     adresy9 = """ CREATE INDEX "index adresy8" ON "adresy_v2" using HASH (
 # 	"okres"
 # ); """
 #     relevant_indices.append(adresy9)
     
-#     adresy10 = """ CREATE INDEX "index adresy9" ON "adresy_v2" (
+#     adresy10 = """ CREATE INDEX "index adresy9" ON "adresy_v2" using HASH (
 # 	"komplet_adresa"
 # ); """
 #     relevant_indices.append(adresy10)
     
-#     adresy11 = """ CREATE INDEX "index adresy10" ON "adresy_v2" (
+#     adresy11 = """ CREATE INDEX "index adresy10" ON "adresy_v2" using HASH (
 # 	"cisloev"
 # ); """
 #     relevant_indices.append(adresy11)
     
-#     adresy12 = """ CREATE INDEX "index adresy11" ON "adresy_v2" (
+#     adresy12 = """ CREATE INDEX "index adresy11" ON "adresy_v2" using HASH (
 # 	"cislotext"
 # ); """
 #     relevant_indices.append(adresy12)
+    
+
 #     akcie = """ CREATE INDEX "index akcie1" ON "akcie" (
 # 	"id"
 # ); """

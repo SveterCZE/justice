@@ -465,7 +465,7 @@ def find_sole_shareholder(c, elem2, primary_sql_key):
             typ_akcionar = get_prop(elem, "hodnotaUdaje/T")
             if typ_akcionar == "P":
                 spol_ico = get_prop(elem, "osoba/ico")
-                regCislo = get_prop(elem, "osoba/rgCislo")
+                regCislo = get_prop(elem, "osoba/regCislo")
                 adresa_id = find_sidlo(c, elem)
                 akcionar_po_id = find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id)
                 c.execute("INSERT into jediny_akcionar (company_id, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id) VALUES (%s, %s, %s, %s, %s, %s)", (primary_sql_key, zapis_datum, vymaz_datum, text_akcionar, akcionar_po_id, adresa_id,))
@@ -527,7 +527,7 @@ def find_sidlo(c, elem):
         obec = get_prop(elem, ".//obec")
         ulice = get_prop(elem, ".//ulice")
         if ulice != None and ('\'' in ulice or '"' in ulice):
-            ulice = ulice.replace('\'', '\'')
+            ulice = ulice.replace('\'', '')
         castObce = get_prop(elem, ".//castObce")
         cisloPo = get_prop(elem, ".//cisloPo")
         cisloOr = get_prop(elem, ".//cisloOr")
@@ -535,15 +535,17 @@ def find_sidlo(c, elem):
         okres = get_prop(elem, ".//okres")
         adresaText = get_prop(elem, ".//adresaText")
         if adresaText != None and ('\'' in adresaText):
-            adresaText = adresaText.replace('\\\'', '')
+            adresaText = adresaText.replace('\'', '')
         cisloEv = get_prop(elem, ".//cisloEv")
         cisloText = get_prop(elem, ".//cisloText")
+        
         insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
         adresa_id = c.fetchone()[0]
+        
         # adresa_id = find_address_id(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
         # if adresa_id == False:
-            # insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
-            # adresa_id = c.fetchone()[0]
+        #     insert_address(c, statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
+        #     adresa_id = c.fetchone()[0]
             # if adresa_id == False:
             #     print(statNazev, obec, ulice, castObce, cisloPo, cisloOr, psc, okres, adresaText, cisloEv, cisloText)
         return adresa_id
@@ -571,6 +573,8 @@ def find_sidlo(c, elem):
 #                 initial_element_inserted = True
 #         sql_query = " ".join(sql_query)
 #         adresa_id = c.execute(sql_query)
+#         if adresa_id == None:
+#             return False
 #         adresa_id = c.fetchone()[0]
 #         return adresa_id
 #     except Exception as f:
@@ -676,9 +680,9 @@ def find_fyzicka_osoba(c, elem, adresa_id):
         if jmeno == None and prijmeni == None:
             prijmeni = lower_names_chars(get_prop(elem, "osoba/osobaText"))
         if jmeno != None and ('\'' in jmeno):
-            jmeno = jmeno.replace('\\\'', '')
+            jmeno = jmeno.replace('\'', '')
         if prijmeni != None and ('\'' in prijmeni):
-            prijmeni = prijmeni.replace('\\\'', '')  
+            prijmeni = prijmeni.replace('\'', '')  
         datum_narozeni = get_prop(elem, "osoba/narozDatum")
         titulPred = get_prop(elem, "osoba/titulPred")
         titulZa = get_prop(elem, "osoba/titulZa")
@@ -740,7 +744,7 @@ def find_pravnicka_osoba(c, elem, spol_ico, regCislo, adresa_id):
     try:
         nazev = get_prop(elem, "osoba/nazev")
         if nazev != None and ('\'' in nazev in nazev):
-            nazev = nazev.replace('\\\'', '')
+            nazev = nazev.replace('\'', '')
         insert_pravnicka_osoba(c, spol_ico, regCislo, nazev, adresa_id)
         osoba_id = c.fetchone()[0]
         # osoba_id = find_pravnicka_osoba_id(c, spol_ico, regCislo, nazev, adresa_id)

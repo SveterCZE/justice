@@ -14,7 +14,7 @@ def main():
     # create_DB(DB_name)
     # Download commercial register data
     valid_files = get_valid_filenames()
-    # os.makedirs("data", exist_ok=True)
+    os.makedirs("data", exist_ok=True)
 
     # for valid_file in valid_files:
     #     download_data(valid_file)
