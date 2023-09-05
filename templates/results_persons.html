@@ -128,7 +128,7 @@
                 <td style="width:20%">Jméno:</td>
                 <td style="width:40%"><b>{{ row.get_name() }}</b></td>
                 <td style="width:15%">Datum narození:</td>
-                <td style="width:25%"><b>{{ row.datum_naroz }}</b></td>
+                <td style="width:25%"><b>{% if row.datum_naroz != None %}{{ row.datum_naroz }}{% endif %}</b></td>
             </tr>
 
             <tr>

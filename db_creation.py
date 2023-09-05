@@ -8,24 +8,24 @@ def create_DB(conn):
     conn.commit()
     # conn.close()
 
-def create_DB_file(db_file):
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-    except Exception as e:
-        print(e)
-    finally:
-        if conn:
-            conn.close()
+# def create_DB_file(db_file):
+#     conn = None
+#     try:
+#         conn = sqlite3.connect(db_file)
+#     except Exception as e:
+#         print(e)
+#     finally:
+#         if conn:
+#             conn.close()
 
-def create_connection(db_file):
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        return conn
-    except Exception as e:
-        print(e)
-    return conn
+# def create_connection(db_file):
+#     conn = None
+#     try:
+#         conn = sqlite3.connect(db_file)
+#         return conn
+#     except Exception as e:
+#         print(e)
+#     return conn
 
 def create_tables(conn):
     list_of_tables = []

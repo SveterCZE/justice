@@ -1,11 +1,12 @@
 import sqlite3
+from app import return_conn
 import xml.etree.ElementTree as ET
 import os
 from update_db import get_primary_sql_key
 
-def insert_criminal_records(DB_name):
+def insert_criminal_records():
     print("Inserting the criminal register information")
-    conn = sqlite3.connect(DB_name)
+    conn = return_conn()
     c = conn.cursor()
     file_address = os.path.join(str(os.getcwd()), "data", "criminal_records.xml")
     tree = ET.parse(file_address)
@@ -25,7 +26,7 @@ def process_individual_extracts(extract, c):
         relevant_paragraphs = find_relevant_paragraphs(extract)
         penalties = find_penalties(extract)
         primary_sql_key = get_primary_sql_key(c, ICO)
-        if primary_sql_key != 0:
+        if primary_sql_key != False:
             insert_crimnal_data_to_DB(c, primary_sql_key, court_records, relevant_paragraphs, penalties)
     return
 
@@ -33,7 +34,7 @@ def get_ICO(extract):
     person_entry = extract[0][0][2]
     temp_ico = person_entry.text
     if temp_ico.isnumeric() == True:
-        return int(temp_ico)
+        return temp_ico
     else:
         return -1
 
@@ -105,5 +106,5 @@ def insert_crimnal_data_to_DB(c, primary_sql_key, court_records, relevant_paragr
         for elem in penalties:
             text_penalties += elem
             text_penalties += ", "
-    c.execute("INSERT INTO criminal_records (company_id, first_instance, second_instance, paragraphs, penalties) VALUES (?, ?, ?, ?, ?)", (primary_sql_key, first_instance, second_instance, text_paragraphs[:-2], text_penalties[:-2],))
+    c.execute("INSERT INTO criminal_records (company_id, first_instance, second_instance, paragraphs, penalties) VALUES (%s, %s, %s, %s, %s)", (primary_sql_key, first_instance, second_instance, text_paragraphs[:-2], text_penalties[:-2],))
     return 0

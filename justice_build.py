@@ -8,35 +8,29 @@ import os
 import cProfile
 
 def main():
-    # valid_files = []
-    # DB_name = "justice.db"
-    # backup_DB()
-    # create_DB(DB_name)
     # Download commercial register data
     valid_files = get_valid_filenames()
     os.makedirs("data", exist_ok=True)
-
-    # for valid_file in valid_files:
-    #     download_data(valid_file)
-    
+    for valid_file in valid_files:
+        download_data(valid_file)
+    # Connect to the database
     conn = return_conn()
     cur = conn.cursor()
+    # Clean the existing database and initialise a new one
     cur.execute('select \'drop table "\' || tablename || \'" cascade;\' from pg_tables where schemaname = \'public\';')
     instructions = cur.fetchall()
     for elem in instructions:
         cur.execute(elem[0])
-    # conn.commit()
+    conn.commit()
     create_DB(conn)
     create_indices(conn)
-
+    # Insert data ffrom individual files
     for valid_file in valid_files:
         modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
         update_DB(modified_file_name, conn)
-    
-    # update_DB("data/as-full-ostrava-2023.xml", conn)
     # Download criminal records
-    # download_criminal_records()
-    # insert_criminal_records(DB_name)
+    download_criminal_records()
+    insert_criminal_records()
 
 # main()
 cProfile.run('main()')

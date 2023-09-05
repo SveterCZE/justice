@@ -53,7 +53,10 @@ def get_primary_sql_key(c, ICO):
     try:
         primary_key = c.execute("SELECT id FROM companies WHERE ico = (%s)", (ICO,))
         primary_key = c.fetchone()
-        return primary_key[0]
+        if primary_key == None:
+            return False
+        else:
+            return primary_key[0]
     except Exception as e:
         print(e)
         return 0
