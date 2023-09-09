@@ -5,3 +5,6 @@ flask
 flask_sqlalchemy
 flask_table
 wtforms
+gunicorn>=21.2,<22.0
+psycopg; sys_platform == "linux"
+psycopg[binary]; sys_platform != "linux"
