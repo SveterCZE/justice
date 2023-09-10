@@ -23,12 +23,13 @@ from models import Company, Soudni_Zapisy, \
     Sidlo_Association, Adresy_v2, Pravni_Forma_Association_v2, Pravni_Formy, Nazvy, Insolvency_Events, Konkurz_Events
 
 def return_conn():
-        return psycopg2.connect(
-        host="localhost",
-        database="justice2023",
-        user=os.environ['DB_USERNAME'],
-        password=os.environ['DB_PASSWORD']
-        )
+        # return psycopg2.connect(
+        # host="localhost",
+        # database="justice2023",
+        # user=os.environ['DB_USERNAME'],
+        # password=os.environ['DB_PASSWORD']
+        # )
+    return psycopg2.connect(os.environ['DB_URI'], sslmode='require')
 
 # @app.route('/', methods=['GET', 'POST'])
 # def index():
