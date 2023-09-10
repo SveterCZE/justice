@@ -9,12 +9,12 @@ from flask import Flask, render_template, request, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from forms import JusticeSearchForm
 from tables import Results
-from db_config import DB_URI, key
+# from db_config import DB_URI, key
 import sqlalchemy as sa
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
-app.secret_key = key
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URI']
+app.secret_key = os.environ['DB_KEY']
 # app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
