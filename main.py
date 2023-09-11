@@ -356,11 +356,11 @@ def search_results(search):
             qry = qry.filter(Sidlo_Association.vymaz_datum == None)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
         if cp_search_method == "text_anywhere":
-            qry = qry.filter(Adresy_v2.cisloPo.contains(cp))
+            qry = qry.filter(Adresy_v2.cislopo.contains(cp))
         elif cp_search_method == "text_beginning":
-            qry = qry.filter(Adresy_v2.cisloPo.like(f'{cp}%'))
+            qry = qry.filter(Adresy_v2.cislopo.like(f'{cp}%'))
         elif cp_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloPo == cp)
+            qry = qry.filter(Adresy_v2.cislopo == cp)
 
     if co:
         qry = qry.join(Sidlo_Association, Company.sidlo_text)
@@ -368,11 +368,11 @@ def search_results(search):
             qry = qry.filter(Sidlo_Association.vymaz_datum == None)
         qry = qry.join(Adresy_v2, Sidlo_Association.sidlo_text)
         if co_search_method == "text_anywhere":
-            qry = qry.filter(Adresy_v2.cisloOr.contains(co))
+            qry = qry.filter(Adresy_v2.cisloor.contains(co))
         elif co_search_method == "text_beginning":
-            qry = qry.filter(Adresy_v2.cisloOr.like(f'{co}%'))
+            qry = qry.filter(Adresy_v2.cisloor.like(f'{co}%'))
         elif co_search_method == "text_exact":
-            qry = qry.filter(Adresy_v2.cisloOr == co)
+            qry = qry.filter(Adresy_v2.cisloor == co)
 
     if pravni_forma:
         qry = qry.join(Pravni_Forma_Association_v2, Company.pravni_forma_text)
