@@ -30,3 +30,4 @@ config_data.py
 /db_config.py
 *.xml
 /psgr2023/*
+*justiceVENV*

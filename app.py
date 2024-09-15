@@ -19,8 +19,8 @@ app.secret_key = os.environ['DB_KEY']
 
 db = SQLAlchemy(app)
 
-from models import Company, Soudni_Zapisy, \
-    Sidlo_Association, Adresy_v2, Pravni_Forma_Association_v2, Pravni_Formy, Nazvy, Insolvency_Events, Konkurz_Events
+# from models import Company, Soudni_Zapisy, \
+#     Sidlo_Association, Adresy_v2, Pravni_Forma_Association_v2, Pravni_Formy, Nazvy, Insolvency_Events, Konkurz_Events
 
 def return_conn():
         # return psycopg2.connect(

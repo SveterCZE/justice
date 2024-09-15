@@ -32,5 +32,5 @@ def main():
     download_criminal_records()
     insert_criminal_records()
 
-# main()
-cProfile.run('main()')
+main()
+# cProfile.run('main()')

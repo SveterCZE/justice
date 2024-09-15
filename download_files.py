@@ -9,8 +9,8 @@ from lxml import etree
 
 def get_valid_filenames():
     FILENAME = "justice_files.txt"
-    # my_file = download_list_filenames()
-    # save_file(my_file, FILENAME)
+    my_file = download_list_filenames()
+    save_file(my_file, FILENAME)
     valid_files = get_files_list(FILENAME)
     return valid_files   
 
@@ -18,7 +18,7 @@ def download_list_filenames():
     source = "https://dataor.justice.cz/api/3/action/package_list"
     download = requests.get(source, stream = True)
     try:
-        # print("Downloading file ", source)
+        print("Downloading file ", source)
         download.raise_for_status()
     except Exception as exc:
         print("There was a problem: %s. Please check whether https://dataor.justice.cz is online. If not, try again later." % (exc))
@@ -59,12 +59,12 @@ def download_data(filename):
         save_temp_file(downloaded_OR, temp_file)
         unzip_file(filename, temp_file)
         delete_archive(temp_file)
-        parse_check = parseOR(temp_file[:-3])
-        if parse_check == True:
-            update_main_file(filename + ".xml", temp_file[:-3])
-            # delete_archive(temp_file[:-3])
-        else:
-            delete_archive(temp_file)
+        # parse_check = parseOR(temp_file[:-3])
+        # if parse_check == True:
+        update_main_file(filename + ".xml", temp_file[:-3])
+        delete_archive(temp_file[:-3])
+        # else:
+        #     delete_archive(temp_file)
     return 0
 
 def downloadOR(source):

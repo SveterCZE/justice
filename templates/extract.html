@@ -525,7 +525,7 @@
             {% set underlne_style_open = "" %}
             {% set underlne_style_close = "" %}
         {% endif %}
-        <td>{{ underlne_style_open|safe }} {% if row.spolecnici_spolecny_podil[i].text_uvolneny_podil != None %}{{ row.spolecnici_spolecny_podil[i].text_spolecny_podil }}{% endif %}   
+        <td>{{ underlne_style_open|safe }} {% if row.spolecnici_spolecny_podil[i].text_spolecny_podil != None %}{{ row.spolecnici_spolecny_podil[i].text_spolecny_podil }}{% endif %}   
             {{ underlne_style_close|safe }}</td>
         <td>{{ underlne_style_open|safe }} Zapsáno: {{ row.spolecnici_spolecny_podil[i].zapis_datum }} {% if row.spolecnici_spolecny_podil[i].vymaz_datum != None %} <br>   Vymazáno: {{ row.spolecnici_spolecny_podil[i].vymaz_datum }} {% endif %} {{ underlne_style_close|safe }}</td>
     </tr>

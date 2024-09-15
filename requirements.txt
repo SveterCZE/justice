@@ -7,7 +7,7 @@ Flask==2.3.3
 flask-babel==3.1.0
 Flask-SQLAlchemy==3.0.5
 Flask-Table==0.5.0
-greenlet==2.0.2
+greenlet
 idna==3.4
 itsdangerous==2.1.2
 Jinja2==3.1.2

@@ -310,7 +310,7 @@ class Podilnici_Association(db.Model):
     zapis_datum = db.Column(MyType)
     vymaz_datum = db.Column(MyType)
     adresa_id = db.Column(db.Integer, db.ForeignKey('adresy_v2.id'))
-    text_podilnik = db.Column(db.String)
+    # text_podilnik = db.Column(db.String)
     adresa = db.relationship("Adresy_v2")
     jmeno = db.relationship("Fyzicka_Osoba")
     oznaceni_po = db.relationship("Pravnicka_Osoba")

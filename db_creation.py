@@ -97,7 +97,7 @@ def create_tables(conn):
 	"jmeno"	TEXT,
 	"prijmeni"	TEXT,
 	"titul_za"	TEXT,
-	"datum_naroz"	TEXT,
+	"datum_naroz"	DATE,
 	"adresa_id" INTEGER,
 	CONSTRAINT not_distinct_natural_person UNIQUE NULLS NOT DISTINCT ("titul_pred","jmeno","prijmeni","titul_za","datum_naroz","adresa_id"),
 	FOREIGN KEY("adresa_id") REFERENCES "adresy_v2"("id")
