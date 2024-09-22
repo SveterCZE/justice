@@ -62,7 +62,7 @@ def download_data(filename):
         # parse_check = parseOR(temp_file[:-3])
         # if parse_check == True:
         update_main_file(filename + ".xml", temp_file[:-3])
-        delete_archive(temp_file[:-3])
+            # delete_archive(temp_file[:-3])
         # else:
         #     delete_archive(temp_file)
     return 0
