@@ -317,6 +317,15 @@ def create_tables(conn):
 ); """
     list_of_tables.append(podily)
 
+    zastavy = """ CREATE TABLE "zastavy" (
+    "id"				SERIAL PRIMARY KEY,
+    "podil_id"			INTEGER,
+    "zapis_datum"		DATE,
+	"vymaz_datum"		DATE,
+    "zastava_text"		TEXT
+); """
+    list_of_tables.append(zastavy)
+
     pravni_formy = """ CREATE TABLE "pravni_formy" (
 	"id"	SERIAL PRIMARY KEY,
 	"pravni_forma"	TEXT NOT NULL UNIQUE

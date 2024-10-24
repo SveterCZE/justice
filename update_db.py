@@ -809,10 +809,26 @@ def insert_podily(c, elem, spolecnik_id):
             souhrn_text = get_prop(podil_elem, "hodnotaUdaje/souhrn/textValue")
             splaceni_typ = get_prop(podil_elem, "hodnotaUdaje/splaceni/typ")
             splaceni_text = get_prop(podil_elem, "hodnotaUdaje/splaceni/textValue")
-            c.execute("INSERT INTO podily (spolecnik_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
+            c.execute("INSERT INTO podily (spolecnik_id, zapis_datum, vymaz_datum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id", (spolecnik_id, zapisDatum, vymazDatum, druh_podilu_id, vklad_typ, vklad_text, souhrn_typ, souhrn_text, splaceni_typ, splaceni_text,))
+            podil_id = c.fetchone()[0]
+            insert_pledge(c, podil_elem, podil_id)
     except Exception as f:
         print(inspect.stack()[0][3])
         print(f)
+
+def insert_pledge(c, podil_elem, podil_id):
+    try:
+        pledge_iter = podil_elem.findall("podudaje/Udaj")
+        for pledge_elem in pledge_iter:
+            if str(get_prop(pledge_elem, "udajTyp/kod")) == "SPOLECNIK_ZASTAVNI_PRAVO":
+                zapisDatum = get_prop(pledge_elem, "zapisDatum")
+                vymazDatum = get_prop(pledge_elem, "vymazDatum")
+                pledgeText = get_prop(pledge_elem, "hodnotaUdaje/text")
+                c.execute("INSERT INTO zastavy (podil_id, zapis_datum, vymaz_datum, zastava_text) VALUES (%s,%s,%s,%s)", (podil_id, zapisDatum, vymazDatum, pledgeText,))
+    except Exception as f:
+        print(inspect.stack()[0][3])
+        print(f)
+        pass
 
 def insert_vacant_podily(c, elem, vacant_id):
     try:
