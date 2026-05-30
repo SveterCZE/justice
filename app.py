@@ -2,6 +2,13 @@
 # -*- coding: utf-8 -*-
 # NEW BUILD BASED ON POSTGRES
 
+import flask
+from markupsafe import Markup
+flask.Markup = Markup
+
+from dotenv import load_dotenv, find_dotenv
+# # Let dotenv actively hunt down the file
+
 import os
 import psycopg2
 from lxml import etree
@@ -11,6 +18,9 @@ from forms import JusticeSearchForm
 from tables import Results
 # from db_config import DB_URI, key
 import sqlalchemy as sa
+
+load_dotenv(find_dotenv())
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URI']

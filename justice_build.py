@@ -1,14 +1,22 @@
+import flask
+from markupsafe import Markup
+flask.Markup = Markup
+
 from db_creation import create_DB, create_indices
-from download_files import download_data, get_valid_filenames, download_criminal_records
+from download_files import download_data, get_valid_filenames
 from update_db import update_DB
 from backup_DB import backup_DB
 from insert_criminal_records import insert_criminal_records
 from app import return_conn
 import os
 import cProfile
+import urllib3
+# from dotenv import load_dotenv
+
 
 def main():
     # Download commercial register data
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     valid_files = get_valid_filenames()
     os.makedirs("data", exist_ok=True)
     for valid_file in valid_files:
@@ -29,8 +37,8 @@ def main():
         modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
         update_DB(modified_file_name, conn)
     # Download criminal records
-    download_criminal_records()
-    insert_criminal_records()
+    # download_criminal_records()
+    # insert_criminal_records()
 
 main()
 # cProfile.run('main()')

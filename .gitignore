@@ -31,3 +31,5 @@ config_data.py
 *.xml
 /psgr2023/*
 *justiceVENV*
+*psgr*
+*.env
