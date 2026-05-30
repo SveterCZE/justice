@@ -9,10 +9,7 @@ from backup_DB import backup_DB
 from insert_criminal_records import insert_criminal_records
 from app import return_conn
 import os
-import cProfile
-import urllib3
-# from dotenv import load_dotenv
-
+# import cProfile
 
 def main():
     # Download commercial register data
@@ -32,7 +29,7 @@ def main():
     conn.commit()
     create_DB(conn)
     create_indices(conn)
-    # Insert data ffrom individual files
+    # Insert data from individual files
     for valid_file in valid_files:
         modified_file_name = os.path.join(str(os.getcwd()), "data", valid_file + ".xml")
         update_DB(modified_file_name, conn)

@@ -5,6 +5,7 @@ import requests
 import gzip
 import shutil
 import send2trash
+import logging
 from lxml import etree
 
 
@@ -16,6 +17,7 @@ def get_valid_filenames():
     return valid_files   
 
 def download_list_filenames():
+    logging.captureWarnings(True)
     source = "https://dataor.justice.cz/api/3/action/package_list"
     download = requests.get(source, stream = True, verify=False)
     try:
@@ -108,56 +110,16 @@ def download_data(filename):
         
     return 0
 
-# def download_data(filename):
-#     source = "https://dataor.justice.cz/api/file/" + filename + ".xml.gz"
-#     # temp_file = "D:\\Programovani\\Moje vymysly\\Justice\\data\\temp-" + filename
-#     temp_file = os.path.join(str(os.getcwd()), "data", "temp-" + filename + ".xml.gz")
-#     # temp_file = str(os.getcwd()) + "\\data\\temp-" + filename
-#     downloaded_OR = downloadOR(source)
-#     if downloaded_OR != None:
-#         save_temp_file(downloaded_OR, temp_file)
-#         unzip_file(filename, temp_file)
-#         delete_archive(temp_file)
-#         # parse_check = parseOR(temp_file[:-3])
-#         # if parse_check == True:
-#         update_main_file(filename + ".xml", temp_file[:-3])
-#             # delete_archive(temp_file[:-3])
-#         # else:
-#         #     delete_archive(temp_file)
-#     return 0
-
-# def downloadOR(source):
-#     download = requests.get(source, stream = True, verify=False)
-#     try:
-#         print("Downloading file ", source)
-#         download.raise_for_status()
-#     except Exception as exc:
-#         print("There was a problem: %s" % (exc))
-#         return None
-#     return download
-
-# def downloadOR(source, max_retries=100, delay_seconds=5):
-#     for attempt in range(max_retries):
-#         print(f"Downloading file {source} (Attempt {attempt + 1} of {max_retries})")
-        
-#         try:
-#             # Request moved inside the try block to catch connection timeouts
-#             download = requests.get(source, stream=True, verify=False, timeout=15)
-#             download.raise_for_status()
-            
-#             # Download successful, exit function and return the response
-#             return download 
-            
-#         except requests.exceptions.RequestException as exc:
-#             print(f"There was a problem: {exc}")
-            
-#             if attempt < max_retries - 1:
-#                 print(f"Waiting {delay_seconds} seconds before retrying...\n")
-#                 time.sleep(delay_seconds)
-#             else:
-#                 print(f"All retry attempts exhausted for {source}.")
-                
-#     return None
+def downloadOR(source):
+    logging.captureWarnings(True)
+    download = requests.get(source, stream = True,verify=False)
+    try:
+        print("Downloading file ", source)
+        download.raise_for_status()
+    except Exception as exc:
+        print("There was a problem: %s" % (exc))
+        return None
+    return download
 
 def parseOR(download):
     print("Parsing the file!")
